@@ -5,17 +5,6 @@ import { API_URL } from "../../actions/constants/constants";
 
 export default function Product(props) {
   const { products } = props;
-  // let products = [];
-  // if (type === "book") {
-  //   products = books;
-  // } else if (type === "foods") {
-  //   products = foods;
-  // } else if (type === "laptop") {
-  //   products = laptops;
-  // } else if (type === "phone") {
-  //   products = phones;
-  // }
-
   return (
     <>
       {products.map((item) => {
@@ -24,18 +13,23 @@ export default function Product(props) {
         return (
           <div className="col l-3 m-4 c-6" key={item.id}>
             <Link
-              // to={`/san-pham/${item.categoryCode.code}/${item.id}/${item.slug}`}
               to={`/san-pham/${item.id}/${item.slug}`}
               className="home-product-item-link"
             >
               <div className="home-product-item">
                 <div
                   className="home-product-item__img"
-                  style={{ backgroundImage: `url(${API_URL + "/images/product/" +  item.mainImage})` }}
+                  style={{
+                    backgroundImage: `url(${
+                      API_URL + "/images/product/" + item.mainImage
+                    })`,
+                  }}
                 />
                 <h4 className="home-product-item__name">{item.name}</h4>
                 <div className="home-product-item-price">
-                  <span className="home-product-item-price-old">{list_price}</span>
+                  <span className="home-product-item-price-old">
+                    {list_price}
+                  </span>
                   <span className="home-product-item-price-new">{price}</span>
                 </div>
                 <div className="home-product-item__info">
@@ -51,7 +45,9 @@ export default function Product(props) {
                   <span>Yêu thích</span>
                 </div>
                 <div className="home-product-item__sales">
-                  <span className="home-product-item__sales-percent">{item.percent_discount}%</span>
+                  <span className="home-product-item__sales-percent">
+                    {item.percent_discount}%
+                  </span>
                   <span className="home-product-item__sales-label">GIẢM</span>
                 </div>
               </div>

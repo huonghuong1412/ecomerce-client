@@ -602,8 +602,8 @@ i.home-product-item__like-icon-fill {
 .close-icon {
     width: 50px;
     position: absolute !important;
-    right: 0;
-    top: -5px;
+    right: 0px;
+    top: 0px;
 }
 
 /* -------   modal   -------- */

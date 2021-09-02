@@ -12,8 +12,7 @@ class ProfilePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            firstName: "",
-            lastName: "",
+            fullName: "",
             phone: "",
             email: "",
             username: "",
@@ -57,8 +56,7 @@ class ProfilePage extends React.Component {
     render() {
         const { user } = this.props;
         let {
-            firstName,
-            lastName,
+            fullName,
             phone,
             email,
             username,
@@ -80,38 +78,54 @@ class ProfilePage extends React.Component {
                                             <AccountNavbar name={username} />
                                         </div>
                                         <div className="col l-9 m-9 c-9">
+                                            <Grid item md={12}>
+                                                <div className="group">
+                                                    <h4 className="heading">Thông tin khách hàng</h4>
+                                                    <div className="content has-table">
+                                                        <table>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Họ tên</td>
+                                                                    <td>{user.fullName}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Username</td>
+                                                                    <td>{user.username}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Email</td>
+                                                                    <td>{user.email}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Số điện thoại</td>
+                                                                    <td>{user.phone}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Ngày sinh</td>
+                                                                    <td>{user.dateOfBirth}</td>
+                                                                </tr>
+                                                                {/* <tr>
+                                                                    <td>Địa chỉ</td>
+                                                                    <td>{user.house + ", " + user.ward + ", " + user.district + ", " + user.city}</td>
+                                                                </tr> */}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </Grid>
                                             <ValidatorForm onSubmit={this.handleSubmit}>
                                                 <Grid className="" container spacing={2}>
-                                                    <Grid item sm={6} xs={6}>
+                                                    <Grid item sm={12} xs={12}>
                                                         <TextValidator
                                                             className="input-text"
                                                             type="text"
-                                                            name="firstName"
-                                                            value={firstName}
-                                                            // onChange={(e) => setFirstName(e.target.value)}
+                                                            name="fullName"
+                                                            value={fullName}
                                                             onChange={this.handleInputChange}
                                                             label={
                                                                 <span>
                                                                     <span style={{ color: "red" }}>*</span>
-                                                                    Tên
-                                                                </span>
-                                                            }
-                                                            validators={["required"]}
-                                                            errorMessages={["Trường này không được để trống"]}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item sm={6} xs={6}>
-                                                        <TextValidator
-                                                            className="input-text"
-                                                            type="text"
-                                                            name="lastName"
-                                                            value={lastName}
-                                                            // onChange={(e) => setLastName(e.target.value)}
-                                                            onChange={this.handleInputChange}
-                                                            label={
-                                                                <span>
-                                                                    <span style={{ color: "red" }}>*</span>
-                                                                    Họ
+                                                                    Họ và tên
                                                                 </span>
                                                             }
                                                             validators={["required"]}
@@ -184,7 +198,6 @@ class ProfilePage extends React.Component {
                                                             type="date"
                                                             name="dateOfBirth"
                                                             value={dateOfBirth}
-                                                            // onChange={(e) => setDateOfBirth(e.target.value)}
                                                             onChange={this.handleInputChange}
                                                             placeholder=""
                                                             label={
@@ -238,7 +251,6 @@ class ProfilePage extends React.Component {
                                                                         name="passwordNew"
                                                                         value={passwordNew}
                                                                         onChange={this.handleInputChange}
-                                                                        // onChange={(e) => setPasswordNew(e.target.value)}
                                                                         label={
                                                                             <span>
                                                                                 <span style={{ color: "red" }}>*</span>
@@ -257,7 +269,6 @@ class ProfilePage extends React.Component {
                                                                         name="passwordNewConfirm"
                                                                         value={passwordNewConfirm}
                                                                         onChange={this.handleInputChange}
-                                                                        // onChange={(e) => setPasswordNewConfirm(e.target.value)}
                                                                         label={
                                                                             <span>
                                                                                 <span style={{ color: "red" }}>*</span>

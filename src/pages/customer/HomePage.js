@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Loading from 'components/Loading/Loading'
+// import Loading from 'components/Loading/Loading'
 import Slide from 'components/Slide/Slide'
 import Promotion from 'components/Promotion/Promotion'
 import Category from 'components/CategoryHighlights/Category'
@@ -7,6 +7,9 @@ import ProductItem from 'components/Item/ProductItem'
 import * as services from 'services/ProductServices'
 import { Link } from 'react-router-dom'
 import Product from 'components/Item/Product'
+import useTimeout from 'hooks/useTimeout'
+import ProductSkeleton from 'components/Item/ProductSkeleton'
+import ProductItemSkeleton from 'components/Item/ProductItemSkeleton'
 
 function HomePage(props) {
     const [products, setProducts] = useState([]);
@@ -20,7 +23,7 @@ function HomePage(props) {
         services.getProductList(searchObject)
             .then((res) => {
                 setProducts(res.data.content);
-                setLoading(false);
+                // setLoading(false);
             })
             .catch(err => console.log(err))
     }
@@ -28,6 +31,8 @@ function HomePage(props) {
     useEffect(() => {
         getNewData();
     }, [])
+
+    useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     return (
         <>
@@ -46,7 +51,7 @@ function HomePage(props) {
                                 </div>
                             </div>
                             {
-                                loading ? <Loading /> : <Product products={products} />
+                                loading ? <ProductSkeleton total={products.length} /> : <Product products={products} />
                             }
                             <div className="col l-12 m-12 c-12">
                                 <div className="section-center">
@@ -69,7 +74,7 @@ function HomePage(props) {
                                 </div>
                             </div>
                             {
-                                loading ? <Loading /> : <ProductItem type="book" books={products.filter(item => item.category.code === 'sach')} />
+                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductItem type="book" books={products.filter(item => item.category.code === 'sach')} />
                             }
                             <div className="col l-12 m-12 c-12">
                                 <div className="section-center">
@@ -92,7 +97,7 @@ function HomePage(props) {
                                 </div>
                             </div>
                             {
-                                loading ? <Loading /> : <ProductItem type="laptop" laptops={products.filter(item => item.category.code === 'laptop')} />
+                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductItem type="laptop" laptops={products.filter(item => item.category.code === 'laptop')} />
                             }
                             <div className="col l-12 m-12 c-12">
                                 <div className="section-center">
@@ -115,7 +120,7 @@ function HomePage(props) {
                                 </div>
                             </div>
                             {
-                                loading ? <Loading /> : <ProductItem type="phone" phones={products.filter(item => item.category.code === 'dien-thoai')} />
+                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductItem type="phone" phones={products.filter(item => item.category.code === 'dien-thoai')} />
                             }
                             <div className="col l-12 m-12 c-12">
                                 <div className="section-center">

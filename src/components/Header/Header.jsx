@@ -178,7 +178,7 @@ function Header(props) {
                             {item.name}
                           </h3>
                           <ul className="header__category--item-sublist">
-                            {item.subcategories.map((sub) => {
+                            {item?.subcategories.map((sub) => {
                               return (
                                 <li
                                   className="header__category--item-subitem"

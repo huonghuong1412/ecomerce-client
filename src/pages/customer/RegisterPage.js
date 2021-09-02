@@ -8,8 +8,7 @@ export default function RegisterPage(props) {
 
     const dispatch = useDispatch();
 
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setLastName] = useState("")
+    const [fullName, setFullName] = useState("")
     const [phone, setPhone] = useState("")
     const [email, setEmail] = useState("")
     const [username, setUsername] = useState("")
@@ -18,16 +17,16 @@ export default function RegisterPage(props) {
 
     useEffect(() => {
         let isAuth = localStorage.getItem('token')
-        if(isAuth && isAuth !== 'undefined') {
-           props.history.push('/')
+        if (isAuth && isAuth !== 'undefined') {
+            props.history.push('/')
         }
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const data = {
-            firstName, lastName, phone, email, username, password, dateOfBirth
+            fullName, phone, email, username, password, dateOfBirth
         }
         dispatch(register(data, props.history));
         // console.log(data);
@@ -49,36 +48,17 @@ export default function RegisterPage(props) {
                             <div className="col l-6 m-8 c-8">
                                 <ValidatorForm onSubmit={handleSubmit}>
                                     <Grid className="" container spacing={2}>
-                                        <Grid item sm={6} xs={6}>
+                                        <Grid item sm={12} xs={12}>
                                             <TextValidator
                                                 className="input-text"
-                                                // style={{ margin: '5px 0' }}
                                                 type="text"
-                                                name="firstName"
-                                                value={firstName}
-                                                onChange={(e) => setFirstName(e.target.value)}
+                                                name="fullName"
+                                                value={fullName}
+                                                onChange={(e) => setFullName(e.target.value)}
                                                 label={
                                                     <span>
                                                         <span style={{ color: "red" }}>*</span>
                                                         Tên
-                                                    </span>
-                                                }
-                                                validators={["required"]}
-                                                errorMessages={["Trường này không được để trống"]}
-                                            />
-                                        </Grid>
-                                        <Grid item sm={6} xs={6}>
-                                            <TextValidator
-                                                className="input-text"
-                                                // style={{ margin: '5px 0' }}
-                                                type="text"
-                                                name="lastName"
-                                                value={lastName}
-                                                onChange={(e) => setLastName(e.target.value)}
-                                                label={
-                                                    <span>
-                                                        <span style={{ color: "red" }}>*</span>
-                                                        Họ
                                                     </span>
                                                 }
                                                 validators={["required"]}

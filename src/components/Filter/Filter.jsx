@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { getSubCategoryByCategoryCode } from "services/CategoryServices";
 
 export default function Filter(props) {
   const { category } = props;
+  const history = useHistory();
 
   const [subcategories, setSubcategories] = useState([]);
 
@@ -40,27 +41,41 @@ export default function Filter(props) {
             <li className="category-item category-item__filter">
               <label className="item  item--seller">
                 <label className="style__Checkbox">
-                  <input type="checkbox" />
-                  <div>
-                    <span>Giá thấp đến cao</span>
-                  </div>
+                  <input
+                    type="radio"
+                    name="sort"
+                    onClick={() => {
+                      history.push("?sortBy=price&sortValue=ASC");
+                    }}
+                  />
+                  <div><span>Giá thấp đến cao</span></div>
                 </label>
               </label>
             </li>
             <li className="category-item category-item__filter">
               <label className="item  item--seller">
                 <label className="style__Checkbox">
-                  <input type="checkbox" />
-                  <div>
-                    <span>Giá cao đến thấp</span>
-                  </div>
+                  <input
+                    type="radio"
+                    name="sort"
+                    onClick={() => {
+                      history.push("?sortBy=price&sortValue=DESC");
+                    }}
+                  />
+                  <div><span>Giá cao đến thấp</span></div>
                 </label>
               </label>
             </li>
             <li className="category-item category-item__filter">
               <label className="item  item--seller">
                 <label className="style__Checkbox">
-                  <input type="checkbox" />
+                  <input
+                    type="radio"
+                    name="sort"
+                    onClick={() => {
+                      history.push("?sortBy=name&sortValue=ASC");
+                    }}
+                  />
                   <div>
                     <span>Tên A-Z</span>
                   </div>
@@ -70,7 +85,13 @@ export default function Filter(props) {
             <li className="category-item category-item__filter">
               <label className="item  item--seller">
                 <label className="style__Checkbox">
-                  <input type="checkbox" />
+                  <input
+                    type="radio"
+                    name="sort"
+                    onClick={() => {
+                      history.push("?sortBy=name&sortValue=DESC");
+                    }}
+                  />
                   <div>
                     <span>Tên Z-A</span>
                   </div>

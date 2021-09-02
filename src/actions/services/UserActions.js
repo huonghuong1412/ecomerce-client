@@ -43,6 +43,18 @@ export const getCurrentUser = () => {
     }
 }
 
+export const getUserLogin = () => {
+    const token = localStorage.getItem('token');
+    setHeader(token);
+    const headers = { Authorization: `Bearer ${token}` }
+    return axios({
+        method: "GET",
+        headers: headers,
+        url: `${API_URL}/api/auth/info`
+    })
+}
+
+
 export const getErrors = (errors) => {
     return {
         type: GET_ERRORS,
@@ -69,7 +81,7 @@ export const login = (user, history) => {
                 history.goBack();
             })
             .catch(err => {
-                toast.error('Đăng nhập không thành công!', {
+                toast.error('Tài khoản hoặc mật khẩu không chính xác!', {
                     position: "bottom-center",
                     theme: 'dark',
                     autoClose: 2000,
@@ -94,15 +106,23 @@ export const register = (data, history) => {
                 'content-type': 'application/json'
             }
         })
-            .then(() => {
-                toast.success("Đăng ký tài khoản thành công.")
+            .then((res) => {
+                toast.success(res.data.message)
                 history.push("/login")
             })
             .catch((err) => {
                 if (err) {
-                    console.log(err);
-                    console.log(err.response.data);
-                    dispatch(getErrors(err.response.data))
+                    toast.error(err.response.data.message, {
+                        position: "bottom-center",
+                        theme: 'dark',
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    dispatch(getErrors(err.response.data.message))
                 }
             })
     }

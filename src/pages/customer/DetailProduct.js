@@ -3,12 +3,14 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from 'actions/services/CartActions'
 import { currency } from "utils/FormatCurrency"
 import { Link } from 'react-router-dom';
-import Loading from 'components/Loading/Loading'
-import Filter from 'components/Filter/Filter'
 import { API_URL } from 'actions/constants/constants'
-import { getOneItem } from 'services/ProductServices'
+import { getAllProductByBrand, getOneItem } from 'services/ProductServices'
 import { toast } from 'react-toastify'
-import "react-toastify/dist/ReactToastify.css";;
+import "react-toastify/dist/ReactToastify.css"; import useTimeout from 'hooks/useTimeout';
+import DetailProductSkeleton from 'components/Loading/DetailProductSkeleton';
+import DetailsThumbnail from 'components/Item/DetailThumbnail';
+import Product from 'components/Item/Product';
+import ProductSkeleton from 'components/Item/ProductSkeleton';
 
 function DetailProduct(props) {
 
@@ -18,16 +20,45 @@ function DetailProduct(props) {
     const [product, setProduct] = useState({});
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
+    const [index, setIndex] = useState(0);
+    const [productByBrands, setProductByBrands] = useState([]);
+
+    const myRef = React.createRef();
+
+    const handleTab = index => {
+        setIndex(index);
+        const images = myRef.current.children;
+        for (let i = 0; i < images.length; i++) {
+            images[i].className = images[i].className.replace("active", "");
+        }
+        images[index].className = "active";
+    };
 
     useEffect(() => {
         const id = match.params.id;
         getOneItem(id)
             .then((res) => {
-                setLoading(false);
                 setProduct(res.data);
             })
             .catch(err => console.log(err));
     }, [match.params.id])
+
+    useEffect(() => {
+        if (myRef.current) {
+            myRef.current.children[index].className = "active";
+        }
+    }, [index, myRef])
+
+    useEffect(() => {
+        const { id, brand } = product;
+        if (id) {
+            getAllProductByBrand(id, brand?.code)
+                .then(res => setProductByBrands(res.data))
+                .catch(() => alert('ERR'))
+        }
+    }, [product])
+
+    useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     const handleAddToCart = () => {
         dispatch(addToCart(product, quantity));
@@ -40,12 +71,13 @@ function DetailProduct(props) {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            });
+        });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
     return (
         <>
-            {(loading && !product) ? <Loading /> : (
+            {!loading ? (
                 <div className="row sm-gutter section__content">
                     <div className="breadcrumb">
                         <Link className="breadcrumb-item" to="/">Trang chủ</Link>
@@ -56,35 +88,24 @@ function DetailProduct(props) {
                         <span className="breadcrumb-item">
                             <span>{product.name}</span></span>
                     </div>
-                    <div className="col l-10 m-12 c-12">
-                        <div className="home-product">
+                    <div className="col l-12 m-12 c-12">
+                        <div className="product-info">
                             {/* ------   Grid -> Row -> Column  ------ */}
                             <div className="row sm-gutter section__item">
-                                <div className="product-info col l-5 m-4 c-12">
+                                <div className="col l-5 m-4 c-12">
                                     <div className="left">
-                                        <>
-                                            {
-                                                <img
-                                                    src={`${API_URL}/images/product/${product.mainImage}`}
-                                                    alt=""
-                                                    style={{ width: '360px', height: '348px', objectFit: 'cover' }} />
-                                            }
-                                        </>
-                                        <div className="slider">
-                                            {product.images && product.images.map((item, i) => {
-                                                return (
-                                                    <img
-                                                        className="u-img-fluid"
-                                                        src={API_URL + "/images/product/" + item}
-                                                        key={i}
-                                                        alt=""
-                                                        style={{ width: '120px', height: '120px', objectFit: 'cover' }}
-                                                    />
-                                                )
-                                            })}
+                                        {
+                                            <img
+                                                src={`${API_URL}/images/product/${product.images[index]}`}
+                                                alt=""
+                                                style={{ width: '444px', height: '444px', objectFit: 'contain' }} />
+                                        }
+                                        <div className="list-img">
+                                            <DetailsThumbnail images={product.images} tab={handleTab} myRef={myRef} />
                                         </div>
                                     </div>
                                 </div>
+                                <div className="line"></div>
                                 <div className="col l-7 m-6 c-12">
                                     <div className="product-detail">
                                         <p>Danh Mục:
@@ -160,6 +181,14 @@ function DetailProduct(props) {
                                         <div className="content has-table">
                                             <table>
                                                 <tbody>
+                                                    <tr>
+                                                        <td>Thương hiệu</td>
+                                                        <td>{product.brand?.name}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Xuất xứ thương hiệu</td>
+                                                        <td>{product.brand?.madeIn}</td>
+                                                    </tr>
                                                     {
                                                         product.type === 1 ? (
                                                             <>
@@ -218,11 +247,47 @@ function DetailProduct(props) {
                                     </div>
                                 </div>
                             </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
+                                            Đánh giá, nhận xét từ khách hàng
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div className="col l-12 m-12 c-12">
+
+                                </div>
+                            </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
+                                            Sản phẩm dành cho bạn
+                                        </h3>
+                                    </div>
+                                </div>
+                                {
+                                    loading ? <ProductSkeleton total={productByBrands.length} /> : <Product products={productByBrands} />
+                                }
+                            </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
+                                            Sản phẩm cùng thương hiệu
+                                        </h3>
+                                    </div>
+                                </div>
+                                {
+                                    loading ? <ProductSkeleton total={productByBrands.length} /> : <Product products={productByBrands} />
+                                }
+                            </div>
                         </div>
                     </div>
-                    <Filter category="sach" />
                 </div>
-            )}
+            ) : <DetailProductSkeleton product={product} />
+            }
         </>
     )
 }

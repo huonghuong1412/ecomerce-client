@@ -10,17 +10,28 @@ import { addOrder } from 'actions/services/OrderActions'
 import { completeCart } from 'actions/services/CartActions';
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
+import { getUserLogin } from 'actions/services/UserActions';
+import useTimeout from 'hooks/useTimeout';
 
 
 function PaymentPage(props) {
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart);
-    const user = useSelector(state => state.auth.auth)
-    const isFetching = useSelector(state => state.auth.isFetching);
+    const [user, setUser] = useState({})
     const [type, setType] = useState(1);
     const [openAddress, setOpenAddress] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    const getUser = () => {
+        getUserLogin()
+            .then(res => {
+                setUser(res.data);
+            })
+            .catch(err => console.log(err))
+    }
 
     useEffect(() => {
+        getUser();
         if (cart.lengh >= 1) {
             return;
         } else {
@@ -29,12 +40,15 @@ function PaymentPage(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useTimeout(() => setLoading(false), loading ? 1000 : null);
+
     const handleClickOpenAddress = () => {
         setOpenAddress(true);
     };
 
     const handleCloseAddress = () => {
         setOpenAddress(false);
+        getUser();
     }
 
     const handleCompleteCart = () => {
@@ -104,7 +118,7 @@ function PaymentPage(props) {
                 address: user ? user.address?.house + ", " + user.address?.ward + ", " + user.address?.district + ", " + user.address?.city : "",
                 payment: payment,
                 phone: user.phone,
-                name: user.lastName + ' ' + user.firstName,
+                name: user.fullName,
             }
 
             addOrder(order)
@@ -151,10 +165,10 @@ function PaymentPage(props) {
                 total_item: getTotalProduct(),
                 order_details: order_details,
                 orderInfo: orderInfo.vnp_OrderInfo,
-                address: user ? user.address?.house + ", " + user.address?.ward + ", " + user.address?.district + ", " + user.address?.city : "",
+                address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
                 payment: payment,
                 phone: user.phone,
-                name: user.lastName + ' ' + user.firstName,
+                name: user.fullName,
             }
             addOrder(order)
                 .then((res) => {
@@ -290,12 +304,13 @@ function PaymentPage(props) {
                                             <Link to="#" onClick={handleClickOpenAddress} >Sửa</Link>
                                         </div>
                                         {
-                                            !isFetching ? <div className="address">
+                                            !loading ? <div className="address">
                                                 <span className="name">
-                                                    {user?.lastName + " " + user?.firstName}
+                                                    {user?.fullName} | {user?.phone}
                                                 </span>
-                                                <span className="street">{user.address?.house + ", " + user.address?.ward + ", " + user.address?.district + ", " + user.address?.city}</span>
-                                                <span className="phone">Điện thoại: {user?.phone}</span>
+                                                <span className="street">
+                                                    {user ?  user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : ''}
+                                                </span>
                                             </div> : <CircularProgress color="secondary" />
                                         }
                                     </div>

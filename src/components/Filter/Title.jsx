@@ -4,7 +4,7 @@ export default function Title(props) {
   const { type, totalProducts } = props;
   let title = "";
   if (type === "sach") {
-    title = "Sách hay";
+    title = "Sách";
   } else if (type === "laptop") {
     title = "Laptop";
   } else if (type === "dien-thoai") {

@@ -1,9 +1,10 @@
 import axios from 'axios'
-import {API_URL} from '../constants/constants'
+import { API_URL } from '../constants/constants'
 export const getAllCity = () => {
     return axios({
         method: "GET",
         url: `${API_URL}/api/tinhthanh/city`
+
     })
 }
 
@@ -16,7 +17,6 @@ export const getAllWardByDistrictId = (id) => {
 }
 
 export const updateAddressUser = (data) => {
-    console.log(data);
     return axios({
         method: "PUT",
         url: `${API_URL}/api/address/customer?username=${data.username}`,

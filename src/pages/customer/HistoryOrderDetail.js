@@ -19,6 +19,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AccountNavbar from "components/AccountNavbar/AccountNavbar.";
 import { Link } from "react-router-dom";
+import useTimeout from "hooks/useTimeout";
+import Loading from "components/Loading/Loading";
 toast.configure({
     autoClose: 2000,
     draggable: false,
@@ -103,6 +105,7 @@ function HistoryOrderDetail(props) {
     const [orders, setOrders] = useState([]);
     const [userInfo, setUserInfo] = useState({});
     const [orderInfo, setOrderInfo] = useState({});
+    const [loading, setLoading] = useState(true);
 
     const handleSubmitOrder = (e) => {
         e.preventDefault();
@@ -133,6 +136,8 @@ function HistoryOrderDetail(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.match.params.id]);
 
+    useTimeout(() => setLoading(false), loading ? 500 : null);
+
     return (
         <>
             <div className="row sm-gutter section__content">
@@ -144,163 +149,164 @@ function HistoryOrderDetail(props) {
                             </div>
                             <div className="col l-10 m-10 c-10">
                                 <div className="glOjBk list-cusomer-order">
-                                    <div className="heading">Chi tiết đơn hàng #{props.match.params.id} - <span>{orderInfo.status_order_name}</span></div>
+                                    {
+                                        loading ? <Loading /> : (
+                                            <>
+                                                <div className="heading"> Chi tiết đơn hàng #{props.match.params.id} - <span>{orderInfo.status_order_name}</span></div>
+                                                <Grid container spacing={3}>
+                                                    <Grid item md={12}>
+                                                        <div className="group">
+                                                            <h4 className="heading">Thông tin khách hàng</h4>
+                                                            <div className="content has-table">
+                                                                <table>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>Họ tên</td>
+                                                                            <td>{userInfo.user_fullname}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Username</td>
+                                                                            <td>{userInfo.username}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Email</td>
+                                                                            <td>{userInfo.email}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Ngày sinh</td>
+                                                                            <td>{userInfo.dateOfBirth}</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={12}>
+                                                        <div className="group">
+                                                            <h4 className="heading">Thông tin đặt hàng</h4>
+                                                            <div className="content has-table">
+                                                                <table>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>Ngày đặt hàng</td>
+                                                                            <td>{orderInfo.create_time}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Địa chỉ nhận hàng</td>
+                                                                            <td>{orderInfo.address}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Số lượng sản phẩm</td>
+                                                                            <td>{orderInfo.total_item}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Tổng tiền</td>
+                                                                            <td>{currency(orderInfo.total_price)}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Tình trạng đơn hàng</td>
+                                                                            <td>{orderInfo.status_order_name}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Tình trạng thanh toán</td>
+                                                                            <td>{orderInfo.status_payment_name}</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item xs={12}>
+                                                        <TableContainer className={classes.container}>
+                                                            <Table stickyHeader aria-label="sticky table">
+                                                                <TableHead>
+                                                                    <TableRow>
+                                                                        {headCells.map((headCell) => (
+                                                                            <TableCell
+                                                                                key={headCell.id}
+                                                                                className={classes.head}
+                                                                            >
+                                                                                {headCell.label}
+                                                                            </TableCell>
+                                                                        ))}
+                                                                    </TableRow>
+                                                                </TableHead>
 
-                                    <Grid container spacing={3}>
-                                        <Grid item md={12}>
-                                            <div className="group">
-                                                <h4 className="heading">Thông tin khách hàng</h4>
-                                                <div className="content has-table">
-                                                    <table>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Họ tên</td>
-                                                                <td>{userInfo.user_fullname}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Username</td>
-                                                                <td>{userInfo.username}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Email</td>
-                                                                <td>{userInfo.email}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Ngày sinh</td>
-                                                                <td>{userInfo.dateOfBirth}</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </Grid>
-                                        <Grid item md={12}>
-                                            <div className="group">
-                                                <h4 className="heading">Thông tin đặt hàng</h4>
-                                                <div className="content has-table">
-                                                    <table>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Ngày đặt hàng</td>
-                                                                <td>{orderInfo.create_time}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Địa chỉ nhận hàng</td>
-                                                                <td>{orderInfo.address}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Số lượng sản phẩm</td>
-                                                                <td>{orderInfo.total_item}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Tổng tiền</td>
-                                                                <td>{currency(orderInfo.total_price)}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Ghi chú</td>
-                                                                <td>{orderInfo.orderInfo}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Tình trạng đơn hàng</td>
-                                                                <td>{orderInfo.status_order_name}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Tình trạng thanh toán</td>
-                                                                <td>{orderInfo.status_payment_name}</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TableContainer className={classes.container}>
-                                                <Table stickyHeader aria-label="sticky table">
-                                                    <TableHead>
-                                                        <TableRow>
-                                                            {headCells.map((headCell) => (
-                                                                <TableCell
-                                                                    key={headCell.id}
-                                                                    className={classes.head}
-                                                                >
-                                                                    {headCell.label}
-                                                                </TableCell>
-                                                            ))}
-                                                        </TableRow>
-                                                    </TableHead>
-
-                                                    <TableBody>
-                                                        {orders.map((row, index) => {
-                                                            return (
-                                                                <TableRow
-                                                                    hover
-                                                                    role="checkbox"
-                                                                    tabIndex={-1}
-                                                                    key={index}
-                                                                >
-                                                                    <TableCell
-                                                                        component="th"
-                                                                        scope="row"
-                                                                        className={classes.text}
-                                                                    >
-                                                                        {index + 1}
-                                                                    </TableCell>
-                                                                    <TableCell
-                                                                        component="th"
-                                                                        scope="row"
-                                                                        className={classes.text}
-                                                                    >
-                                                                        {row.order_id}
-                                                                    </TableCell>
-                                                                    <TableCell
-                                                                        component="th"
-                                                                        scope="row"
-                                                                        className={classes.text}
-                                                                    >
-                                                                        {row.product_name}
-                                                                    </TableCell>
-                                                                    <TableCell
-                                                                        component="th"
-                                                                        scope="row"
-                                                                        className={classes.text}
-                                                                    >
-                                                                        {row.amount_item}
-                                                                    </TableCell>
-                                                                    <TableCell
-                                                                        component="th"
-                                                                        scope="row"
-                                                                        className={classes.text}
-                                                                    >
-                                                                        {currency(row.price_item)}
-                                                                    </TableCell>
-                                                                    <TableCell
-                                                                        component="th"
-                                                                        scope="row"
-                                                                        className={classes.text}
-                                                                    >
-                                                                        {currency(row.total_price)}
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                            );
-                                                        })}
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
-                                        </Grid>
-                                        <Grid item md={12} className={classes.right}>
-                                            <Button
-                                                variant="outlined"
-                                                color="secondary"
-                                                className={classes.button}
-                                                onClick={handleSubmitOrder}
-                                            >
-                                                Huỷ đơn hàng
-                                            </Button>
-                                        </Grid>
-                                        <Grid item md={12}>
-                                            <Link className="view-list-order" to="/customer/order/history">&lt;&lt; Quay lại đơn hàng của tôi</Link>
-                                        </Grid>
-                                    </Grid>
+                                                                <TableBody>
+                                                                    {orders.map((row, index) => {
+                                                                        return (
+                                                                            <TableRow
+                                                                                hover
+                                                                                role="checkbox"
+                                                                                tabIndex={-1}
+                                                                                key={index}
+                                                                            >
+                                                                                <TableCell
+                                                                                    component="th"
+                                                                                    scope="row"
+                                                                                    className={classes.text}
+                                                                                >
+                                                                                    {index + 1}
+                                                                                </TableCell>
+                                                                                <TableCell
+                                                                                    component="th"
+                                                                                    scope="row"
+                                                                                    className={classes.text}
+                                                                                >
+                                                                                    {row.order_id}
+                                                                                </TableCell>
+                                                                                <TableCell
+                                                                                    component="th"
+                                                                                    scope="row"
+                                                                                    className={classes.text}
+                                                                                >
+                                                                                    {row.product_name}
+                                                                                </TableCell>
+                                                                                <TableCell
+                                                                                    component="th"
+                                                                                    scope="row"
+                                                                                    className={classes.text}
+                                                                                >
+                                                                                    {row.amount_item}
+                                                                                </TableCell>
+                                                                                <TableCell
+                                                                                    component="th"
+                                                                                    scope="row"
+                                                                                    className={classes.text}
+                                                                                >
+                                                                                    {currency(row.price_item)}
+                                                                                </TableCell>
+                                                                                <TableCell
+                                                                                    component="th"
+                                                                                    scope="row"
+                                                                                    className={classes.text}
+                                                                                >
+                                                                                    {currency(row.total_price)}
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        );
+                                                                    })}
+                                                                </TableBody>
+                                                            </Table>
+                                                        </TableContainer>
+                                                    </Grid>
+                                                    <Grid item md={12} className={classes.right}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            color="secondary"
+                                                            className={classes.button}
+                                                            onClick={handleSubmitOrder}
+                                                        >
+                                                            Huỷ đơn hàng
+                                                        </Button>
+                                                    </Grid>
+                                                    <Grid item md={12}>
+                                                        <Link className="view-list-order" to="/customer/order/history">&lt;&lt; Quay lại đơn hàng của tôi</Link>
+                                                    </Grid>
+                                                </Grid>
+                                            </>
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>

@@ -5,8 +5,9 @@ import Filter from 'components/Filter/Filter';
 import Title from 'components/Filter/Title';
 import Product from 'components/Item/Product';
 import Pagination from 'components/Pagination/Pagination';
-import Loading from 'components/Loading/Loading';
 import { getProductListByCategoryAndSubcategory } from 'services/ProductServices'
+import useTimeout from 'hooks/useTimeout';
+import ProductSkeleton from 'components/Item/ProductSkeleton';
 
 function ListProductPage(props) {
     const { match } = props;
@@ -19,6 +20,8 @@ function ListProductPage(props) {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
         const page = params.get('page');
+        const sortBy = params.get('sortBy');
+        const sortValue = params.get('sortValue');
         let searchObject = {};
         searchObject.keyword = '';
         searchObject.page = page ? parseInt(page) : 1;
@@ -26,27 +29,28 @@ function ListProductPage(props) {
         const subcategory = match.params.subcategory ? match.params.subcategory : '';
         searchObject.category = category;
         searchObject.subcategory = subcategory;
-
+        searchObject.sortBy = sortBy ? sortBy : '';
+        searchObject.sortValue = sortValue ? sortValue : '';
         getProductListByCategoryAndSubcategory(searchObject)
             .then((res) => {
                 setProducts(res.data.content);
                 setTotalElements(res.data.totalElements)
-                setLoading(false);
             })
             .catch(err => console.log(err))
     }, [page, match])
 
+    useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     return (
         <>
             <div className="row sm-gutter section__content">
-                <Filter category={match.params.category} />
+                <Filter category={match.params.category} history={props.history} />
                 <div className="col l-10 m-12 c-12">
                     <div className="home-product">
                         <div className="row sm-gutter section__item">
                             <Title type={match.params.category} totalProducts={totalElements} />
                             {
-                                loading ? <Loading /> : <Product products={products} />
+                                loading ? <ProductSkeleton total={totalElements} /> : <Product products={products} />
                             }
                         </div>
 

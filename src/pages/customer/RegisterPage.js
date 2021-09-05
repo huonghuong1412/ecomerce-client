@@ -58,7 +58,7 @@ export default function RegisterPage(props) {
                                                 label={
                                                     <span>
                                                         <span style={{ color: "red" }}>*</span>
-                                                        Tên
+                                                        Họ tên
                                                     </span>
                                                 }
                                                 validators={["required"]}

@@ -1,4 +1,3 @@
-
 class Authentication {
 
     // eslint-disable-next-line

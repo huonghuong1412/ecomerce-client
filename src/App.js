@@ -25,8 +25,10 @@ import HistoryOrder from './pages/customer/HistoryOrder';
 import CustomerAddress from './pages/customer/CustomerAddress';
 import HistoryOrderDetail from 'pages/customer/HistoryOrderDetail';
 import { Suspense } from 'react';
+import CustomerWishlist from 'pages/customer/CustomerWishlist';
+import ListProductViewed from 'pages/customer/ListProductViewed';
 // import Loading from 'components/Loading/Loading';
-const ListProductPage  = React.lazy(() => import('./pages/customer/ListProductPage'));
+const ListProductPage = React.lazy(() => import('./pages/customer/ListProductPage'));
 
 function App() {
 
@@ -51,20 +53,26 @@ function App() {
           <div className="grid wide">
 
             <Switch>
-              <PublicRoute exact path="/" component={HomePage} />
-              <PublicRoute exact path="/login" component={LoginPage} />
-              <PublicRoute exact path="/register" component={RegisterPage} />
 
               <PrivateRoute exact path="/my-profile" component={ProfilePage} />
               <PrivateRoute exact path="/customer/address" component={CustomerAddress} />
-              <Route exact path="/checkout/cart" component={CartPage}></Route>
+              <PrivateRoute exact path="/customer/wishlist" component={CustomerWishlist} />
+              <PrivateRoute exact path="/customer/viewed" component={ListProductViewed} />
               <PrivateRoute exact path="/checkout/payment" component={PaymentPage}></PrivateRoute>
               <PrivateRoute exact path="/success/payment" component={ResultOrderPage}></PrivateRoute>
               <PrivateRoute exact path="/customer/order/history" component={HistoryOrder}></PrivateRoute>
               <PrivateRoute exact path="/customer/order/history/detail/:id" component={HistoryOrderDetail}></PrivateRoute>
+
+              <PublicRoute exact path="/" component={HomePage} />
+              <PublicRoute exact path="/login" component={LoginPage} />
+              <PublicRoute exact path="/register" component={RegisterPage} />
+              <Route exact path="/checkout/cart" component={CartPage}></Route>
+              <Route exact path="/search" render={(props) => <ListProductPage {...props} key={props.location.key} />}></Route>
               <Route exact path="/:category" render={(props) => <ListProductPage {...props} key={props.location.key} />}></Route>
               <Route exact path="/:category/:subcategory" render={(props) => <ListProductPage {...props} key={props.location.key} />}></Route>
               <Route exact path="/san-pham/:id/:slug" render={(props) => <DetailProduct {...props} key={props.location.key} />}></Route>
+
+
 
               <PublicRoute exact path="*" component={NotFoundPage} />
             </Switch>

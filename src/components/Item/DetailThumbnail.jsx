@@ -6,7 +6,7 @@ function DetailsThumbnail(props) {
     return (
       <div className="thumb u-img-fluid" ref={myRef}>
         {images.map((img, index) => (
-          <img alt="" src={`${API_URL}/images/product/${img}`} style={{ width: '75px', height: '75px', objectFit: 'cover' }} key={index} onClick={() => tab(index)} />
+          <img alt="" src={`${API_URL}/images/product/${img}`} style={{ width: '64px', height: '64px', objectFit: 'cover' }} key={index} onClick={() => tab(index)} />
         ))}
       </div>
     );

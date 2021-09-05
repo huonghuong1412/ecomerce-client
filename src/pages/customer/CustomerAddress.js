@@ -50,6 +50,7 @@ const CustomerAddress = (props) => {
 
     const [user, setUser] = useState({
         id: '',
+        fullName: '',
         username: '',
         city: '',
         district: '',

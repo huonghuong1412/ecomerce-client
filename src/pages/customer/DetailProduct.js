@@ -5,12 +5,14 @@ import { currency } from "utils/FormatCurrency"
 import { Link } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
 import { getAllProductByBrand, getOneItem } from 'services/ProductServices'
+import { addLikeProduct, deleteProductLiked, getProductLiked } from 'services/ProductServices'
+// import { addProductViewed, getAllProductViewed} from 'services/ProductServices'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"; import useTimeout from 'hooks/useTimeout';
 import DetailProductSkeleton from 'components/Loading/DetailProductSkeleton';
 import DetailsThumbnail from 'components/Item/DetailThumbnail';
-import Product from 'components/Item/Product';
-import ProductSkeleton from 'components/Item/ProductSkeleton';
+import ProductItem from 'components/Item/ProductItem';
+import ProductItemSkeleton from 'components/Item/ProductItemSkeleton';
 
 function DetailProduct(props) {
 
@@ -22,6 +24,9 @@ function DetailProduct(props) {
     const [quantity, setQuantity] = useState(1);
     const [index, setIndex] = useState(0);
     const [productByBrands, setProductByBrands] = useState([]);
+    const [productLiked, setProductLiked] = useState(false);
+    // const [productViewed, setProductViewed] = useState([]);
+    const username = localStorage.getItem('username')
 
     const myRef = React.createRef();
 
@@ -41,7 +46,24 @@ function DetailProduct(props) {
                 setProduct(res.data);
             })
             .catch(err => console.log(err));
-    }, [match.params.id])
+        // const data = {
+        //     productId: id,
+        //     username
+        // }
+        if (username) {
+            getProductLiked(username, id)
+                .then((res) => {
+                    if (res.data === true) {
+                        setProductLiked(true)
+                    }
+                })
+                .catch(() => setProductLiked(false))
+        }
+        // addProductViewed(data)
+        //     .then(() => { })
+        //     .catch(err => console.log(err))
+
+    }, [match.params.id, username])
 
     useEffect(() => {
         if (myRef.current) {
@@ -58,6 +80,18 @@ function DetailProduct(props) {
         }
     }, [product])
 
+
+    // useEffect(() => {
+    //     const { category } = product;
+    //     if (category) {
+    //         getAllProductViewed(username, category?.code)
+    //             .then(res => {
+    //                 setProductViewed(res.data)
+    //             })
+    //             .catch(err => alert("Error"))
+    //     }
+    // }, [product, username])
+
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     const handleAddToCart = () => {
@@ -73,6 +107,27 @@ function DetailProduct(props) {
             progress: undefined,
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const toggleLikeProduct = () => {
+        if(username) {
+            const data = {
+                productId: product?.id,
+                username
+            }
+            if (productLiked) {
+                deleteProductLiked(username, product?.id)
+                    .then(() => setProductLiked(false))
+                    .catch(() => alert("ERR"))
+            } else {
+                addLikeProduct(data)
+                    .then(() => setProductLiked(true))
+                    .catch(() => setProductLiked(false))
+            }
+        } else {
+            props.history.push('/login');
+        }
+        
     }
 
     return (
@@ -103,9 +158,33 @@ function DetailProduct(props) {
                                         <div className="list-img">
                                             <DetailsThumbnail images={product.images} tab={handleTab} myRef={myRef} />
                                         </div>
+                                        <div className="left-bottom">
+                                            <div className="share">
+                                                <p>Chia sẻ:</p>
+                                                <div className="share-social">
+                                                    <img
+                                                        src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/social-facebook.svg"
+                                                        alt="social-facebook" />
+                                                    <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/social-messenger.svg"
+                                                        alt="social-messenger" />
+                                                    <img
+                                                        src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/social-copy.svg"
+                                                        alt="social-copy" />
+                                                </div>
+                                                <div className="like">
+                                                    {
+                                                        productLiked
+                                                            ?
+                                                            <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-liked.svg" onClick={toggleLikeProduct} alt="social-liked" />
+                                                            :
+                                                            <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-like.svg" onClick={toggleLikeProduct} alt="social-like" />
+                                                    }
+                                                    <p>{productLiked ? 'Đã thích' : 'Thích'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="line"></div>
                                 <div className="col l-7 m-6 c-12">
                                     <div className="product-detail">
                                         <p>Danh Mục:
@@ -166,6 +245,18 @@ function DetailProduct(props) {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
+                                            Sản phẩm tương tự
+                                        </h3>
+                                    </div>
+                                </div>
+                                {
+                                    loading ? <ProductItemSkeleton total={productByBrands.length} /> : <ProductItem products={productByBrands} />
+                                }
                             </div>
 
                             <div className="row sm-gutter section__item">
@@ -263,26 +354,31 @@ function DetailProduct(props) {
                                 <div className="col l-12 m-12 c-12">
                                     <div className="home-product-category-item">
                                         <h3 className="home-product-title">
-                                            Sản phẩm dành cho bạn
-                                        </h3>
-                                    </div>
-                                </div>
-                                {
-                                    loading ? <ProductSkeleton total={productByBrands.length} /> : <Product products={productByBrands} />
-                                }
-                            </div>
-                            <div className="row sm-gutter section__item">
-                                <div className="col l-12 m-12 c-12">
-                                    <div className="home-product-category-item">
-                                        <h3 className="home-product-title">
                                             Sản phẩm cùng thương hiệu
                                         </h3>
                                     </div>
                                 </div>
                                 {
-                                    loading ? <ProductSkeleton total={productByBrands.length} /> : <Product products={productByBrands} />
+                                    loading ? <ProductItemSkeleton total={productByBrands.length} /> : <ProductItem products={productByBrands} />
                                 }
                             </div>
+                            {/* {
+                                username ? (
+                                    <div className="row sm-gutter section__item">
+                                        <div className="col l-12 m-12 c-12">
+                                            <div className="home-product-category-item">
+                                                <h3 className="home-product-title">
+                                                    Sản phẩm bạn đã xem
+                                                </h3>
+                                            </div>
+                                        </div>
+                                        {
+                                            loading ? <ProductItemSkeleton total={productViewed.length} /> : <ProductItem products={productViewed} />
+                                        }
+
+                                    </div>
+                                ) : ''
+                            } */}
                         </div>
                     </div>
                 </div>

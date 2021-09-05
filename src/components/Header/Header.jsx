@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useState } from "react";
 import { getAllCategory } from "actions/services/CategoryActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,10 +10,13 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Cart from "./Cart";
 function Header(props) {
   const [category, setCategory] = useState([]);
-
+  const [keyword, setKeyword] = useState("");
+  const history = useHistory();
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.auth.user);
   const token = localStorage.getItem("token");
+  const search_keyword = [];
+  const list_search = JSON.parse(localStorage.getItem('search_keyword'));
   useEffect(() => {
     if (token) {
       const decoded = jwtDecode(token);
@@ -22,6 +25,10 @@ function Header(props) {
   }, [dispatch, token]);
 
   const handleLogout = () => dispatch(logout());
+
+  const handleChange = (e) => {
+    setKeyword(e.target.value);
+  };
 
   useEffect(() => {
     getAllCategory()
@@ -124,10 +131,7 @@ function Header(props) {
                     </Link>
                   </li>
                   <li className="header__navbar--item navbar--strong">
-                    <Link
-                      to="/login"
-                      className="nav--link nav--link-login"
-                    >
+                    <Link to="/login" className="nav--link nav--link-login">
                       Đăng nhập
                     </Link>
                   </li>
@@ -207,6 +211,7 @@ function Header(props) {
                   type="text"
                   className="header__search-input"
                   placeholder="Nhập thông tin tìm kiếm"
+                  onChange={handleChange}
                 />
                 {/* -------  SEARCH HISTORY  ------ */}
                 <div className="header__search-history">
@@ -214,19 +219,25 @@ function Header(props) {
                     Lịch sử tìm kiếm
                   </h3>
                   <ul className="header__search-history-list">
-                    <li className="header__search-history-item">
-                      <Link to="/">laptop</Link>
-                    </li>
-                    <li className="header__search-history-item">
-                      <Link to="/">áo khoác nữ</Link>
-                    </li>
-                    <li className="header__search-history-item">
-                      <Link to="/">truyện</Link>
-                    </li>
+                    {list_search?.map((item, index) => {
+                      return (
+                        <li className="header__search-history-item"  key={index}>
+                          <Link to={`/search?keyword=${item}`}>
+                            {item}
+                          </Link>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
-              <button className="header__search-btn">
+              <button
+                className="header__search-btn"
+                onClick={() => {
+                  history.push(`/search?keyword=${keyword}`);
+                  localStorage.setItem("search_keyword", JSON.stringify([...list_search, ...search_keyword, keyword]));
+                }}
+              >
                 <i className="header__search-btn-icon fas fa-search" />
               </button>
             </div>

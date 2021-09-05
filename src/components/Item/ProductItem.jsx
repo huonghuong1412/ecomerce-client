@@ -3,21 +3,21 @@ import { Link } from "react-router-dom";
 import { currency } from "../../utils/FormatCurrency";
 import {API_URL} from '../../actions/constants/constants'
 function ProductItem(props) {
-  const { type, books, laptops, foods, phones } = props;
-  let products = [];
+  const { type, books, laptops, phones, products } = props;
+  let productList = [];
   if (type === "book") {
-    products = books;
-  } else if (type === "foods") {
-    products = foods;
-  } else if (type === "laptop") {
-    products = laptops;
+    productList = books;
+  }  else if (type === "laptop") {
+    productList = laptops;
   } else if (type === "phone") {
-    products = phones;
+    productList = phones;
+  } else {
+    productList = products;
   }
   
   return (
     <>
-      {products.map((item) => {
+      {productList.map((item) => {
         const price = currency(item.price);
         const list_price = currency(item.list_price);
         return (

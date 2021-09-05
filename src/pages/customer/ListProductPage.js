@@ -5,7 +5,7 @@ import Filter from 'components/Filter/Filter';
 import Title from 'components/Filter/Title';
 import Product from 'components/Item/Product';
 import Pagination from 'components/Pagination/Pagination';
-import { getProductListByCategoryAndSubcategory } from 'services/ProductServices'
+import { getProductListByCategoryAndSubcategory, getProductList } from 'services/ProductServices'
 import useTimeout from 'hooks/useTimeout';
 import ProductSkeleton from 'components/Item/ProductSkeleton';
 
@@ -22,8 +22,9 @@ function ListProductPage(props) {
         const page = params.get('page');
         const sortBy = params.get('sortBy');
         const sortValue = params.get('sortValue');
+        const keyword = params.get('keyword');
         let searchObject = {};
-        searchObject.keyword = '';
+        searchObject.keyword = keyword ? keyword : '';
         searchObject.page = page ? parseInt(page) : 1;
         const category = match.params.category ? match.params.category : '';
         const subcategory = match.params.subcategory ? match.params.subcategory : '';
@@ -31,13 +32,23 @@ function ListProductPage(props) {
         searchObject.subcategory = subcategory;
         searchObject.sortBy = sortBy ? sortBy : '';
         searchObject.sortValue = sortValue ? sortValue : '';
-        getProductListByCategoryAndSubcategory(searchObject)
+       if(category !== '' && category) {
+            getProductListByCategoryAndSubcategory(searchObject)
             .then((res) => {
                 setProducts(res.data.content);
                 setTotalElements(res.data.totalElements)
             })
             .catch(err => console.log(err))
+       } else {
+            getProductList(searchObject)
+                .then((res) => {
+                    setProducts(res.data.content);
+                    setTotalElements(res.data.totalElements)
+                })
+                .catch(err => console.log(err))
+       }
     }, [page, match])
+
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 

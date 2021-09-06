@@ -27,6 +27,7 @@ import HistoryOrderDetail from 'pages/customer/HistoryOrderDetail';
 import { Suspense } from 'react';
 import CustomerWishlist from 'pages/customer/CustomerWishlist';
 import ListProductViewed from 'pages/customer/ListProductViewed';
+import ListProductBrand from 'pages/customer/ListProductBrand';
 // import Loading from 'components/Loading/Loading';
 const ListProductPage = React.lazy(() => import('./pages/customer/ListProductPage'));
 
@@ -68,6 +69,7 @@ function App() {
               <PublicRoute exact path="/register" component={RegisterPage} />
               <Route exact path="/checkout/cart" component={CartPage}></Route>
               <Route exact path="/search" render={(props) => <ListProductPage {...props} key={props.location.key} />}></Route>
+              <Route exact path="/thuong-hieu/:brand" render={(props) => <ListProductBrand {...props} key={props.location.key} />}></Route>
               <Route exact path="/:category" render={(props) => <ListProductPage {...props} key={props.location.key} />}></Route>
               <Route exact path="/:category/:subcategory" render={(props) => <ListProductPage {...props} key={props.location.key} />}></Route>
               <Route exact path="/san-pham/:id/:slug" render={(props) => <DetailProduct {...props} key={props.location.key} />}></Route>

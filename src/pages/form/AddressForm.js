@@ -5,8 +5,8 @@ import { getUserLogin } from '../../actions/services/UserActions';
 import { getAllCity, getAllDistrictByCityId, getAllWardByDistrictId, updateAddressUser } from '../../actions/services/AddressActions'
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import Loading from 'components/Loading/Loading';
-import useTimeout from 'hooks/useTimeout';
+// import Loading from 'components/Loading/Loading';
+// import useTimeout from 'hooks/useTimeout';
 toast.configure({
     autoClose: 2000,
     draggable: false,
@@ -59,7 +59,7 @@ const AddressForm = (props) => {
         ward: '',
         house: ''
     })
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const getListCity = () => {
         getAllCity()
             .then((res) => {
@@ -138,12 +138,12 @@ const AddressForm = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    useTimeout(() => setLoading(false), loading ? 1000 : null);
+    // useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     return (
         <>
             {
-                loading ? <Loading /> : (
+                // loading ? <Loading /> : (
                     <Dialog onClose={onClose} open={open} className={classes.formControl}>
                         <IconButton aria-label="delete" onClick={onClose} className="close-icon">
                             <CloseIcon fontSize="large" />
@@ -218,7 +218,7 @@ const AddressForm = (props) => {
                                 </div>
                             </div>
                     </Dialog>
-                )
+                // )
             }
         </>
     )

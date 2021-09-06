@@ -6,7 +6,7 @@ axios.defaults.baseURL = API_URL;
 const token = localStorage.getItem('token');
 const headers = { Authorization: `Bearer ${token}` }
 
-
+// get
 export const getProductListByCategoryAndSubcategory = (searchObject) => {
     return axios.get(`${API_URL}/api/product/danh-muc/${searchObject.category}/${searchObject.subcategory}?page=${searchObject.page}&keyword=${searchObject.keyword}&sortBy=${searchObject.sortBy}&sortValue=${searchObject.sortValue}`)
 }
@@ -22,12 +22,24 @@ export const getOneItem = (id) => {
     return axios.get(`${API_URL}/api/product/san-pham/${id}`);
 }
 
-// http://localhost:8080/api/product/brand?brandCode=DELL&productId=5
-export const getAllProductByBrand = (productId, brandCode) => {
+
+// Get ds sap cung thuong hieu sp
+export const getAllProductByBrandNotExists = (productId, brandCode) => {
     return axios.get(`${API_URL}/api/product/brand?productId=${productId}&brandCode=${brandCode}`);
 }
 
-// http://localhost:8080/api/viewed-product?username=huong1&category=sach
+// GET all SP theo thuong hieu
+export const getAllProductByBrandCode = (brandCode) => {
+    return axios.get(`${API_URL}/api/product/all/${brandCode}`);
+}
+
+// Get Thuowng hieu theo ma thuong hieu
+export const getBrandByCode = (brandCode) => {
+    return axios.get(`${API_URL}/api/brand/get-one/${brandCode}`);
+}
+
+
+// GET DS SP da xem
 export const getAllProductViewed = (username) => {
     return axios.get(`${API_URL}/api/viewed-product?username=${username}`);
 }
@@ -39,7 +51,6 @@ export const addProductViewed = (data) => {
 
 // -------   SP Da Thich   --------
 
-// http://localhost:8080/api/liked/user
 export const addLikeProduct = (data) => {
     return axios({
         method: 'POST',
@@ -49,7 +60,6 @@ export const addLikeProduct = (data) => {
     })
 }
 
-// http://localhost:8080/api/liked/product?username=huong1&productId=1
 export const getProductLiked = (username, productId) => {
     return axios({
         method: 'GET',
@@ -58,7 +68,6 @@ export const getProductLiked = (username, productId) => {
     });
 }
 
-//http://localhost:8080/api/liked/products?username=huong1
 // get ds sp yeu thich
 export const getListProductLiked = (username) => {
     return axios({
@@ -69,12 +78,16 @@ export const getListProductLiked = (username) => {
 }
 
 // bo thich san pham
-// http://localhost:8080/api/liked/user?username=huong1&productId=1
-
 export const deleteProductLiked = (username, productId) => {
     return axios({
         method: 'DELETE',
         url: `${API_URL}/api/liked/user?username=${username}&productId=${productId}`,
         headers: headers,
     })
+}
+
+
+// Binh luan ve san pham
+export const getAllCommentByProductId = (productId) => {
+    return axios.get(`${API_URL}/api/comment/product/search?productId=${productId}`)
 }

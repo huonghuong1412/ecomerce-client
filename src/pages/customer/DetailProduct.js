@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState, useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from 'actions/services/CartActions'
 import { currency } from "utils/FormatCurrency"
 import { Link } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
-import { getAllProductByBrand, getOneItem } from 'services/ProductServices'
+import { getCurrentUser } from 'actions/services/UserActions'
+import { getAllProductByBrandNotExists, getOneItem } from 'services/ProductServices'
 import { addLikeProduct, deleteProductLiked, getProductLiked } from 'services/ProductServices'
+import { getAllCommentByProductId } from 'services/ProductServices'
+import AddressForm from '../form/AddressForm';
 // import { addProductViewed, getAllProductViewed} from 'services/ProductServices'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"; import useTimeout from 'hooks/useTimeout';
@@ -13,6 +16,7 @@ import DetailProductSkeleton from 'components/Loading/DetailProductSkeleton';
 import DetailsThumbnail from 'components/Item/DetailThumbnail';
 import ProductItem from 'components/Item/ProductItem';
 import ProductItemSkeleton from 'components/Item/ProductItemSkeleton';
+import BrandProduct from 'components/Brand/BrandProduct';
 
 function DetailProduct(props) {
 
@@ -25,8 +29,15 @@ function DetailProduct(props) {
     const [index, setIndex] = useState(0);
     const [productByBrands, setProductByBrands] = useState([]);
     const [productLiked, setProductLiked] = useState(false);
+    const [openAddress, setOpenAddress] = useState(false);
     // const [productViewed, setProductViewed] = useState([]);
+    const [comments, setComments] = useState([]);
     const username = localStorage.getItem('username')
+    const user = useSelector(state => state.auth.auth);
+
+    const getUser = useCallback(() => {
+        dispatch(getCurrentUser())
+    }, [dispatch])
 
     const myRef = React.createRef();
 
@@ -46,6 +57,11 @@ function DetailProduct(props) {
                 setProduct(res.data);
             })
             .catch(err => console.log(err));
+        getAllCommentByProductId(id)
+            .then((res) => {
+                setComments(res.data)
+            })
+            .catch(err => alert(err))
         // const data = {
         //     productId: id,
         //     username
@@ -72,9 +88,13 @@ function DetailProduct(props) {
     }, [index, myRef])
 
     useEffect(() => {
+        getUser();
+    }, [getUser])
+
+    useEffect(() => {
         const { id, brand } = product;
         if (id) {
-            getAllProductByBrand(id, brand?.code)
+            getAllProductByBrandNotExists(id, brand?.code)
                 .then(res => setProductByBrands(res.data))
                 .catch(() => alert('ERR'))
         }
@@ -109,8 +129,63 @@ function DetailProduct(props) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    const handleClickOpenAddress = () => {
+        setOpenAddress(true);
+    };
+
+    const handleCloseAddress = () => {
+        setOpenAddress(false);
+        getUser();
+    }
+
+    const displayComment = (numStar) => {
+        let ratingStars = [];
+        if (product) {
+            for (let i = 0; i < 5; i++) {
+                if (numStar === 5) {
+                    ratingStars.push(<i key={i} className="fas fa-star" />)
+                }
+                else {
+                    for (let j = 0; j < numStar; j++) {
+                        ratingStars.push(<i key={j} className="fas fa-star" />);
+                    }
+                    for (let k = numStar; k < 5; k++) {
+                        ratingStars.push(<i key={k} className="far fa-star" />);
+                    }
+                    break;
+                }
+
+            }
+        }
+        return ratingStars;
+    }
+
+    const displayStatusRating = (rating) => {
+        let status = '';
+        switch (rating) {
+            case 5:
+                status = "Cực kỳ hài lòng";
+                break;
+            case 4:
+                status = "Hài lòng";
+                break;
+            case 3:
+                status = "Bình thường";
+                break;
+            case 2:
+                status = "Không hài lòng";
+                break;
+            case 1:
+                status = "Rất không hài lòng";
+                break;
+            default:
+                break;
+        }
+        return status;
+    }
+
     const toggleLikeProduct = () => {
-        if(username) {
+        if (username) {
             const data = {
                 productId: product?.id,
                 username
@@ -127,7 +202,7 @@ function DetailProduct(props) {
         } else {
             props.history.push('/login');
         }
-        
+
     }
 
     return (
@@ -148,7 +223,7 @@ function DetailProduct(props) {
                             {/* ------   Grid -> Row -> Column  ------ */}
                             <div className="row sm-gutter section__item">
                                 <div className="col l-5 m-4 c-12">
-                                    <div className="left">
+                                    <div className="left-thumbnail">
                                         {
                                             <img
                                                 src={`${API_URL}/images/product/${product.images[index]}`}
@@ -187,61 +262,67 @@ function DetailProduct(props) {
                                 </div>
                                 <div className="col l-7 m-6 c-12">
                                     <div className="product-detail">
-                                        <p>Danh Mục:
-                                            <Link to={`/${product.category?.code}`}
-                                                className="text-primary">{product.category?.name}
-                                            </Link>
-                                            <span className="text-primary">
-                                                <i className="fas fa-angle-right"></i>
-                                            </span>
-                                            <Link to={`/${product.category?.code}/${product.subcategory?.code}`}
-                                                className="text-primary">{product.subcategory?.name}
-                                            </Link>
-                                        </p>
                                         <h4 className="product-name">{product.name}</h4>
-                                        <p className="product-price">
-                                            <span className="product-price__current-price">{currency(product.price)}</span>
-                                            <span className="product-price__list-price">{currency(product.list_price)}</span>
-                                            <span className="product-price__discount">{product.percent_discount}% giảm</span>
-                                        </p>
+                                    </div>
+                                    <div className="product-detail-body">
+                                        <div className="left">
+                                            <p className="product-price">
+                                                <span className="product-price__current-price">{currency(product.price)}</span>
+                                                <span className="product-price__list-price">{currency(product.list_price)}</span>
+                                                <span className="product-price__discount">{product.percent_discount}% giảm</span>
+                                            </p>
+                                            {
+                                                username ? (
+                                                    <div className="ship-info">
+                                                        <span className="text">Giao đến</span>
+                                                        <span className="address">{`${user?.district},${user?.city}`}</span>
+                                                        <span className="address-change" onClick={handleClickOpenAddress} >Đổi địa chỉ</span>
+                                                        <AddressForm open={openAddress} onClose={handleCloseAddress} />
+                                                    </div>
+                                                ) : ''
+                                            }
 
-                                        <div id="info-1" className="collapse in">
-                                            <div className="input-label">
-                                                <span>Số lượng</span>
-                                            </div>
+                                            <div id="info-1" className="collapse in">
+                                                <div className="input-label">
+                                                    <span>Số lượng</span>
+                                                </div>
 
-                                            <div className="group-input">
-                                                <button
-                                                    className={quantity <= 1 ? 'disable' : ''}
-                                                    disabled={quantity <= 1}
-                                                    onClick={() => setQuantity(quantity - 1)}>
-                                                    <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-remove.svg" alt="remove-icon" width={20} height={20} />
-                                                </button>
-                                                <input
-                                                    type="number"
-                                                    min={1}
-                                                    className="input"
-                                                    pattern="^[1-9]\d*"
-                                                    value={quantity <= 0 ? 1 : quantity >= product.in_stock ? product.in_stock : quantity}
-                                                    onChange={(e) => setQuantity(parseInt(e.target.value) <= 1 ? 1 : parseInt(e.target.value) >= product.in_stock ? product.in_stock : parseInt(e.target.value))}
-                                                />
-                                                <button
-                                                    onClick={() =>
-                                                        setQuantity(quantity + 1)}
-                                                    className={quantity >= product.in_stock ? 'disable' : ''}
-                                                    disabled={quantity >= product.in_stock}>
-                                                    <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-add.svg" alt="add-icon" width={20} height={20} />
-                                                </button>
+                                                <div className="group-input">
+                                                    <button
+                                                        className={quantity <= 1 ? 'disable' : ''}
+                                                        disabled={quantity <= 1}
+                                                        onClick={() => setQuantity(quantity - 1)}>
+                                                        <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-remove.svg" alt="remove-icon" width={20} height={20} />
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        min={1}
+                                                        className="input"
+                                                        pattern="^[1-9]\d*"
+                                                        value={quantity <= 0 ? 1 : quantity >= product.in_stock ? product.in_stock : quantity}
+                                                        onChange={(e) => setQuantity(parseInt(e.target.value) <= 1 ? 1 : parseInt(e.target.value) >= product.in_stock ? product.in_stock : parseInt(e.target.value))}
+                                                    />
+                                                    <button
+                                                        onClick={() =>
+                                                            setQuantity(quantity + 1)}
+                                                        className={quantity >= product.in_stock ? 'disable' : ''}
+                                                        disabled={quantity >= product.in_stock}>
+                                                        <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-add.svg" alt="add-icon" width={20} height={20} />
+                                                    </button>
+                                                </div>
+                                                <div className="input-label">
+                                                    <span>{product.in_stock} sản phẩm có sẵn </span>
+                                                </div>
                                             </div>
-                                            <div className="input-label">
-                                                <span>{product.in_stock} sản phẩm có sẵn </span>
+                                            <div className="group-button">
+                                                <button
+                                                    className="btn btn-add-to-cart"
+                                                    onClick={handleAddToCart}
+                                                >Thêm vào giỏ hàng</button>
                                             </div>
                                         </div>
-                                        <div className="group-button">
-                                            <button
-                                                className="btn btn-add-to-cart"
-                                                onClick={handleAddToCart}
-                                            >Thêm vào giỏ hàng</button>
+                                        <div className="right">
+                                            <BrandProduct brand={product.brand} />
                                         </div>
                                     </div>
                                 </div>
@@ -347,7 +428,51 @@ function DetailProduct(props) {
                                     </div>
                                 </div>
                                 <div className="col l-12 m-12 c-12">
-
+                                    {
+                                        comments.length === 0 ? (
+                                            <div className="customer-reviews__empty">
+                                                <img src={`${API_URL}/images/star.png`} alt="" />
+                                                <span>Chưa có đánh giá nào cho sản phẩm này</span>
+                                            </div>
+                                        ) :
+                                            comments.map((item) => {
+                                                return (
+                                                    <div className="review-comment" key={item.id}>
+                                                        <div className="review-comment__user">
+                                                            <div className="review-comment__user-inner">
+                                                                <div className="review-comment__user-avatar">
+                                                                    <div className="has-character">
+                                                                        <img src={`${API_URL}/images/avatar.png`} alt="" />
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <div className="review-comment__user-name">{item.displayName}</div>
+                                                                    {/* <div className="review-comment__user-date">Đã tham gia 6 năm</div> */}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ flexGrow: 1 }}>
+                                                            <div className="review-comment__rating-title">
+                                                                <div className="review-comment__rating">
+                                                                    {displayComment(item.rating)}
+                                                                </div>
+                                                                <span className="review-comment__title">
+                                                                    {displayStatusRating(item.rating)}
+                                                                </span>
+                                                            </div>
+                                                            <div className="review-comment__seller-name-attributes">
+                                                                <div className="review-comment__seller-name">Thương hiệu<span className="review-comment__check-icon" />{product.brand?.name}</div>
+                                                            </div>
+                                                            <div className="review-comment__content">{item.content}</div>
+                                                            <div className="review-comment__created-date">
+                                                                <span>Nhận xét vào {item.date_comment}</span>
+                                                            </div>
+                                                            <span className="review-comment__reply">Gửi trả lời</span>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                    }
                                 </div>
                             </div>
                             <div className="row sm-gutter section__item">

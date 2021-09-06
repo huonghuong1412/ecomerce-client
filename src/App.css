@@ -1070,6 +1070,301 @@ input[type="number"] {
   border: 1px solid rgb(236, 236, 236);
 }
 
+.product-detail-body {
+  display: flex;
+}
+
+.product-detail-body .left {
+    flex: 1 1 0%;
+}
+
+.product-detail-body .right {
+    padding-bottom: 20px;
+    width: 240px;
+}
+
+.product-detail-body .right--inner {
+    border-radius: 4px;
+    box-shadow: rgb(242 242 242) 1px 1px 0px 0px inset, rgb(242 242 242) -1px -1px 0px 0px inset;
+}
+
+.product-detail-body .right--inner .seller-info {
+    padding: 8px;
+}
+
+.product-detail-body .right--inner  .seller-name {
+  margin: 0px 0px 2px;
+  font-size: 15px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.6;
+  letter-spacing: normal;
+  color: rgb(36, 36, 36);
+}
+
+.product-detail-body .seller-action {
+  padding: 8px;
+}
+
+.product-detail-body .seller-action > .action {
+  display: flex;
+  padding: 6px 9px;
+  -webkit-box-align: center;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px solid rgb(13, 92, 182);
+  cursor: pointer;
+}
+
+.product-detail-body .seller-action > .action > img {
+  width: 20px;
+  height: 20px;
+}
+
+.product-detail-body .seller-action > .action > span {
+  font-size: 13px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.54;
+  letter-spacing: normal;
+  color: rgb(13, 92, 182);
+  margin-left: 4px;
+}
+
+.product-detail-body .seller-benefit {
+  display: flex;
+    padding: 8px;
+    border-top: 1px solid rgb(242, 242, 242);
+}
+
+.product-detail-body .benefit-item {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 30%;
+  -webkit-box-flex: 1;
+}
+
+.product-detail-body .benefit-item > img {
+  height: 20px;
+  width: 20px;
+  display: block;
+  margin: 0 auto;
+}
+
+.product-detail-body .benefit-item > span {
+  text-align: center;
+  font-size: 13px;
+  line-height: 20px;
+  margin-top: 8px;
+}
+
+.product-detail-body .benefit-item > span b {
+  font-weight: 500;
+}
+
+
+
+
+
+
+.ship-info {
+  width: 75%;
+  display: flex;
+  padding: 16px 0px;
+  -webkit-box-pack: justify;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ship-info .text {
+  font-size: 14px;
+  font-weight: 400;
+  margin-right: 5px;
+}
+
+.ship-info .address {
+  text-decoration: underline;
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ship-info .address-change {
+  color: rgb(13, 92, 182);
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+/* -  COMMENT  -- */
+
+.review-comment {
+  padding: 32px 48px;
+  display: flex;
+  border-top: 1px solid rgb(242, 242, 242);
+}
+
+.review-comment__user {
+  flex-basis: 335px;
+  flex-shrink: 0;
+}
+
+.review-comment__user-inner {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.review-comment__user-avatar {
+  margin: 0px 12px 0px 0px;
+  width: 48px;
+  height: 48px;
+  background-size: cover;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+.review-comment__user-name {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.review-comment__user-date {
+  font-size: 14px;
+  line-height: 20px;
+  color: rgb(120, 120, 120);
+}
+
+.review-comment__title {
+  margin: 0px 0px 0px 12px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  color: rgb(36, 36, 36);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.review-comment__rating-title {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  margin: 0px 0px 4px;
+}
+
+.review-comment__rating {
+  font-size: 1.6rem;
+}
+
+.review-comment__rating .fas {
+  color: rgb(253, 216, 53);
+}
+
+.review-comment__seller-name-attributes {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  margin: 0px 0px 16px;
+}
+
+.review-comment__seller-name {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgb(0, 153, 0);
+}
+
+.review-comment__check-icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+  background-color: rgb(0, 153, 0);
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+  margin: 0px 4px;
+}
+
+.review-comment__check-icon::before {
+  content: "";
+  width: 6px;
+  height: 3px;
+  border-left: 1px solid rgb(255, 255, 255);
+  border-bottom: 1px solid rgb(255, 255, 255);
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -70%) rotate(-45deg);
+}
+
+.review-comment__content {
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0px 0px 8px;
+}
+
+.review-comment__created-date {
+  font-size: 14px;
+  line-height: 16px;
+  margin: 0px 0px 16px;
+  color: rgb(120, 120, 120);
+}
+
+.review-comment__created-date > span {
+  padding: 0px 7px;
+  border-left: 1px solid rgb(238, 238, 238);
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0px 7px 0px 0px;
+  border-left: 0px;
+}
+
+.review-comment__reply {
+  padding: 8px 16px 9px;
+  font-size: 14px;
+  line-height: 20px;
+  border: 1px solid rgb(13, 92, 182);
+  font-weight: 500;
+  border-radius: 4px;
+  color: rgb(13, 92, 182);
+  cursor: pointer;
+  display: inline-block;
+  user-select: none;
+}
+
+.customer-reviews__empty {
+  display: flex;
+  flex-direction: column;
+  -webkit-box-align: center;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.customer-reviews__empty span {
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-top: 15px;
+}
+
 /* -------- TOAST  --------- */
 
 .toast {
@@ -1177,11 +1472,11 @@ input[type="number"] {
   font-size: 2rem;
 }
 
-.product-detail {
+/* .product-detail {
   margin-left: 10px;
-}
+} */
 
-.left {
+.left-thumbnail {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1189,13 +1484,13 @@ input[type="number"] {
   border-right: 1px solid rgb(218, 216, 216);
 }
 
-.left .list-img {
+.left-thumbnail .list-img {
   display: flex;
   justify-content: center;
   margin-top: 16px;
 }
 
-.left .list-img img {
+.left-thumbnail .list-img img {
   margin-right: 10px;
   cursor: pointer;
 }

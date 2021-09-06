@@ -3,7 +3,7 @@ import "./Header.css";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteItemInCart } from "actions/services/CartActions";
-import { IMAGE_FOLDER } from "actions/constants/constants";
+import { API_URL, IMAGE_FOLDER } from "actions/constants/constants";
 import { currency } from "utils/FormatCurrency";
 function Header(props) {
   
@@ -85,7 +85,7 @@ function Header(props) {
           ) : (
             <>
               <img
-                src="/images/no-cart.png"
+                src={`${API_URL}/images/no-cart.png`}
                 alt=""
                 className="header__cart-no-cart-img"
               />

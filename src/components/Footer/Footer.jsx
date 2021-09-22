@@ -1,6 +1,7 @@
 import React from "react";
 import "./Footer.css";
 import { Link } from "react-router-dom";
+import { API_URL } from "actions/constants/constants";
 
 export default function Footer() {
   return (
@@ -97,7 +98,7 @@ export default function Footer() {
                 <Link to="/" className="footer__download-link">
                   <img
                     className="footer__download-img"
-                    src="./img/qrcode.png"
+                    src={`${API_URL}/images/qrcode.png`}
                     alt=""
                   />
                 </Link>
@@ -105,14 +106,14 @@ export default function Footer() {
                   <Link to="/" className="footer__download-apps-link">
                     <img
                       className="footer__download-apps-img"
-                      src="./img/googleplay.png"
+                      src={`${API_URL}/images/googleplay.png`}
                       alt=""
                     />
                   </Link>
                   <Link to="/" className="footer__download-apps-link">
                     <img
                       className="footer__download-apps-img"
-                      src="./img/appstore.png"
+                      src={`${API_URL}/images/appstore.png`}
                       alt=""
                     />
                   </Link>

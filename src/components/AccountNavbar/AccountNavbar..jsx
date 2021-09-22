@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom';
 import React from "react";
+import { API_URL } from 'actions/constants/constants';
 
 export default function AccountNavbar(props) {
   const { name } = props;
   return (
     <>
-      <aside className="Account__StyledSideBar-sc-1d5h8iz-3 gKGcfW">
-        <div className="Account__StyledAvatar-sc-1d5h8iz-4 hBHoW">
-          <img src="https://salt.tikicdn.com/desktop/img/avatar.png" alt="" />
+      <aside className="gKGcfW">
+        <div className="hBHoW">
+          <img src={`${API_URL}/images/avatar.png`} alt="" />
           <div className="info">
             Tài khoản của<strong>{name}</strong>
           </div>
         </div>
-        <ul className="Account__StyledNav-sc-1d5h8iz-5 uSLJP">
+        <ul className="uSLJP">
           <li>
             <Link to="/my-profile">
               <svg
@@ -79,7 +80,7 @@ export default function AccountNavbar(props) {
           </li>
           <li>
             <Link to="/customer/viewed">
-            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+            <svg stroke="currentColor" fill="currentColor" strokeWidth={0} viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
               <span>Sản phẩm bạn đã xem</span>
             </Link>
           </li>

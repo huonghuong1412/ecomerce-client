@@ -1,4 +1,5 @@
-export const API_URL = "http://localhost:8080"
+// export const API_URL = "http://localhost:8080"
+export const API_URL = process.env.REACT_APP_BASE_URL;
 export const IMAGE_FOLDER = `${API_URL}/images/product/`
 // export const API_URL_WEB = "https://shielded-sea-59884.herokuapp.com"
 
@@ -18,11 +19,11 @@ export const GET_ALL_PHONE_SUCCESS = "GET_ALL_PHONES_SUCCESS"
 export const GET_ALL_FOOD_SUCCESS = "GET_ALL_FOOD_SUCCESS"
 
 // CART
+export const GET_ALL_ITEM_IN_CART = "GET_ALL_ITEM_IN_CART"
+export const GET_CART_INFO = "GET_CART_INFO"
 export const ADD_TO_CART = "ADD_TO_CART"
 export const DELETE_ITEM_IN_CART = "DELETE_ITEM_IN_CART"
 export const UPDATE_ITEM_IN_CART = "UPDATE_ITEM_IN_CART"
-export const INCREASE_QUANTITY = "INCREASE_QUANTITY"
-export const DECREASE_QUANTITY = "DECREASE_QUANTITY"
 export const CART_COMPLETE = "CART_COMPLETE"
 
 // AUTH

@@ -84,14 +84,14 @@ export default function HistoryOrder(props) {
     const username = localStorage.getItem("username");
     const classes = useStyles();
     useEffect(() => {
-        getAllOrderByUser(username)
+        getAllOrderByUser()
             .then((res) => {
                 setOrders(res.data);
             })
             .catch((err) => {
                 console.log(err);
             })
-    }, [username])
+    }, [])
 
     useTimeout(() => setLoading(false), loading ? 500 : null);
     return (

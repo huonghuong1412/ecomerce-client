@@ -30,7 +30,7 @@ export default function Promotion() {
               </div>
             </div>
             <div className="same-promotion-item">
-              <a href="https://www.bachhoaxanh.com/khuyen-mai">
+              <a href="/">
                 <i className="bhx-block hidden" />
                 <i className="bhx-check hidden" />
                 <img
@@ -48,7 +48,7 @@ export default function Promotion() {
               </a>
             </div>
             <div className="same-promotion-item un-selected">
-              <a href="https://www.bachhoaxanh.com/kinh-nghiem-hay/huong-dan-cach-su-dung-voucher-tai-website-bachhoaxanhcom-1363774">
+              <a href="/">
                 <i className="bhx-block" />
                 <i className="bhx-check hidden" />
                 <img
@@ -67,7 +67,7 @@ export default function Promotion() {
               </a>
             </div>
             <div className="same-promotion-item un-selected">
-              <a href="https://www.bachhoaxanh.com/chinh-sach-giao-hang">
+              <a href="/">
                 <i className="bhx-block hidden" />
                 <i className="bhx-check hidden" />
                 <img

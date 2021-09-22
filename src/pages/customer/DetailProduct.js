@@ -1,17 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from 'actions/services/CartActions'
 import { currency } from "utils/FormatCurrency"
 import { Link } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
 import { getCurrentUser } from 'actions/services/UserActions'
-import { getAllProductByBrandNotExists, getOneItem } from 'services/ProductServices'
+import { getAllProductByBrand, getOneItem } from 'services/ProductServices'
 import { addLikeProduct, deleteProductLiked, getProductLiked } from 'services/ProductServices'
 import { getAllCommentByProductId } from 'services/ProductServices'
+import { addProductToCart, getCartInfo } from 'actions/services/CartActions'
 import AddressForm from '../form/AddressForm';
-// import { addProductViewed, getAllProductViewed} from 'services/ProductServices'
-import { toast } from 'react-toastify'
-import "react-toastify/dist/ReactToastify.css"; import useTimeout from 'hooks/useTimeout';
+import "react-toastify/dist/ReactToastify.css";
+import useTimeout from 'hooks/useTimeout';
 import DetailProductSkeleton from 'components/Loading/DetailProductSkeleton';
 import DetailsThumbnail from 'components/Item/DetailThumbnail';
 import ProductItem from 'components/Item/ProductItem';
@@ -30,7 +29,6 @@ function DetailProduct(props) {
     const [productByBrands, setProductByBrands] = useState([]);
     const [productLiked, setProductLiked] = useState(false);
     const [openAddress, setOpenAddress] = useState(false);
-    // const [productViewed, setProductViewed] = useState([]);
     const [comments, setComments] = useState([]);
     const username = localStorage.getItem('username')
     const user = useSelector(state => state.auth.auth);
@@ -62,12 +60,8 @@ function DetailProduct(props) {
                 setComments(res.data)
             })
             .catch(err => alert(err))
-        // const data = {
-        //     productId: id,
-        //     username
-        // }
         if (username) {
-            getProductLiked(username, id)
+            getProductLiked(id)
                 .then((res) => {
                     if (res.data === true) {
                         setProductLiked(true)
@@ -75,9 +69,6 @@ function DetailProduct(props) {
                 })
                 .catch(() => setProductLiked(false))
         }
-        // addProductViewed(data)
-        //     .then(() => { })
-        //     .catch(err => console.log(err))
 
     }, [match.params.id, username])
 
@@ -94,38 +85,29 @@ function DetailProduct(props) {
     useEffect(() => {
         const { id, brand } = product;
         if (id) {
-            getAllProductByBrandNotExists(id, brand?.code)
+            getAllProductByBrand(id, brand?.code)
                 .then(res => setProductByBrands(res.data))
                 .catch(() => alert('ERR'))
         }
     }, [product])
 
-
-    // useEffect(() => {
-    //     const { category } = product;
-    //     if (category) {
-    //         getAllProductViewed(username, category?.code)
-    //             .then(res => {
-    //                 setProductViewed(res.data)
-    //             })
-    //             .catch(err => alert("Error"))
-    //     }
-    // }, [product, username])
-
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     const handleAddToCart = () => {
-        dispatch(addToCart(product, quantity));
-        toast.info('Đã thêm sản phẩm vào giỏ hàng!', {
-            position: "bottom-center",
-            theme: 'dark',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
+        if (username) {
+            const data = {
+                cart_details: [{
+                    product_id: product?.id,
+                    quantity
+                }]
+            }
+            if (product?.in_stock > 0 && quantity <= product?.in_stock) {
+                dispatch(addProductToCart(data))
+                dispatch(getCartInfo())
+            }
+        } else {
+            props.history.push('/login')
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -188,10 +170,9 @@ function DetailProduct(props) {
         if (username) {
             const data = {
                 productId: product?.id,
-                username
             }
             if (productLiked) {
-                deleteProductLiked(username, product?.id)
+                deleteProductLiked(product?.id)
                     .then(() => setProductLiked(false))
                     .catch(() => alert("ERR"))
             } else {
@@ -238,21 +219,21 @@ function DetailProduct(props) {
                                                 <p>Chia sẻ:</p>
                                                 <div className="share-social">
                                                     <img
-                                                        src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/social-facebook.svg"
+                                                        src={`${API_URL}/images/facebook.png`}
                                                         alt="social-facebook" />
-                                                    <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/social-messenger.svg"
+                                                    <img src={`${API_URL}/images/messenger.png`}
                                                         alt="social-messenger" />
                                                     <img
-                                                        src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/social-copy.svg"
+                                                        src={`${API_URL}/images/copy.png`}
                                                         alt="social-copy" />
                                                 </div>
                                                 <div className="like">
                                                     {
                                                         productLiked
                                                             ?
-                                                            <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-liked.svg" onClick={toggleLikeProduct} alt="social-liked" />
+                                                            <img src={`${API_URL}/images/liked.png`} onClick={toggleLikeProduct} alt="social-liked" />
                                                             :
-                                                            <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-like.svg" onClick={toggleLikeProduct} alt="social-like" />
+                                                            <img src={`${API_URL}/images/like.png`} onClick={toggleLikeProduct} alt="social-like" />
                                                     }
                                                     <p>{productLiked ? 'Đã thích' : 'Thích'}</p>
                                                 </div>
@@ -292,7 +273,7 @@ function DetailProduct(props) {
                                                         className={quantity <= 1 ? 'disable' : ''}
                                                         disabled={quantity <= 1}
                                                         onClick={() => setQuantity(quantity - 1)}>
-                                                        <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-remove.svg" alt="remove-icon" width={20} height={20} />
+                                                        <img src={`${API_URL}/images/remove.png`} alt="remove-icon" width={20} height={20} />
                                                     </button>
                                                     <input
                                                         type="number"
@@ -307,11 +288,13 @@ function DetailProduct(props) {
                                                             setQuantity(quantity + 1)}
                                                         className={quantity >= product.in_stock ? 'disable' : ''}
                                                         disabled={quantity >= product.in_stock}>
-                                                        <img src="https://frontend.tikicdn.com/_desktop-next/static/img/pdp_revamp_v2/icons-add.svg" alt="add-icon" width={20} height={20} />
+                                                        <img src={`${API_URL}/images/add.png`} alt="add-icon" width={20} height={20} />
                                                     </button>
                                                 </div>
                                                 <div className="input-label">
-                                                    <span>{product.in_stock} sản phẩm có sẵn </span>
+                                                    {
+                                                        product.in_stock > 0 ? <span>Đã bán: {product.seller_count}</span> : <span>Hết hàng</span>
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="group-button">

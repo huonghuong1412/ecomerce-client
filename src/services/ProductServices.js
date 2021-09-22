@@ -24,13 +24,13 @@ export const getOneItem = (id) => {
 
 
 // Get ds sap cung thuong hieu sp
-export const getAllProductByBrandNotExists = (productId, brandCode) => {
+export const getAllProductByBrand = (productId, brandCode) => {
     return axios.get(`${API_URL}/api/product/brand?productId=${productId}&brandCode=${brandCode}`);
 }
 
 // GET all SP theo thuong hieu
-export const getAllProductByBrandCode = (brandCode) => {
-    return axios.get(`${API_URL}/api/product/all/${brandCode}`);
+export const getAllProductByBrandCode = (searchObject) => {
+    return axios.get(`${API_URL}/api/product/all/${searchObject.brandCode}?page=${searchObject.page}&keyword=${searchObject.keyword}&sortBy=${searchObject.sortBy}`);
 }
 
 // Get Thuowng hieu theo ma thuong hieu
@@ -60,28 +60,28 @@ export const addLikeProduct = (data) => {
     })
 }
 
-export const getProductLiked = (username, productId) => {
+export const getProductLiked = (productId) => {
     return axios({
         method: 'GET',
-        url: `${API_URL}/api/liked/product?username=${username}&productId=${productId}`,
+        url: `${API_URL}/api/liked/product?productId=${productId}`,
         headers: headers,
     });
 }
 
 // get ds sp yeu thich
-export const getListProductLiked = (username) => {
+export const getListProductLiked = () => {
     return axios({
         method: 'GET',
-        url: `${API_URL}/api/liked/products?username=${username}`,
+        url: `${API_URL}/api/liked/products`,
         headers: headers,
     });
 }
 
 // bo thich san pham
-export const deleteProductLiked = (username, productId) => {
+export const deleteProductLiked = (productId) => {
     return axios({
         method: 'DELETE',
-        url: `${API_URL}/api/liked/user?username=${username}&productId=${productId}`,
+        url: `${API_URL}/api/liked/user?productId=${productId}`,
         headers: headers,
     })
 }

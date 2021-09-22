@@ -4,10 +4,10 @@ import { API_URL } from '../constants/constants'
 const token = localStorage.getItem('token');
 const headers = { Authorization: `Bearer ${token}` }
 
-export const getAllOrderByUser = (username) => {
+export const getAllOrderByUser = () => {
     return axios({
         method: 'GET',
-        url: `${API_URL}/api/order/user?username=${username}`,
+        url: `${API_URL}/api/order/user`,
         headers: headers,
     })
 }

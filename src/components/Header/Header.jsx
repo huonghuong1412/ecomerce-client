@@ -8,6 +8,7 @@ import jwtDecode from "jwt-decode";
 import { logout, setCurrentUser } from "actions/services/UserActions";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Cart from "./Cart";
+import {API_URL} from 'actions/constants/constants'
 function Header(props) {
   const [category, setCategory] = useState([]);
   const [keyword, setKeyword] = useState("");
@@ -50,21 +51,21 @@ function Header(props) {
                 Vào cửa hàng trên ứng dụng
                 <div className="header__qr">
                   <img
-                    src="./img/qrcode.png"
+                    src={`${API_URL}/images/qrcode.png`}
                     alt="Qr code"
                     className="header__qr-img"
                   />
                   <div className="header__qr-apps">
                     <Link to="/" className="header__qr-link">
                       <img
-                        src="./img/googleplay.png"
+                        src={`${API_URL}/images/googleplay.png`}
                         alt="Goole Play"
                         className="header__qr-download-img"
                       />
                     </Link>
                     <Link to="/" className="header__qr-link">
                       <img
-                        src="./img/appstore.png"
+                       src={`${API_URL}/images/appstore.png`}
                         alt="App store"
                         className="header__qr-download-img"
                       />

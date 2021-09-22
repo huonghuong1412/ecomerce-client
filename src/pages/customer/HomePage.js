@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react'
 import Slide from 'components/Slide/Slide'
 import Promotion from 'components/Promotion/Promotion'
 import Category from 'components/CategoryHighlights/Category'
-import ProductItem from 'components/Item/ProductItem'
+// import ProductItem from 'components/Item/ProductItem'
 import * as services from 'services/ProductServices'
 import { Link } from 'react-router-dom'
 import Product from 'components/Item/Product'
 import useTimeout from 'hooks/useTimeout'
 import ProductSkeleton from 'components/Item/ProductSkeleton'
-import ProductItemSkeleton from 'components/Item/ProductItemSkeleton'
+// import ProductItemSkeleton from 'components/Item/ProductItemSkeleton'
 
 function HomePage(props) {
     const [products, setProducts] = useState([]);
@@ -55,7 +55,7 @@ function HomePage(props) {
                             }
                             <div className="col l-12 m-12 c-12">
                                 <div className="section-center">
-                                    <Link to="/sach" className="home-product-viewmore">
+                                    <Link to="#" className="home-product-viewmore">
                                         Xem thêm
                                     </Link>
                                 </div>
@@ -63,7 +63,7 @@ function HomePage(props) {
                         </div>
                     </div>
                 </div>
-                <div className="col l-12 m-12 c-12">
+                {/* <div className="col l-12 m-12 c-12">
                     <div className="home-product">
                         <div className="row sm-gutter section__item">
                             <div className="col l-12 m-12 c-12">
@@ -131,7 +131,7 @@ function HomePage(props) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </>
     )

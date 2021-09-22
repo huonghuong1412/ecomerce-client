@@ -1172,7 +1172,7 @@ input[type="number"] {
 
 
 .ship-info {
-  width: 75%;
+  width: 100%;
   display: flex;
   padding: 16px 0px;
   -webkit-box-pack: justify;
@@ -1662,4 +1662,89 @@ h4.heading {
   position: absolute;
   left: 9px;
   top: 2px;
+}
+
+
+/* -------  CART    ------------- */
+
+.iiyvNb {
+  position: relative;
+  width: 300px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  box-shadow: rgb(179 179 179) 1px 1px 15px;
+}
+
+.iiyvNb .btn-close {
+  cursor: pointer;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 4px;
+  color: rgb(155, 155, 155);
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.iiyvNb .status {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  margin: 0px;
+  color: rgb(51, 51, 51);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.iiyvNb .status svg {
+  margin-right: 4px;
+  color: rgb(76, 175, 80);
+  font-size: 19px;
+}
+
+.iiyvNb .btn-view-cart {
+  display: block;
+  margin-top: 16px;
+  padding: 10px 0px;
+  width: 240px;
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  background-color: rgb(255, 57, 69);
+  border-radius: 4px;
+}
+
+.no-cart {
+  background: rgb(255, 255, 255);
+  padding: 40px 20px;
+  border-radius: 4px;
+  text-align: center;
+  width: 100%;
+}
+
+.no-cart__img {
+  width: 190px;
+}
+
+.no-cart__note {
+  margin: 15px 0px 30px;
+  font-size: 1.4rem;
+}
+
+.no-cart__btn {
+  background-color: rgb(253, 216, 53);
+  color: rgb(74, 74, 74);
+  font-weight: 500;
+  padding: 10px 55px;
+  display: inline-block;
+  border-radius: 4px;
+  font-size: 1.4rem;
 }

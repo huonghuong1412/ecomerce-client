@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import Product from 'components/Item/Product';
@@ -16,7 +16,7 @@ function ListProductBrand(props) {
     const params = new URLSearchParams(window.location.search)
     const page = params.get('page');
 
-    useEffect(() => {
+    const getData = useCallback(() => {
         const params = new URLSearchParams(window.location.search)
         const page = params.get('page');
         const sortBy = params.get('sortBy');
@@ -24,24 +24,30 @@ function ListProductBrand(props) {
         const keyword = params.get('keyword');
         let searchObject = {};
         searchObject.keyword = keyword ? keyword : '';
-        searchObject.page = page ? parseInt(page) : 1;
-        const brand = match.params.brand ? match.params.brand : '';
-        const category = match.params.category ? match.params.category : '';
-        searchObject.category = category;
+        searchObject.page = page ? parseInt(page) : 0;
+        const brandCode = match.params.brand ? match.params.brand : '';
+        searchObject.brandCode = brandCode;
         searchObject.sortBy = sortBy ? sortBy : '';
         searchObject.sortValue = sortValue ? sortValue : '';
 
-        getAllProductByBrandCode(brand)
+        getAllProductByBrandCode(searchObject)
             .then((res) => {
-                setProducts(res.data);
-                setTotalElements(res.data.length)
+                setProducts(res.data.content);
+                setTotalElements(res.data.totalElements)
             })
             .catch(err => console.log(err))
+    }, [match.params.brand])
 
+    useEffect(() => {
+        
+        getData();
+
+        const brand = match.params.brand ? match.params.brand : '';
         getBrandByCode(brand) 
             .then((res => setBrand(res.data)))
             .catch(() => alert("ERR"))
-    }, [page, match])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getData])
 
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
@@ -76,7 +82,7 @@ function ListProductBrand(props) {
                         </div>
 
                     </div>
-                    <Pagination totalRows={totalElements} page={page ? page : 1} limit={20} />
+                    <Pagination totalRows={totalElements} page={page ? page : 0} limit={20} />
                 </div>
             </div>
         </>

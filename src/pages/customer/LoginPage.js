@@ -21,6 +21,9 @@ export default function LoginPage(props) {
     const [password, setPassword] = useState("")
 
     useEffect(() => {
+
+        document.title = "Đăng nhập | Tiki"
+
         let isAuth = localStorage.getItem('token')
         if(isAuth && isAuth !== 'undefined') {
            props.history.goBack();

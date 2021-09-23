@@ -55,6 +55,9 @@ function ResultOrderPage(props) {
     }
 
     useEffect(() => {
+
+        document.title = "Kết quả thanh toán | Tiki"
+
         if (vnp_TransactionNo) {
             handleUpdatePayment();
         }

@@ -31,7 +31,7 @@ export default function Slide() {
       link: "/sach",
     },
     {
-      img: "https://cdn.tgdd.vn/2021/06/banner/sn-chung-800-33002-830x300.gif",
+      img: "https://salt.tikicdn.com/cache/w824/ts/banner/51/a5/d4/8412280f9df1a15fcbf699e2357e7dc3.png.jpg",
       link: "/sach",
     },
   ];

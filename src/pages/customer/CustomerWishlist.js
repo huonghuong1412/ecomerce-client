@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import AccountNavbar from 'components/AccountNavbar/AccountNavbar.';
 import Loading from 'components/Loading/Loading'
 import useTimeout from 'hooks/useTimeout';
-import { deleteProductLiked, getListProductLiked } from 'services/ProductServices'
+import { deleteProductLiked, getListProductLiked } from 'actions/services/ProductServices'
 import { Link } from 'react-router-dom';
 import { currency } from 'utils/FormatCurrency';
 import { API_URL } from 'actions/constants/constants';
@@ -20,6 +20,9 @@ export default function CustomerWishlist(props) {
     }, [username])
 
     useEffect(() => {
+
+        document.title = "Sản phẩm yêu thích | Tiki"
+
         getData();
     }, [getData, username])
 

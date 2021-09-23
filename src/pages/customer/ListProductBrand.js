@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import Product from 'components/Item/Product';
 import Pagination from 'components/Pagination/Pagination';
-import { getAllProductByBrandCode, getBrandByCode } from 'services/ProductServices'
+import { getAllProductByBrandCode, getBrandByCode } from 'actions/services/ProductServices'
 import useTimeout from 'hooks/useTimeout';
 import ProductSkeleton from 'components/Item/ProductSkeleton';
 
@@ -40,6 +40,9 @@ function ListProductBrand(props) {
 
     useEffect(() => {
         
+
+        document.title = "Thương hiệu sản phẩm | Tiki"
+
         getData();
 
         const brand = match.params.brand ? match.params.brand : '';

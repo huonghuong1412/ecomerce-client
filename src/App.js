@@ -76,7 +76,7 @@ function App() {
 
 
 
-              <PublicRoute exact path="*" component={NotFoundPage} />
+              <PublicRoute path="*" component={NotFoundPage} />
             </Switch>
 
           </div>

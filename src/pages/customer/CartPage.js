@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { currency } from "utils/FormatCurrency"
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
-import { deleteItemInCart, getCartInfo, getDetailCart, updateQuantityItem } from 'actions/services/CartActions'
+import { deleteItemInCart, getCartInfo, getDetailCart, updateQuantityItem, checkQuantityItemInCart } from 'actions/services/CartActions'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"; import Loading from 'components/Loading/Loading';
 ;
@@ -13,11 +13,27 @@ function CartPage(props) {
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart.cart);
     const isFetching = useSelector(state => state.cart.isFetching);
+    const history = useHistory();
 
     const handleDeleteItem = (product_id) => {
-        dispatch(deleteItemInCart(product_id))
-        dispatch(getCartInfo())
-        dispatch(getDetailCart());
+        deleteItemInCart(product_id)
+            .then((res) => {
+                toast.info(res.data.message, {
+                    position: "bottom-center",
+                    theme: 'dark',
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                dispatch(getCartInfo())
+                dispatch(getDetailCart());
+            })
+            .catch((err) => {
+                console.log(err);
+            })
     }
 
     const handleUpdateItem = (item, quantity) => {
@@ -27,26 +43,74 @@ function CartPage(props) {
                 quantity
             }]
         }
-        dispatch(updateQuantityItem(data))
-        dispatch(getCartInfo())
-        dispatch(getDetailCart());
+        // dispatch(updateQuantityItem(data))
+        updateQuantityItem(data)
+            .then((res) => {
+                toast.info(res.data.message, {
+                    position: "bottom-center",
+                    theme: 'dark',
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                dispatch(getCartInfo())
+                dispatch(getDetailCart());
+            })
+            .catch((err) => {
+                toast.warning(err.response.data.message, {
+                    position: "bottom-center",
+                    theme: 'dark',
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            })
     }
 
     const token = localStorage.getItem('token');
 
-    const showToast = () => {
-        toast.info('Bạn cần chọn mua sản phẩm!', {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
+    const checkQuantity = () => {
+        checkQuantityItemInCart(cart)
+            .then((res) => {
+                if (res.data.message === "SUCCESS") {
+                    history.push("/checkout/payment")
+                } else {
+                    toast.info(res.data.message, {
+                        position: "bottom-center",
+                        autoClose: 2500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                }
+            })
+            .catch(() => {
+                toast.error('Thao tác không thành công!', {
+                    position: "bottom-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            })
     }
 
+
+
     useEffect(() => {
+
+        document.title = "Giỏ hàng | Tiki"
+
         if (token) {
             dispatch(getDetailCart())
         } else {
@@ -173,10 +237,7 @@ function CartPage(props) {
                                                                         </div>
                                                                     </div>
                                                                     <div className="group-button">
-                                                                        {
-                                                                            cart?.cart_details.length >= 1 ? <Link to={token ? "/checkout/payment" : "/login"} type="button" className="btn btn-add-to-cart">Mua Hàng</Link>
-                                                                                : <Link to='#' onClick={showToast} type="button" className="btn btn-add-to-cart">Mua Hàng</Link>
-                                                                        }
+                                                                        <Link to="#" onClick={checkQuantity} className="btn btn-add-to-cart">Mua Hàng</Link>
                                                                     </div>
                                                                 </div>
                                                             </div>

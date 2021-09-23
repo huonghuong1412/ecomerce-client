@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { getAllProductViewed } from 'services/ProductServices'
+import { getAllProductViewed } from 'actions/services/ProductServices'
 import useTimeout from 'hooks/useTimeout';
 import ProductItemSkeleton from 'components/Item/ProductItemSkeleton';
 import ProductItem from 'components/Item/ProductItem';

@@ -6,7 +6,7 @@ import { API_URL, IMAGE_FOLDER } from 'actions/constants/constants'
 import { makePaymentVnpay } from 'actions/services/PaymentActions'
 import AddressForm from '../form/AddressForm';
 import { addOrder } from 'actions/services/OrderActions'
-import { completeCart, getDetailCart } from 'actions/services/CartActions';
+import { completeCart, getCartInfo, getDetailCart } from 'actions/services/CartActions';
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import { getUserLogin } from 'actions/services/UserActions';
@@ -18,7 +18,7 @@ function PaymentPage(props) {
     const cart = useSelector(state => state.cart.cart);
     const loading = useSelector(state => state.cart.isFetching);
     const [user, setUser] = useState({})
-    const [type, setType] = useState(1);
+    const [type, setType] = useState(2);
     const [openAddress, setOpenAddress] = useState(false);
     const token = localStorage.getItem('token');
 
@@ -44,10 +44,17 @@ function PaymentPage(props) {
     }
 
     const handleCompleteCart = () => {
-        dispatch(completeCart());
+        completeCart()
+            .then(() => {
+                dispatch(getCartInfo())
+            })
+            .catch(err => console.log(err))
     }
 
     useEffect(() => {
+
+        document.title = "Thông tin thanh toán | Tiki"
+
         if (token) {
             dispatch(getDetailCart())
         } else {
@@ -168,10 +175,18 @@ function PaymentPage(props) {
             <div className="row sm-gutter section__content">
                 <div className="col l-12 m-12 c-12">
                     <div className="home-product">
-                        <div className="bkMhdM">
-                            <h4 className="productsV2__title">Thanh toán đơn hàng</h4>
-                            {
-                                loading ? <Loading /> : (
+                        {
+                            loading ? <Loading /> : (
+                                <div className="bkMhdM">
+                                    {
+                                        cart?.cart_details.length === 0 ? (
+                                            <div className="cwMaQD">
+                                                Giỏ hàng không có sản phẩm. Vui lòng thực hiện lại.
+                                            </div>
+                                        ) : ""
+                                    }
+                                    <h4 className="productsV2__title">Thanh toán đơn hàng</h4>
+
                                     <div className="row sm-gutter">
                                         <div className="col l-9 m-12 c-12">
                                             <div className="deellp">
@@ -227,7 +242,7 @@ function PaymentPage(props) {
                                                         <ul className="list">
                                                             <li className="dWHFNX">
                                                                 <label className="HafWE">
-                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(2)} value={2} /><span className="radio-fake" />
+                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(2)} value={2} defaultChecked /><span className="radio-fake" />
                                                                     <span className="label">
                                                                         <div className="fbjKoD">
                                                                             <img className="method-icon" width={32} src={`${API_URL}/images/icon-payment-method-cod.png`} alt="cod" />
@@ -240,7 +255,7 @@ function PaymentPage(props) {
                                                             </li>
                                                             <li className="dWHFNX">
                                                                 <label className="HafWE">
-                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(1)} value={1} defaultChecked /><span className="radio-fake" />
+                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(1)} value={1} /><span className="radio-fake" />
                                                                     <span className="label">
                                                                         <div className="fbjKoD">
                                                                             <img className="method-icon" width={32} src={`${API_URL}/images/icon-payment-method-atm.png`} alt="pay123" />
@@ -265,7 +280,7 @@ function PaymentPage(props) {
                                         <div className="col l-3 m-3 c-12">
                                             <div className="gDuXAE">
                                                 <div className="title">
-                                                    <span>Địa chỉ giao hàng</span>
+                                                    <span>Thông tin giao hàng</span>
                                                     <Link to="#" onClick={handleClickOpenAddress} >Sửa</Link>
                                                 </div><div className="address">
                                                     <span className="name">
@@ -304,9 +319,9 @@ function PaymentPage(props) {
                                             </div>
                                         </div>
                                     </div>
-                                )
-                            }
-                        </div>
+
+                                </div>
+                            )}
                     </div>
                 </div>
             </div>

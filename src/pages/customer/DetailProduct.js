@@ -4,9 +4,9 @@ import { currency } from "utils/FormatCurrency"
 import { Link } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
 import { getCurrentUser } from 'actions/services/UserActions'
-import { getAllProductByBrand, getOneItem } from 'services/ProductServices'
-import { addLikeProduct, deleteProductLiked, getProductLiked } from 'services/ProductServices'
-import { getAllCommentByProductId } from 'services/ProductServices'
+import { getAllProductByBrand, getOneItem } from 'actions/services/ProductServices'
+import { addLikeProduct, deleteProductLiked, getProductLiked } from 'actions/services/ProductServices'
+import { getAllCommentByProductId } from 'actions/services/ProductServices'
 import { addProductToCart, getCartInfo } from 'actions/services/CartActions'
 import AddressForm from '../form/AddressForm';
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +16,7 @@ import DetailsThumbnail from 'components/Item/DetailThumbnail';
 import ProductItem from 'components/Item/ProductItem';
 import ProductItemSkeleton from 'components/Item/ProductItemSkeleton';
 import BrandProduct from 'components/Brand/BrandProduct';
+import { toast } from 'react-toastify';
 
 function DetailProduct(props) {
 
@@ -91,6 +92,10 @@ function DetailProduct(props) {
         }
     }, [product])
 
+    useEffect(() => {
+        document.title = `${product?.name} | Tiki`
+    }, [product?.name])
+
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     const handleAddToCart = () => {
@@ -102,8 +107,33 @@ function DetailProduct(props) {
                 }]
             }
             if (product?.in_stock > 0 && quantity <= product?.in_stock) {
-                dispatch(addProductToCart(data))
-                dispatch(getCartInfo())
+                // dispatch(addProductToCart(data))
+                addProductToCart(data)
+                    .then((res) => {
+                        toast.info(res.data.message, {
+                            position: "bottom-center",
+                            theme: 'dark',
+                            autoClose: 2000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                        dispatch(getCartInfo())
+                    })
+                    .catch((err) => {
+                        toast.warning(err.response.data.message, {
+                            position: "bottom-center",
+                            theme: 'dark',
+                            autoClose: 2000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                    })
             }
         } else {
             props.history.push('/login')
@@ -430,7 +460,6 @@ function DetailProduct(props) {
                                                                 </div>
                                                                 <div>
                                                                     <div className="review-comment__user-name">{item.displayName}</div>
-                                                                    {/* <div className="review-comment__user-date">Đã tham gia 6 năm</div> */}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -470,23 +499,6 @@ function DetailProduct(props) {
                                     loading ? <ProductItemSkeleton total={productByBrands.length} /> : <ProductItem products={productByBrands} />
                                 }
                             </div>
-                            {/* {
-                                username ? (
-                                    <div className="row sm-gutter section__item">
-                                        <div className="col l-12 m-12 c-12">
-                                            <div className="home-product-category-item">
-                                                <h3 className="home-product-title">
-                                                    Sản phẩm bạn đã xem
-                                                </h3>
-                                            </div>
-                                        </div>
-                                        {
-                                            loading ? <ProductItemSkeleton total={productViewed.length} /> : <ProductItem products={productViewed} />
-                                        }
-
-                                    </div>
-                                ) : ''
-                            } */}
                         </div>
                     </div>
                 </div>

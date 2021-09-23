@@ -132,6 +132,9 @@ function HistoryOrderDetail(props) {
     };
 
     useEffect(() => {
+
+        document.title = "Đơn hàng của tôi | Tiki"
+
         getData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.match.params.id]);

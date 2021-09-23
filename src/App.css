@@ -1748,3 +1748,13 @@ h4.heading {
   border-radius: 4px;
   font-size: 1.4rem;
 }
+
+.cwMaQD {
+  padding: 10px 15px;
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: rgb(169, 68, 66);
+  background-color: rgb(242, 222, 222);
+  border: 1px solid rgb(235, 204, 209);
+  border-radius: 4px;
+}

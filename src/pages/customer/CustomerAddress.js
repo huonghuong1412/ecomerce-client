@@ -140,6 +140,9 @@ const CustomerAddress = (props) => {
     }
 
     useEffect(() => {
+
+        document.title = "Số địa chỉ | Tiki"
+
         getUser();
         getListCity();
         // eslint-disable-next-line react-hooks/exhaustive-deps

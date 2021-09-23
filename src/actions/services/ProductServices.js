@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {
     API_URL
-} from '../actions/constants/constants'
+} from 'actions/constants/constants'
 axios.defaults.baseURL = API_URL;
 const token = localStorage.getItem('token');
 const headers = { Authorization: `Bearer ${token}` }

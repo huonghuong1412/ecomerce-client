@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { getSubCategoryByCategoryCode } from "services/CategoryServices";
+import { getSubCategoryByCategoryCode } from "actions/services/CategoryServices";
 
 export default function Filter(props) {
   const { category } = props;
@@ -13,6 +13,10 @@ export default function Filter(props) {
       .then((res) => setSubcategories(res.data))
       .catch(() => setSubcategories({}));
   }, [category]);
+
+  const params = new URLSearchParams(window.location.search);
+  const sortBy = params.get("sort");
+  const sortValue = params.get("value");
 
   return (
     <>
@@ -44,11 +48,15 @@ export default function Filter(props) {
                   <input
                     type="radio"
                     name="sort"
+                    checked={sortBy === "price" && sortValue === "asc"}
+                    readOnly
                     onClick={() => {
-                      history.push("?sortBy=price&sortValue=ASC");
+                      history.push("?sort=price&value=asc");
                     }}
                   />
-                  <div><span>Giá thấp đến cao</span></div>
+                  <div>
+                    <span>Giá thấp đến cao</span>
+                  </div>
                 </label>
               </label>
             </li>
@@ -58,11 +66,15 @@ export default function Filter(props) {
                   <input
                     type="radio"
                     name="sort"
+                    checked={sortBy === "price" && sortValue === "desc"}
+                    readOnly
                     onClick={() => {
-                      history.push("?sortBy=price&sortValue=DESC");
+                      history.push("?sort=price&value=desc");
                     }}
                   />
-                  <div><span>Giá cao đến thấp</span></div>
+                  <div>
+                    <span>Giá cao đến thấp</span>
+                  </div>
                 </label>
               </label>
             </li>
@@ -72,8 +84,10 @@ export default function Filter(props) {
                   <input
                     type="radio"
                     name="sort"
+                    checked={sortBy === "name" && sortValue === "asc"}
+                    readOnly
                     onClick={() => {
-                      history.push("?sortBy=name&sortValue=ASC");
+                      history.push("?sort=name&value=asc");
                     }}
                   />
                   <div>
@@ -88,8 +102,10 @@ export default function Filter(props) {
                   <input
                     type="radio"
                     name="sort"
+                    checked={sortBy === "name" && sortValue === "desc"}
+                    readOnly
                     onClick={() => {
-                      history.push("?sortBy=name&sortValue=DESC");
+                      history.push("?sort=name&value=desc");
                     }}
                   />
                   <div>
@@ -151,7 +167,17 @@ export default function Filter(props) {
             <li className="category-item category-item__filter">
               <label className="item  item--seller">
                 <label className="style__Checkbox">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={sortBy === "name" && sortValue === "desc"}
+                    readOnly
+                    onClick={() => {
+                      history.push({
+                        pathname: '/sach',
+                        search: `${params}&brand=alpha-books`
+                      });
+                    }}
+                  />
                   <div>
                     <span>Times Books</span>
                   </div>

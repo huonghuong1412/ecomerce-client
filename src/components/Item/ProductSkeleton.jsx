@@ -8,9 +8,9 @@ export default function ProductSkeleton(props) {
         .fill()
         .map((item, index) => {
           return (
-            <div className="col l-3 m-4 c-6" key={index}>
+            <div className="col l-2 m-4 c-6" key={index}>
               <div className="home-product-item">
-                <Skeleton duration={1} width={245} height={245} />
+                <Skeleton duration={1} width={168} height={168} />
                 <Skeleton duration={1} />
                 <Skeleton duration={1} />
                 <Skeleton duration={1} />

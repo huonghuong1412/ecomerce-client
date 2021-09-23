@@ -5,7 +5,7 @@ import Filter from 'components/Filter/Filter';
 import Title from 'components/Filter/Title';
 import Product from 'components/Item/Product';
 import Pagination from 'components/Pagination/Pagination';
-import { getProductListByCategoryAndSubcategory, getProductList } from 'services/ProductServices'
+import { getProductListByCategoryAndSubcategory, getProductList } from 'actions/services/ProductServices'
 import useTimeout from 'hooks/useTimeout';
 import ProductSkeleton from 'components/Item/ProductSkeleton';
 
@@ -18,10 +18,12 @@ function ListProductPage(props) {
     const page = params.get('page');
 
     useEffect(() => {
+        document.title = "Danh sách sản phẩm giá cực tốt"
+
         const params = new URLSearchParams(window.location.search)
         const page = params.get('page');
-        const sortBy = params.get('sortBy');
-        const sortValue = params.get('sortValue');
+        const sortBy = params.get('sort');
+        const sortValue = params.get('value');
         const keyword = params.get('keyword');
         let searchObject = {};
         searchObject.keyword = keyword ? keyword : '';

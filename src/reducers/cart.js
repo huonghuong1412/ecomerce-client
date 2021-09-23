@@ -37,7 +37,9 @@ const cartReducer = (state = initialState, action) => {
                 ...state
             }
         case types.CART_COMPLETE:
-            return [...state];
+            return {
+                ...state
+            }
         default:
             return state;
     }

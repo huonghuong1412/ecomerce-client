@@ -16,6 +16,9 @@ export default function RegisterPage(props) {
     const [dateOfBirth, setDateOfBirth] = useState("")
 
     useEffect(() => {
+
+        document.title = "Đăng ký tài khoản | Tiki"
+
         let isAuth = localStorage.getItem('token')
         if (isAuth && isAuth !== 'undefined') {
             props.history.push('/')

@@ -1,36 +1,39 @@
-import React, { useEffect, useState } from 'react'
-// import Loading from 'components/Loading/Loading'
+import React, { useCallback, useEffect, useState } from 'react'
 import Slide from 'components/Slide/Slide'
 import Promotion from 'components/Promotion/Promotion'
 import Category from 'components/CategoryHighlights/Category'
-// import ProductItem from 'components/Item/ProductItem'
-import * as services from 'services/ProductServices'
-import { Link } from 'react-router-dom'
+import * as services from 'actions/services/ProductServices'
 import Product from 'components/Item/Product'
 import useTimeout from 'hooks/useTimeout'
 import ProductSkeleton from 'components/Item/ProductSkeleton'
-// import ProductItemSkeleton from 'components/Item/ProductItemSkeleton'
 
 function HomePage(props) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const getNewData = () => {
+    const [page, setPage] = useState(1);
+
+    const handleChangePage = (page) => {
+        setPage(page + 1)
+    }
+
+    const getNewData = useCallback(() => {
         let searchObject = {
-            page: 0,
-            limit: 20,
+            page: page,
+            limit: 2,
             keyword: ''
         }
         services.getProductList(searchObject)
             .then((res) => {
-                setProducts(res.data.content);
-                // setLoading(false);
+                setProducts([...products, ...res.data.content]);
             })
             .catch(err => console.log(err))
-    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page])
 
     useEffect(() => {
+        document.title = "Mua hàng online giá tốt, hàng chuẩn, ship nhanh"
         getNewData();
-    }, [])
+    }, [getNewData])
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
@@ -55,83 +58,16 @@ function HomePage(props) {
                             }
                             <div className="col l-12 m-12 c-12">
                                 <div className="section-center">
-                                    <Link to="#" className="home-product-viewmore">
-                                        Xem thêm
-                                    </Link>
+                                    {
+                                        page <= 3 ? <button className="home-product-viewmore" onClick={() => handleChangePage(page)}>
+                                            Xem thêm
+                                        </button> : ""
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {/* <div className="col l-12 m-12 c-12">
-                    <div className="home-product">
-                        <div className="row sm-gutter section__item">
-                            <div className="col l-12 m-12 c-12">
-                                <div className="home-product-category-item">
-                                    <h3 className="home-product-title">
-                                        Sách hay
-                                    </h3>
-                                </div>
-                            </div>
-                            {
-                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductItem type="book" books={products.filter(item => item.category.code === 'sach')} />
-                            }
-                            <div className="col l-12 m-12 c-12">
-                                <div className="section-center">
-                                    <Link to="/sach" className="home-product-viewmore">
-                                        Xem thêm
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col l-12 m-12 c-12">
-                    <div className="home-product">
-                        <div className="row sm-gutter section__item">
-                            <div className="col l-12 m-12 c-12">
-                                <div className="home-product-category-item">
-                                    <h3 className="home-product-title">
-                                        Laptop
-                                    </h3>
-                                </div>
-                            </div>
-                            {
-                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductItem type="laptop" laptops={products.filter(item => item.category.code === 'laptop')} />
-                            }
-                            <div className="col l-12 m-12 c-12">
-                                <div className="section-center">
-                                    <Link to="/laptop" className="home-product-viewmore">
-                                        Xem thêm
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col l-12 m-12 c-12">
-                    <div className="home-product">
-                        <div className="row sm-gutter section__item">
-                            <div className="col l-12 m-12 c-12">
-                                <div className="home-product-category-item">
-                                    <h3 className="home-product-title">
-                                        Điện thoại
-                                    </h3>
-                                </div>
-                            </div>
-                            {
-                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductItem type="phone" phones={products.filter(item => item.category.code === 'dien-thoai')} />
-                            }
-                            <div className="col l-12 m-12 c-12">
-                                <div className="section-center">
-                                    <Link to="/dien-thoai" className="home-product-viewmore">
-                                        Xem thêm
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
             </div>
         </>
     )

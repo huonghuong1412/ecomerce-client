@@ -84,6 +84,9 @@ export default function HistoryOrder(props) {
     const username = localStorage.getItem("username");
     const classes = useStyles();
     useEffect(() => {
+
+        document.title = "Đơn hàng của tôi | Tiki"
+
         getAllOrderByUser()
             .then((res) => {
                 setOrders(res.data);

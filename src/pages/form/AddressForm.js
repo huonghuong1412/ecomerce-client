@@ -198,6 +198,7 @@ const AddressForm = (props) => {
                                             <TextField
                                                 type="text"
                                                 name="house"
+                                                required
                                                 value={user?.house}
                                                 fullWidth
                                                 className={classes.textInput}

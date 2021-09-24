@@ -1,5 +1,8 @@
 import axios from 'axios'
 import { API_URL } from '../constants/constants'
+const token = localStorage.getItem('token');
+const headers = { Authorization: `Bearer ${token}` }
+
 export const getAllCity = () => {
     return axios({
         method: "GET",
@@ -20,6 +23,7 @@ export const updateAddressUser = (data) => {
     return axios({
         method: "PUT",
         url: `${API_URL}/api/address/customer?username=${data.username}`,
-        data: data
+        data: data,
+        headers: headers
     })
 }

@@ -106,7 +106,7 @@ function Header(props) {
                   </span>
                   <ul className="header__navbar-user-menu">
                     <li className="header__navbar-user-item">
-                      <Link to="/my-profile">Tài khoản của tôi</Link>
+                      <Link to="/customer/account">Tài khoản của tôi</Link>
                     </li>
                     <li className="header__navbar-user-item">
                       <Link to="/customer/address">Địa chỉ của tôi</Link>

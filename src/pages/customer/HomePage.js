@@ -25,6 +25,7 @@ function HomePage(props) {
         services.getProductList(searchObject)
             .then((res) => {
                 setProducts([...products, ...res.data.content]);
+                setLoading(false);
             })
             .catch(err => console.log(err))
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,6 +7,9 @@ import jwtDecode from 'jwt-decode'
 import setHeader from '../../helpers/setHeader'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
+const token = localStorage.getItem('token');
+const headers = { Authorization: `Bearer ${token}` }
+
 toast.configure({
     autoClose: 1500,
     draggable: false,
@@ -78,6 +81,7 @@ export const login = (user, history) => {
                 localStorage.setItem('username', username);
                 const decoded = jwtDecode(token);
                 dispatch(setCurrentUser(decoded));
+                window.location.reload();
                 history.goBack();
             })
             .catch(err => {
@@ -128,12 +132,30 @@ export const register = (data, history) => {
     }
 }
 
+export const updateInfo = (data) => {
+    return axios({
+        method: "PUT",
+        url: `${API_URL}/api/auth/update-info`,
+        headers: headers,
+        data: data
+    })
+}
+
+export const updatePassword = (data) => {
+    return axios({
+        method: "PUT",
+        url: `${API_URL}/api/auth/update-password`,
+        headers: headers,
+        data: data
+    })
+}
+
 export const logout = () => {
     return dispatch => {
-        toast.success("Đăng xuất thành công")
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         dispatch(setCurrentUser({}));
         setHeader();
+        window.location.reload();
     }
 }

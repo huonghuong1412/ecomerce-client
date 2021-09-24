@@ -18,7 +18,7 @@ function PaymentPage(props) {
     const cart = useSelector(state => state.cart.cart);
     const loading = useSelector(state => state.cart.isFetching);
     const [user, setUser] = useState({})
-    const [type, setType] = useState(2);
+    const [type, setType] = useState(1);
     const [openAddress, setOpenAddress] = useState(false);
     const token = localStorage.getItem('token');
 
@@ -94,7 +94,7 @@ function PaymentPage(props) {
                 total_item: cart?.items_count,
                 order_details: order_details,
                 orderInfo: orderInfo.vnp_OrderInfo,
-                address: user ? user.address?.house + ", " + user.address?.ward + ", " + user.address?.district + ", " + user.address?.city : "",
+                address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
@@ -242,7 +242,7 @@ function PaymentPage(props) {
                                                         <ul className="list">
                                                             <li className="dWHFNX">
                                                                 <label className="HafWE">
-                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(2)} value={2} defaultChecked /><span className="radio-fake" />
+                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(2)} value={2} /><span className="radio-fake" />
                                                                     <span className="label">
                                                                         <div className="fbjKoD">
                                                                             <img className="method-icon" width={32} src={`${API_URL}/images/icon-payment-method-cod.png`} alt="cod" />
@@ -255,7 +255,7 @@ function PaymentPage(props) {
                                                             </li>
                                                             <li className="dWHFNX">
                                                                 <label className="HafWE">
-                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(1)} value={1} /><span className="radio-fake" />
+                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(1)} value={1} defaultChecked /><span className="radio-fake" />
                                                                     <span className="label">
                                                                         <div className="fbjKoD">
                                                                             <img className="method-icon" width={32} src={`${API_URL}/images/icon-payment-method-atm.png`} alt="pay123" />

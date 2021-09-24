@@ -10,7 +10,6 @@ import Footer from './components/Footer/Footer'
 import HomePage from './pages/customer/HomePage'
 import LoginPage from './pages/customer/LoginPage'
 import RegisterPage from './pages/customer/RegisterPage'
-import ProfilePage from './pages/customer/ProfilePage'
 import NotFoundPage from './pages/customer/NotFound'
 
 import DetailProduct from './pages/customer/DetailProduct';
@@ -28,7 +27,8 @@ import { Suspense } from 'react';
 import CustomerWishlist from 'pages/customer/CustomerWishlist';
 import ListProductViewed from 'pages/customer/ListProductViewed';
 import ListProductBrand from 'pages/customer/ListProductBrand';
-// import Loading from 'components/Loading/Loading';
+import CustomerProfile from 'pages/customer/CustomerProfile';
+import CustomerPassword from 'pages/customer/CustomerPassword';
 const ListProductPage = React.lazy(() => import('./pages/customer/ListProductPage'));
 
 function App() {
@@ -55,7 +55,8 @@ function App() {
 
             <Switch>
 
-              <PrivateRoute exact path="/my-profile" component={ProfilePage} />
+              <PrivateRoute exact path="/customer/account" component={CustomerProfile} />
+              <PrivateRoute exact path="/customer/change-password" component={CustomerPassword} />
               <PrivateRoute exact path="/customer/address" component={CustomerAddress} />
               <PrivateRoute exact path="/customer/wishlist" component={CustomerWishlist} />
               <PrivateRoute exact path="/customer/viewed" component={ListProductViewed} />

@@ -7,15 +7,9 @@ import jwtDecode from 'jwt-decode'
 import setHeader from '../../helpers/setHeader'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
+import { getCartInfo } from './CartActions'
 const token = localStorage.getItem('token');
 const headers = { Authorization: `Bearer ${token}` }
-
-toast.configure({
-    autoClose: 1500,
-    draggable: false,
-    limit: 3,
-});
-
 
 export const setCurrentUser = (user) => {
     return {
@@ -74,14 +68,22 @@ export const login = (user, history) => {
             data: { username, password }
         })
             .then((res) => {
-                toast.success("Đăng nhập thành công.")
+                toast.success('Đăng nhập thành công!', {
+                    position: "bottom-center",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
                 const token = res.data.token;
                 const username = res.data.username;
                 localStorage.setItem('token', token);
                 localStorage.setItem('username', username);
                 const decoded = jwtDecode(token);
                 dispatch(setCurrentUser(decoded));
-                window.location.reload();
+                dispatch(getCartInfo())
                 history.goBack();
             })
             .catch(err => {
@@ -111,7 +113,15 @@ export const register = (data, history) => {
             }
         })
             .then((res) => {
-                toast.success(res.data.message)
+                toast.success(res.data.message, {
+                    position: "bottom-center",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
                 history.push("/login")
             })
             .catch((err) => {
@@ -156,6 +166,5 @@ export const logout = () => {
         localStorage.removeItem("username");
         dispatch(setCurrentUser({}));
         setHeader();
-        window.location.reload();
     }
 }

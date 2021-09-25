@@ -6,9 +6,9 @@ import { API_URL } from 'actions/constants/constants'
 import { getCurrentUser } from 'actions/services/UserActions'
 import { getAllProductByBrand, getOneItem } from 'actions/services/ProductServices'
 import { addLikeProduct, deleteProductLiked, getProductLiked } from 'actions/services/ProductServices'
-import { getAllCommentByProductId } from 'actions/services/ProductServices'
+import { getAllCommentByProductId } from 'actions/services/CommentServices'
 import { addProductToCart, getCartInfo } from 'actions/services/CartActions'
-import AddressForm from '../form/AddressForm';
+import AddressForm from 'components/form/AddressForm';
 import "react-toastify/dist/ReactToastify.css";
 import useTimeout from 'hooks/useTimeout';
 import DetailProductSkeleton from 'components/Loading/DetailProductSkeleton';
@@ -107,7 +107,6 @@ function DetailProduct(props) {
                 }]
             }
             if (product?.in_stock > 0 && quantity <= product?.in_stock) {
-                // dispatch(addProductToCart(data))
                 addProductToCart(data)
                     .then((res) => {
                         toast.info(res.data.message, {
@@ -274,6 +273,10 @@ function DetailProduct(props) {
                                 <div className="col l-7 m-6 c-12">
                                     <div className="product-detail">
                                         <h4 className="product-name">{product.name}</h4>
+                                        <div className="product-detail-info">
+                                            <p className="product-review"><span>{product?.review_count}</span> Đánh Giá</p>
+                                            <p className="product-seller"><span>{product?.seller_count}</span> Đã Bán </p>
+                                        </div>
                                     </div>
                                     <div className="product-detail-body">
                                         <div className="left">
@@ -323,7 +326,7 @@ function DetailProduct(props) {
                                                 </div>
                                                 <div className="input-label">
                                                     {
-                                                        product.in_stock > 0 ? <span>Đã bán: {product.seller_count}</span> : <span>Hết hàng</span>
+                                                        product.in_stock > 0 ? <span>{product.in_stock} sản phẩm có sẵn</span> : <span>Hết hàng</span>
                                                     }
                                                 </div>
                                             </div>

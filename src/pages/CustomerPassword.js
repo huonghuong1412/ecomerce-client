@@ -2,35 +2,39 @@ import React, { useState, useEffect } from 'react'
 import { Button, Grid } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Loading from 'components/Loading/Loading'
-import { getUserLogin, updateInfo } from 'actions/services/UserActions';
+import { getUserLogin, logout, updatePassword } from 'actions/services/UserActions';
+import useTimeout from 'hooks/useTimeout';
 import AccountNavbar from 'components/AccountNavbar/AccountNavbar.';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
-function CustomerProfile(props) {
+function CustomerPassword(props) {
 
+    const dispatch = useDispatch();
+    const token = localStorage.getItem("token");
     const [user, setUser] = useState({
         id: '',
-        fullName: '',
-        username: '',
-        email: '',
-        phone: '',
-        dateOfBirth: ''
+        password: "",
+        passwordNew: "",
+        passwordNewConfirm: "",
     })
     const [loading, setLoading] = useState(true);
     const getUser = () => {
         getUserLogin()
             .then(res => {
                 setUser(res.data);
-                setLoading(false)
             })
             .catch(err => console.log(err))
     }
 
     useEffect(() => {
         document.title = "Tài khoản của tôi | Tiki"
-        getUser();
-    }, [])
-
+        if (token) {
+            getUser();
+        } else {
+            props.history.push('/login');
+        }
+    }, [props.history, token])
 
     const handleInputChange = (e) => {
         setUser({
@@ -39,33 +43,30 @@ function CustomerProfile(props) {
         })
     }
 
+    const handleLogout = () => dispatch(logout())
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true)
         const data = {
-            username: user?.username,
-            email: user?.email,
-            fullName: user?.fullName,
-            phone: user?.phone,
-            dateOfBirth: user?.dateOfBirth
+            password: user?.password,
+            passwordNew: user?.passwordNew
         }
-        updateInfo(data)
-            .then((res) => {
-                toast.success(res.data.message, {
-                    position: "bottom-center",
-                    theme: 'dark',
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                setLoading(false);
-            })
-            .catch((err) => {
-                if (err) {
-                    toast.error(err.response.data.message, {
+        if (user?.passwordNew !== user?.passwordNewConfirm) {
+            toast.info("Mật khẩu xác nhận không khớp!", {
+                position: "bottom-center",
+                theme: 'dark',
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } else {
+            updatePassword(data)
+                .then((res) => {
+                    toast.success(res.data.message, {
                         position: "bottom-center",
                         theme: 'dark',
                         autoClose: 1500,
@@ -75,9 +76,27 @@ function CustomerProfile(props) {
                         draggable: true,
                         progress: undefined,
                     });
-                }
-            })
+                    setLoading(false);
+                    handleLogout();
+                })
+                .catch((err) => {
+                    if (err) {
+                        toast.error(err.response.data.message, {
+                            position: "bottom-center",
+                            theme: 'dark',
+                            autoClose: 1500,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                    }
+                })
+        }
     }
+
+    useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     return (
         <div>
@@ -87,13 +106,13 @@ function CustomerProfile(props) {
                         <div className="col l-12 m-12 c-12">
                             <div className="home-product">
                                 <div className="row sm-gutter section__item">
-                                    <div className="col l-3 m-3 c-3">
-                                        <AccountNavbar name={user?.username} />
+                                    <div className="col l-2-4 m-3 c-3">
+                                        <AccountNavbar name={user?.fullName} />
                                     </div>
-                                    <div className="col l-9 m-9 c-9">
+                                    <div className="col l-9-4 m-9 c-9">
                                         <Grid item md={12}>
                                             <div className="group">
-                                                <h4 className="heading">Thông tin tài khoản</h4>
+                                                <h4 className="heading">Đổi mật khẩu</h4>
                                             </div>
                                         </Grid>
                                         <ValidatorForm onSubmit={handleSubmit}>
@@ -101,93 +120,56 @@ function CustomerProfile(props) {
                                                 <Grid item sm={12} xs={12}>
                                                     <TextValidator
                                                         className="input-text"
-                                                        type="text"
-                                                        name="fullName"
-                                                        value={user?.fullName}
-                                                        onChange={handleInputChange}
-                                                        label={
-                                                            <span>
-                                                                <span style={{ color: "red" }}>*</span>
-                                                                Họ và tên
-                                                            </span>
-                                                        }
-                                                        validators={["required"]}
-                                                        errorMessages={["Trường này không được để trống"]}
-                                                    />
-                                                </Grid>
-                                                <Grid item sm={12} xs={12}>
-                                                    <TextValidator
-                                                        className="input-text"
-                                                        type="number"
-                                                        name="phone"
-                                                        value={user?.phone}
-                                                        onChange={handleInputChange}
-                                                        label={
-                                                            <span>
-                                                                <span style={{ color: "red" }}>*</span>
-                                                                Số điện thoại
-                                                            </span>
-                                                        }
-                                                        validators={["required"]}
-                                                        errorMessages={["Trường này không được để trống"]}
-                                                    />
-                                                </Grid>
-                                                <Grid item sm={12} xs={12}>
-                                                    <TextValidator
-                                                        className="input-text"
-                                                        type="text"
-                                                        name="email"
-                                                        value={user?.email}
-                                                        onChange={handleInputChange}
-                                                        label={
-                                                            <span>
-                                                                <span style={{ color: "red" }}>*</span>
-                                                                Email
-                                                            </span>
-                                                        }
-                                                        validators={["required"]}
-                                                        errorMessages={["Trường này không được để trống"]}
-                                                    />
-                                                </Grid>
-                                                <Grid item sm={12} xs={12}>
-                                                    <TextValidator
-                                                        className="input-text"
-                                                        type="text"
-                                                        name="username"
-                                                        value={user?.username}
-                                                        disabled
-                                                        inputProps={{
-                                                            style: { color: 'blue' },
-                                                        }}
-                                                        onChange={handleInputChange}
-                                                        label={
-                                                            <span>
-                                                                <span style={{ color: "red" }}>*</span>
-                                                                Tên tài khoản
-                                                            </span>
-                                                        }
-                                                        validators={["required"]}
-                                                        errorMessages={["Trường này không được để trống"]}
-                                                    />
-                                                </Grid>
 
-                                                <Grid item sm={12} xs={12}>
-                                                    <TextValidator
-                                                        className="input-text"
-                                                        style={{ margin: '5px 0' }}
-                                                        type="date"
-                                                        name="dateOfBirth"
-                                                        value={user?.dateOfBirth}
+                                                        type="password"
+                                                        name="password"
+                                                        value={user?.password}
+                                                        defaultValue={user.password}
                                                         onChange={handleInputChange}
-                                                        placeholder=""
                                                         label={
                                                             <span>
                                                                 <span style={{ color: "red" }}>*</span>
-                                                                Ngày sinh
+                                                                Mật khẩu cũ
                                                             </span>
                                                         }
                                                         validators={["required"]}
-                                                        errorMessages={["Ngày sinh không được để trống"]}
+                                                        errorMessages={["Trường này không được để trống"]}
+                                                    />
+                                                </Grid>
+                                                <Grid item sm={12} xs={12}>
+                                                    <TextValidator
+                                                        className="input-text"
+
+                                                        type="password"
+                                                        name="passwordNew"
+                                                        value={user?.passwordNew}
+                                                        onChange={handleInputChange}
+                                                        label={
+                                                            <span>
+                                                                <span style={{ color: "red" }}>*</span>
+                                                                Mật khẩu mới
+                                                            </span>
+                                                        }
+                                                        validators={["required"]}
+                                                        errorMessages={["Trường này không được để trống"]}
+                                                    />
+                                                </Grid>
+                                                <Grid item sm={12} xs={12}>
+                                                    <TextValidator
+                                                        className="input-text"
+
+                                                        type="password"
+                                                        name="passwordNewConfirm"
+                                                        value={user?.passwordNewConfirm}
+                                                        onChange={handleInputChange}
+                                                        label={
+                                                            <span>
+                                                                <span style={{ color: "red" }}>*</span>
+                                                                Xác nhận mật khẩu mới
+                                                            </span>
+                                                        }
+                                                        validators={["required"]}
+                                                        errorMessages={["Trường này không được để trống"]}
                                                     />
                                                 </Grid>
                                                 <Grid item sm={12} xs={12}>
@@ -196,7 +178,7 @@ function CustomerProfile(props) {
                                                         style={{ margin: '10px 0', width: '100%' }}
                                                         className="btn btn--e-transparent-brand-b-2"
                                                         type="submit"
-                                                    >Cập nhật thông tin</Button>
+                                                    >Đổi mật khẩu</Button>
                                                 </Grid>
                                             </Grid>
                                         </ValidatorForm>
@@ -211,4 +193,4 @@ function CustomerProfile(props) {
     )
 }
 
-export default CustomerProfile;
+export default CustomerPassword;

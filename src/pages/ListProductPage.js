@@ -34,21 +34,21 @@ function ListProductPage(props) {
         searchObject.subcategory = subcategory;
         searchObject.sortBy = sortBy ? sortBy : '';
         searchObject.sortValue = sortValue ? sortValue : '';
-       if(category !== '' && category) {
+        if (category !== '' && category) {
             getProductListByCategoryAndSubcategory(searchObject)
-            .then((res) => {
-                setProducts(res.data.content);
-                setTotalElements(res.data.totalElements)
-            })
-            .catch(err => console.log(err))
-       } else {
+                .then((res) => {
+                    setProducts(res.data.content);
+                    setTotalElements(res.data.totalElements)
+                })
+                .catch(err => console.log(err))
+        } else {
             getProductList(searchObject)
                 .then((res) => {
                     setProducts(res.data.content);
                     setTotalElements(res.data.totalElements)
                 })
                 .catch(err => console.log(err))
-       }
+        }
     }, [page, match])
 
 
@@ -61,9 +61,15 @@ function ListProductPage(props) {
                 <div className="col l-10 m-12 c-12">
                     <div className="home-product">
                         <div className="row sm-gutter section__item">
-                            <Title type={match.params.category} totalProducts={totalElements} />
                             {
-                                loading ? <ProductSkeleton total={totalElements} /> : <Product products={products} />
+                                products.length > 0 ? (
+                                    <>
+                                        <Title type={match.params.category} totalProducts={totalElements} />
+                                        {
+                                            loading ? <ProductSkeleton total={totalElements} /> : <Product products={products} />
+                                        }
+                                    </>
+                                ) : <p>Không tìm thấy sản phẩm cần  tìm</p>
                             }
                         </div>
 

@@ -17,7 +17,7 @@ function Header(props) {
   const profile = useSelector((state) => state.auth.user);
   const token = localStorage.getItem("token");
   const search_keyword = [];
-  const list_search = JSON.parse(localStorage.getItem('search_keyword'));
+  const list_search = localStorage.getItem('search_keyword') ? JSON.parse(localStorage.getItem('search_keyword')) : [];
   useEffect(() => {
     if (token) {
       const decoded = jwtDecode(token);

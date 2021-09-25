@@ -4,13 +4,15 @@ import { Link, Redirect } from 'react-router-dom'
 import { currency } from 'utils/FormatCurrency'
 import { API_URL, IMAGE_FOLDER } from 'actions/constants/constants'
 import { makePaymentVnpay } from 'actions/services/PaymentActions'
-import AddressForm from '../form/AddressForm';
+import AddressForm from 'components/form/AddressForm';
 import { addOrder } from 'actions/services/OrderActions'
 import { completeCart, getCartInfo, getDetailCart } from 'actions/services/CartActions';
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import { getUserLogin } from 'actions/services/UserActions';
 import Loading from 'components/Loading/Loading';
+import { getPaymentMethods } from 'actions/services/PaymentServices';
+import { getShipMethods } from 'actions/services/ShipmentServices';
 
 
 function PaymentPage(props) {
@@ -19,7 +21,13 @@ function PaymentPage(props) {
     const loading = useSelector(state => state.cart.isFetching);
     const [user, setUser] = useState({})
     const [type, setType] = useState(1);
+    const [shipment, setShipment] = useState({
+        code: 'noi-thanh',
+        fee: 20000
+    });
     const [openAddress, setOpenAddress] = useState(false);
+    const [payMethods, setPayMethods] = useState([])
+    const [shipMethods, setShipMethods] = useState([])
     const token = localStorage.getItem('token');
 
     const getUser = () => {
@@ -51,6 +59,22 @@ function PaymentPage(props) {
             .catch(err => console.log(err))
     }
 
+    const getPayMethodsList = () => {
+        getPaymentMethods()
+            .then((res) => {
+                setPayMethods(res.data.content)
+            })
+            .catch(err => console.log(err))
+    }
+
+    const getShipMethodsList = () => {
+        getShipMethods()
+            .then((res) => {
+                setShipMethods(res.data.content)
+            })
+            .catch(err => console.log(err))
+    }
+
     useEffect(() => {
 
         document.title = "Thông tin thanh toán | Tiki"
@@ -60,15 +84,17 @@ function PaymentPage(props) {
         } else {
             props.history.push('/login');
         }
+        getPayMethodsList();
+        getShipMethodsList();
     }, [dispatch, props.history, token])
 
     const handlePayment = () => {
         let orderInfo = {}
 
         orderInfo.vnp_OrderInfo = "Thanh toan don hang";
-        orderInfo.vnp_Amount = cart?.total_price;
+        orderInfo.vnp_Amount = cart?.total_price + shipment?.fee;
 
-        if (type === 1) {
+        if (type === 2) {
             let now = new Date();
             const create_time = now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear();
             const order_details = cart?.cart_details.map(item => {
@@ -81,7 +107,7 @@ function PaymentPage(props) {
             })
             const payment = {
                 type: 1,
-                method_code: "ATM",
+                method_code: 'vnpay',
                 datePayment: create_time,
                 tradingCode: null,
                 status: 0
@@ -98,6 +124,7 @@ function PaymentPage(props) {
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
+                shipment: shipment?.code
             }
 
             addOrder(order)
@@ -119,7 +146,7 @@ function PaymentPage(props) {
                     draggable: true,
                     progress: undefined,
                 }))
-        } else if (type === 2) {
+        } else if (type === 1) {
             let now = new Date();
             const create_time = now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear();
             const order_details = cart?.cart_details.map(item => {
@@ -132,7 +159,7 @@ function PaymentPage(props) {
             })
             const payment = {
                 bankName: null,
-                method_code: "PayOff",
+                method_code: 'cod',
                 datePayment: create_time,
                 tradingCode: null,
                 status: 0
@@ -148,6 +175,7 @@ function PaymentPage(props) {
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
+                shipment: shipment?.code
             }
             addOrder(order)
                 .then((res) => {
@@ -237,35 +265,53 @@ function PaymentPage(props) {
                                                     </div>
                                                 </div>
                                                 <div className="styles__Section-sc-18qxeou-0 kRoZux">
-                                                    <h3 className="title">2. Chọn hình thức thanh toán</h3>
+                                                    <h3 className="title">2. Chọn hình thức giao hàng</h3>
                                                     <div className="dnENUJ">
                                                         <ul className="list">
-                                                            <li className="dWHFNX">
-                                                                <label className="HafWE">
-                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(2)} value={2} /><span className="radio-fake" />
-                                                                    <span className="label">
-                                                                        <div className="fbjKoD">
-                                                                            <img className="method-icon" width={32} src={`${API_URL}/images/icon-payment-method-cod.png`} alt="cod" />
-                                                                            <div className="method-content">
-                                                                                <div className="method-content__name"><span>Thanh toán tiền mặt khi nhận hàng</span></div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </span>
-                                                                </label>
-                                                            </li>
-                                                            <li className="dWHFNX">
-                                                                <label className="HafWE">
-                                                                    <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(1)} value={1} defaultChecked /><span className="radio-fake" />
-                                                                    <span className="label">
-                                                                        <div className="fbjKoD">
-                                                                            <img className="method-icon" width={32} src={`${API_URL}/images/icon-payment-method-atm.png`} alt="pay123" />
-                                                                            <div className="method-content">
-                                                                                <div className="method-content__name"><span>Thẻ ATM nội địa/Internet Banking (Miễn phí thanh toán)</span></div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </span>
-                                                                </label>
-                                                            </li>
+                                                            {
+                                                                shipMethods.map((item, index) => {
+                                                                    return (
+                                                                        <li className="dWHFNX" key={index}>
+                                                                            <label className="HafWE">
+                                                                                <input type="radio" readOnly name="shipCode" onChange={(e) => setShipment(item)} value={item} required defaultChecked={item?.code === shipment?.code}/><span className="radio-fake" />
+                                                                                <span className="label">
+                                                                                    <div className="fbjKoD">
+                                                                                        <div className="method-content">
+                                                                                            <div className="method-content__name"><span>{item.name} - {currency(item.fee)}</span></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </span>
+                                                                            </label>
+                                                                        </li>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div className="styles__Section-sc-18qxeou-0 kRoZux">
+                                                    <h3 className="title">3. Chọn hình thức thanh toán</h3>
+                                                    <div className="dnENUJ">
+                                                        <ul className="list">
+                                                            {
+                                                                payMethods.map((item, index) => {
+                                                                    return (
+                                                                        <li className="dWHFNX" key={index}>
+                                                                            <label className="HafWE">
+                                                                                <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(item.type)} value={item.type} defaultChecked={item?.type === type} /><span className="radio-fake" />
+                                                                                <span className="label">
+                                                                                    <div className="fbjKoD">
+                                                                                        <img className="method-icon" width={32} src={`${API_URL}/images/${item.icon}`} alt="cod" />
+                                                                                        <div className="method-content">
+                                                                                            <div className="method-content__name"><span>{item.name}</span></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </span>
+                                                                            </label>
+                                                                        </li>
+                                                                    )
+                                                                })
+                                                            }
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -303,12 +349,12 @@ function PaymentPage(props) {
                                                                     </li>
                                                                     <li className="prices__item">
                                                                         <span className="prices__text">Phí vận chuyển</span>
-                                                                        <span className="prices__value">{currency(0)}</span>
+                                                                        <span className="prices__value">{currency(shipment?.fee)}</span>
                                                                     </li>
                                                                 </ul>
                                                                 <p className="prices__total">
                                                                     <span className="prices__text">Tổng cộng</span>
-                                                                    <span className="prices__value prices__value--final">{currency(cart?.total_price)}
+                                                                    <span className="prices__value prices__value--final">{currency(cart?.total_price + shipment?.fee)}
                                                                         <i>(Đã bao gồm VAT nếu có)</i>
                                                                     </span>
                                                                 </p>

@@ -19,7 +19,7 @@ function ProductItem(props) {
     <>
       {productList.map((item) => {
         const price = currency(item.price);
-        const list_price = currency(item.list_price);
+        // const list_price = currency(item.list_price);
         return (
           <div className="col l-2 m-2 c-6" key={item.id}>
             <Link to={`/san-pham/${item.id}/${item.slug}`} className="home-product-item-link">
@@ -30,8 +30,9 @@ function ProductItem(props) {
                 />
                 <h4 className="home-product-item__name">{item.name}</h4>
                 <div className="home-product-item-price">
-                  <span className="home-product-item-price-old">{list_price}</span>
+                  {/* <span className="home-product-item-price-old">{list_price}</span> */}
                   <span className="home-product-item-price-new">{price}</span>
+                  <span className="home-product-item-seller">Đã bán {item.seller_count}</span>
                 </div>
                 <div className="home-product-item__info">
                   <span className="home-product-item__brand">

@@ -38,17 +38,6 @@ export const getBrandByCode = (brandCode) => {
     return axios.get(`${API_URL}/api/brand/get-one/${brandCode}`);
 }
 
-
-// GET DS SP da xem
-export const getAllProductViewed = (username) => {
-    return axios.get(`${API_URL}/api/viewed-product?username=${username}`);
-}
-
-export const addProductViewed = (data) => {
-    return axios.post(`${API_URL}/api/viewed-product`, data);
-}
-
-
 // -------   SP Da Thich   --------
 
 export const addLikeProduct = (data) => {
@@ -84,10 +73,4 @@ export const deleteProductLiked = (productId) => {
         url: `${API_URL}/api/liked/user?productId=${productId}`,
         headers: headers,
     })
-}
-
-
-// Binh luan ve san pham
-export const getAllCommentByProductId = (productId) => {
-    return axios.get(`${API_URL}/api/comment/product/search?productId=${productId}`)
 }

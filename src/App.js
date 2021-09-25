@@ -7,29 +7,29 @@ import ScrollToTop from './ScrollToTop';
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 
-import HomePage from './pages/customer/HomePage'
-import LoginPage from './pages/customer/LoginPage'
-import RegisterPage from './pages/customer/RegisterPage'
-import NotFoundPage from './pages/customer/NotFound'
+import HomePage from 'pages/HomePage'
+import LoginPage from 'pages/LoginPage'
+import RegisterPage from 'pages/RegisterPage'
+import NotFoundPage from 'pages/NotFound'
 
-import DetailProduct from './pages/customer/DetailProduct';
+import DetailProduct from 'pages/DetailProduct';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 import { logout, setCurrentUser } from './actions/services/UserActions';
-import CartPage from './pages/customer/CartPage';
-import PaymentPage from './pages/customer/PaymentPage';
-import ResultOrderPage from './pages/customer/ResultOrderPage';
-import HistoryOrder from './pages/customer/HistoryOrder';
-import CustomerAddress from './pages/customer/CustomerAddress';
-import HistoryOrderDetail from 'pages/customer/HistoryOrderDetail';
+import CartPage from 'pages/CartPage';
+import PaymentPage from 'pages/PaymentPage';
+import ResultOrderPage from 'pages/ResultOrderPage';
+import HistoryOrder from 'pages/HistoryOrder';
+import CustomerAddress from 'pages/CustomerAddress';
+import HistoryOrderDetail from 'pages/HistoryOrderDetail';
 import { Suspense } from 'react';
-import CustomerWishlist from 'pages/customer/CustomerWishlist';
-import ListProductViewed from 'pages/customer/ListProductViewed';
-import ListProductBrand from 'pages/customer/ListProductBrand';
-import CustomerProfile from 'pages/customer/CustomerProfile';
-import CustomerPassword from 'pages/customer/CustomerPassword';
-const ListProductPage = React.lazy(() => import('./pages/customer/ListProductPage'));
+import CustomerWishlist from 'pages/CustomerWishlist';
+import ListProductBrand from 'pages/ListProductBrand';
+import CustomerProfile from 'pages/CustomerProfile';
+import CustomerPassword from 'pages/CustomerPassword';
+import CustomerReview from 'pages/CustomerReview';
+const ListProductPage = React.lazy(() => import('./pages/ListProductPage'));
 
 function App() {
 
@@ -59,7 +59,7 @@ function App() {
               <PrivateRoute exact path="/customer/change-password" component={CustomerPassword} />
               <PrivateRoute exact path="/customer/address" component={CustomerAddress} />
               <PrivateRoute exact path="/customer/wishlist" component={CustomerWishlist} />
-              <PrivateRoute exact path="/customer/viewed" component={ListProductViewed} />
+              <PrivateRoute exact path="/customer/review" component={CustomerReview} />
               <PrivateRoute exact path="/checkout/payment" component={PaymentPage}></PrivateRoute>
               <PrivateRoute exact path="/success/payment" component={ResultOrderPage}></PrivateRoute>
               <PrivateRoute exact path="/customer/order/history" component={HistoryOrder}></PrivateRoute>

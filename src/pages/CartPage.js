@@ -46,16 +46,18 @@ function CartPage(props) {
         // dispatch(updateQuantityItem(data))
         updateQuantityItem(data)
             .then((res) => {
-                toast.info(res.data.message, {
-                    position: "bottom-center",
-                    theme: 'dark',
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+                if(res.data.message !== "SUCCESS") {
+                    toast.info(res.data.message, {
+                        position: "bottom-center",
+                        theme: 'dark',
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                }
                 dispatch(getCartInfo())
                 dispatch(getDetailCart());
             })
@@ -83,7 +85,7 @@ function CartPage(props) {
                 } else {
                     toast.info(res.data.message, {
                         position: "bottom-center",
-                        autoClose: 2500,
+                        autoClose: 2000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,

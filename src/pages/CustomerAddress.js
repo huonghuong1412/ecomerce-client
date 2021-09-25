@@ -120,7 +120,7 @@ const CustomerAddress = (props) => {
             .then((res) => {
                 toast.success("Cập nhật thông tin thành công.")
                 setAddressUser(res.data)
-
+                getUser();
             })
             .catch(err => console.log(err))
     }
@@ -158,11 +158,11 @@ const CustomerAddress = (props) => {
                         <div className="col l-12 m-12 c-12">
                             <div className="home-product">
                                 <div className="row sm-gutter section__item">
-                                    <div className="col l-3 m-3 c-3">
-                                        <AccountNavbar name={user?.username} />
+                                    <div className="col l-2-4 m-3 c-3">
+                                        <AccountNavbar name={user?.fullName} />
                                     </div>
-                                    <div className="col l-9 m-9 c-9">
-                                        <Grid className="" container spacing={2}>
+                                    <div className="col l-9-4 m-9 c-9">
+                                        <Grid container>
                                             <Grid item md={12}>
                                                 <div className="group">
                                                     <h4 className="heading">Thông tin khách hàng</h4>

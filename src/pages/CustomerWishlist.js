@@ -6,29 +6,40 @@ import { deleteProductLiked, getListProductLiked } from 'actions/services/Produc
 import { Link } from 'react-router-dom';
 import { currency } from 'utils/FormatCurrency';
 import { API_URL } from 'actions/constants/constants';
+import { getUserLogin } from 'actions/services/UserActions';
 export default function CustomerWishlist(props) {
 
-
+    const token = localStorage.getItem("token");
     const [listProductLiked, setListProductLiked] = useState([]);
     const [loading, setLoading] = useState(true);
-    const username = localStorage.getItem('username');
+    const [user, setUser] = useState({
+        id: '',
+        fullName: '',
+        username: '',
+    })
 
     const getData = useCallback(() => {
-        getListProductLiked(username)
+        getListProductLiked()
             .then((res) => setListProductLiked(res.data))
             .catch(() => alert('ERROR'))
-    }, [username])
-
+    }, [])
+    const getUser = () => {
+        getUserLogin()
+            .then(res => {
+                setUser(res.data);
+            })
+            .catch(err => console.log(err))
+    }
     useEffect(() => {
 
         document.title = "Sản phẩm yêu thích | Tiki"
-
+        getUser();
         getData();
-    }, [getData, username])
+    }, [getData])
 
     const dislikeProduct = (productId) => {
-        if (username) {
-            deleteProductLiked(username, productId)
+        if (token) {
+            deleteProductLiked(productId)
                 .then(() => getData())
                 .catch(() => alert("ERR"))
         } else {
@@ -44,10 +55,10 @@ export default function CustomerWishlist(props) {
                     <div className="row sm-gutter section__content">
                         <div className="customer-wishlist">
                             <div className="row sm-gutter section__item">
-                                <div className="col l-3 m-3 c-3">
-                                    <AccountNavbar name={username} />
+                                <div className="col l-2-4 m-3 c-3">
+                                    <AccountNavbar name={user?.fullName} />
                                 </div>
-                                <div className="col l-9 m-9 c-9">
+                                <div className="col l-9-4 m-9 c-9">
                                     <h4 className="heading">Danh sách yêu thích ({listProductLiked.length}) </h4>
                                     <ul className="list">
                                         {

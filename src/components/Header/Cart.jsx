@@ -10,8 +10,10 @@ function Header(props) {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    dispatch(getCartInfo());
-  }, [dispatch]);
+    if(token) {
+      dispatch(getCartInfo());
+    }
+  }, [dispatch, token]);
 
   return (
     <>

@@ -9,6 +9,8 @@ export default function Title(props) {
     title = "Laptop";
   } else if (type === "dien-thoai") {
     title = "Điện thoại";
+  } else if (type === "bach-hoa") {
+    title = "Bách hoá online";
   }
 
   return (

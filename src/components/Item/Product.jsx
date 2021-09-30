@@ -11,7 +11,7 @@ export default function Product(props) {
         const price = currency(item.price);
         const list_price = currency(item.list_price);
         return (
-          <div className="col l-2-4 m-2-4 c-6" key={item.id}>
+          <div className="col l-3 m-3 c-6" key={item.id}>
             <Link
               to={`/san-pham/${item.id}/${item.slug}`}
               className="home-product-item-link"

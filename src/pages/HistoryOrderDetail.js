@@ -156,8 +156,8 @@ function HistoryOrderDetail(props) {
                                                 <div className="heading"> Chi tiết đơn hàng #{props.match.params.id} - <span>{orderInfo.status_order_name}</span></div>
                                                 <Grid container spacing={3}>
                                                     <Grid item sm={12}>
-                                                        <div className="styles__StyledGroupSection-sc-ri73gr-0 cRRvpz">
-                                                            <div className="styles__StyledSection-sc-ri73gr-1 gQjSfs">
+                                                        <div className="cRRvpz">
+                                                            <div className="gQjSfs">
                                                                 <div className="title">Địa chỉ người nhận</div>
                                                                 <div className="content">
                                                                     <p className="name">{userInfo.user_fullname}</p>
@@ -168,14 +168,14 @@ function HistoryOrderDetail(props) {
                                                                     </p>
                                                                 </div>
                                                             </div>
-                                                            <div className="styles__StyledSection-sc-ri73gr-1 gQjSfs">
+                                                            <div className="gQjSfs">
                                                                 <div className="title">Hình thức giao hàng</div>
                                                                 <div className="content">
                                                                     <p>{orderInfo?.shipment_name}</p>
                                                                     <p>Phí vận chuyển: {currency(orderInfo?.shipment_fee)}</p>
                                                                 </div>
                                                             </div>
-                                                            <div className="styles__StyledSection-sc-ri73gr-1 gQjSfs">
+                                                            <div className="gQjSfs">
                                                                 <div className="title">Hình thức thanh toán</div>
                                                                 <div className="content">
                                                                     <p className="">{orderInfo?.payment_method}</p>

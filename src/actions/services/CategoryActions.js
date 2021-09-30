@@ -23,3 +23,12 @@ export const getAllsubCategory = () => {
         url: `${API_URL}/api/subcategory`
     })
 }
+
+// get ds thuong hieu theo danh muc
+
+export const getAllBrandByCategoryCode = (category) => {
+    return axios({
+        method: 'GET',
+        url: `${API_URL}/api/brand/category/${category}`
+    })
+}

@@ -8,7 +8,7 @@ const headers = { Authorization: `Bearer ${token}` }
 
 // get
 export const getProductListByCategoryAndSubcategory = (searchObject) => {
-    return axios.get(`${API_URL}/api/product/danh-muc/${searchObject.category}/${searchObject.subcategory}?page=${searchObject.page}&keyword=${searchObject.keyword}&sortBy=${searchObject.sortBy}&sortValue=${searchObject.sortValue}`)
+    return axios.get(`${API_URL}/api/product/danh-muc/${searchObject.category}/${searchObject.subcategory}?page=${searchObject.page}&keyword=${searchObject.keyword}&sortBy=${searchObject.sortBy}&sortValue=${searchObject.sortValue}&brand=${searchObject.brand}&price=${searchObject.price}`)
 }
 export const getProductList = (searchObject) => {
     return axios.get(`${API_URL}/api/product/search?page=${searchObject.page}&keyword=${searchObject.keyword}`)

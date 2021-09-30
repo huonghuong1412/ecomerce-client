@@ -22,9 +22,11 @@ function ListProductPage(props) {
 
         const params = new URLSearchParams(window.location.search)
         const page = params.get('page');
-        const sortBy = params.get('sort');
-        const sortValue = params.get('value');
+        const sortBy = params.get('sort_by');
+        const sortValue = params.get('sort_value');
         const keyword = params.get('keyword');
+        const price = params.get('price');
+        const brand = params.get('brand');
         let searchObject = {};
         searchObject.keyword = keyword ? keyword : '';
         searchObject.page = page ? parseInt(page) : 1;
@@ -34,6 +36,8 @@ function ListProductPage(props) {
         searchObject.subcategory = subcategory;
         searchObject.sortBy = sortBy ? sortBy : '';
         searchObject.sortValue = sortValue ? sortValue : '';
+        searchObject.brand = brand ? brand : '';
+        searchObject.price = price ? price : '';
         if (category !== '' && category) {
             getProductListByCategoryAndSubcategory(searchObject)
                 .then((res) => {
@@ -58,18 +62,18 @@ function ListProductPage(props) {
         <>
             <div className="row sm-gutter section__content">
                 <Filter category={match.params.category} history={props.history} />
-                <div className="col l-10 m-12 c-12">
+                <div className="col l-9-4 m-12 c-12">
                     <div className="home-product">
                         <div className="row sm-gutter section__item">
                             {
-                                products.length > 0 ? (
+                                // products?.length > 0 ? (
                                     <>
                                         <Title type={match.params.category} totalProducts={totalElements} />
                                         {
                                             loading ? <ProductSkeleton total={totalElements} /> : <Product products={products} />
                                         }
                                     </>
-                                ) : <p>Không tìm thấy sản phẩm cần  tìm</p>
+                                // ) : <p>Không tìm thấy sản phẩm cần  tìm</p>
                             }
                         </div>
 

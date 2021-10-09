@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { getUserLogin } from 'actions/services/UserActions';
 import AccountNavbar from 'components/AccountNavbar/AccountNavbar.';
 import Loading from 'components/Loading/Loading'
-import { getAllCity, getAllDistrictByCityId, getAllWardByDistrictId, updateAddressUser } from 'actions/services/AddressActions'
+import { updateAddressUser } from 'actions/services/AddressActions'
+import { getListProvince, getListDistrict, getListWard } from 'actions/services/GHNServices'
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import useTimeout from 'hooks/useTimeout';
@@ -60,18 +61,21 @@ const CustomerAddress = (props) => {
 
     const [addressUser, setAddressUser] = useState({
         city: '',
+        city_id: 0,
         district: '',
+        district_id: 0,
         ward: '',
+        ward_id: '',
         house: ''
     })
     const [loading, setLoading] = useState(true);
 
     const getListCity = () => {
-        getAllCity()
+        getListProvince()
             .then((res) => {
                 setData({
                     ...data,
-                    listCity: res.data
+                    listCity: res.data.data.sort((a, b) => a.ProvinceID - b.ProvinceID),
                 })
             })
             .catch(err => console.log(err))
@@ -83,35 +87,6 @@ const CustomerAddress = (props) => {
             ...user,
             [e.target.name]: value,
         });
-    };
-
-    const changeCity = e => {
-        const value = e.target.value;
-        setUser({
-            ...user,
-            city: value,
-        });
-        getAllDistrictByCityId(value)
-            .then((res) => setData({
-                ...data,
-                listDistrict: res.data,
-                listWard: []
-            }))
-            .catch(() => alert("ERROR"))
-    };
-
-    const changeDistrict = e => {
-        const value = e.target.value;
-        setUser({
-            ...user,
-            district: value,
-        });
-        getAllWardByDistrictId(value)
-            .then((res) => setData({
-                ...data,
-                listWard: res.data
-            }))
-            .catch(() => alert("ERROR"))
     };
 
     const handleSubmit = (e) => {
@@ -198,8 +173,9 @@ const CustomerAddress = (props) => {
                                                     </div>
                                                 </div>
                                             </Grid>
-                                            <Grid item sm={12} xs={12}>
-                                                <label className="select">
+                                            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                                                <Grid item sm={12} xs={12}>
+                                                    {/* <label className="select">
                                                     <select required="required" name='city' onChange={changeCity} value={user?.city}>
                                                         <option value="">-- Thành phố --</option>
                                                         {
@@ -210,10 +186,37 @@ const CustomerAddress = (props) => {
                                                             })
                                                         }
                                                     </select>
-                                                </label>
-                                            </Grid>
-                                            <Grid item sm={12} xs={12}>
-                                                <label className="select">
+                                                </label> */}
+                                                    <div className="input-group">
+                                                        <label className="select">
+                                                            <select required name='city' onChange={(e) => {
+                                                                setUser({
+                                                                    ...user,
+                                                                    city: data.listCity.filter(item => item.ProvinceID === parseInt(e.target.value))[0]?.ProvinceName || "",
+                                                                    city_id: parseInt(e.target.value)
+                                                                })
+                                                                getListDistrict(e.target.value)
+                                                                    .then((res) => setData({
+                                                                        ...data,
+                                                                        listDistrict: res.data.data,
+                                                                        listWard: []
+                                                                    }))
+                                                                    .catch(() => alert("ERROR"))
+                                                            }} value={user.city_id}>
+                                                                <option value="">-- Thành phố --</option>
+                                                                {
+                                                                    data.listCity.map((item) => {
+                                                                        return (
+                                                                            <option key={item.ProvinceID} value={item.ProvinceID}>{item.ProvinceName ? item.ProvinceName : user.city}</option>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </select>
+                                                        </label>
+                                                    </div>
+                                                </Grid>
+                                                <Grid item sm={12} xs={12}>
+                                                    {/* <label className="select">
                                                     <select required="required" name='district' onChange={changeDistrict} value={user?.district}>
                                                         <option>-- Quận/Huyện --</option>
                                                         {
@@ -224,10 +227,36 @@ const CustomerAddress = (props) => {
                                                             })
                                                         }
                                                     </select>
-                                                </label>
-                                            </Grid>
-                                            <Grid item sm={12} xs={12}>
-                                                <label className="select">
+                                                </label> */}
+                                                    <div className="input-group">
+                                                        <label className="select">
+                                                            <select required name='district' onChange={(e) => {
+                                                                setUser({
+                                                                    ...user,
+                                                                    district: data.listDistrict.filter(item => item.DistrictID === parseInt(e.target.value))[0]?.DistrictName || "",
+                                                                    district_id: parseInt(e.target.value)
+                                                                })
+                                                                getListWard(e.target.value)
+                                                                    .then((res) => setData({
+                                                                        ...data,
+                                                                        listWard: res.data.data,
+                                                                    }))
+                                                                    .catch(() => alert("ERROR"))
+                                                            }} value={user.district_id}>
+                                                                <option>-- Quận/Huyện --</option>
+                                                                {
+                                                                    data.listDistrict.sort((a, b) => a.DistrictID - b.DistrictID).map((item) => {
+                                                                        return (
+                                                                            <option key={item.DistrictID} value={item.DistrictID}>{item.DistrictName}</option>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </select>
+                                                        </label>
+                                                    </div>
+                                                </Grid>
+                                                <Grid item sm={12} xs={12}>
+                                                    {/* <label className="select">
                                                     <select required="required" name='ward' onChange={handleChange} value={user?.ward}>
                                                         <option>-- Xã/Phường --</option>
                                                         {
@@ -238,29 +267,51 @@ const CustomerAddress = (props) => {
                                                             })
                                                         }
                                                     </select>
-                                                </label>
-                                            </Grid>
+                                                </label> */}
+                                                    <div className="input-group">
+                                                        <label className="select">
+                                                            <select required name='ward' onChange={(e) => {
+                                                                setUser({
+                                                                    ...user,
+                                                                    ward: data.listWard.filter(item => item.WardCode === e.target.value)[0]?.WardName || "",
+                                                                    ward_id: e.target.value
+                                                                })
 
-                                            <Grid item sm={12} xs={12}>
-                                                <TextField
-                                                    type="text"
-                                                    name="house"
-                                                    value={user?.house}
-                                                    fullWidth
-                                                    className={classes.textInput}
-                                                    onChange={handleChange}
-                                                    label='Địa chỉ nhà'
+                                                            }} value={user.ward_id}>
+                                                                <option>-- Xã/Phường --</option>
+                                                                {
+                                                                    data.listWard.map((item) => {
+                                                                        return (
+                                                                            <option key={item.WardCode} value={item.WardCode}>{item.WardName}</option>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </select>
+                                                        </label>
+                                                    </div>
+                                                </Grid>
 
-                                                />
-                                            </Grid>
-                                            <Grid item sm={12} xs={12}>
-                                                <Button
-                                                    onClick={handleSubmit}
-                                                    variant="outlined" color="secondary"
-                                                    style={{ margin: '10px 0', width: '100%' }}
-                                                    className="btn btn--e-transparent-brand-b-2"
-                                                >Cập nhật địa chỉ</Button>
-                                            </Grid>
+                                                <Grid item sm={12} xs={12}>
+                                                    <TextField
+                                                        type="text"
+                                                        name="house"
+                                                        value={user?.house}
+                                                        fullWidth
+                                                        className={classes.textInput}
+                                                        onChange={handleChange}
+                                                        label='Địa chỉ nhà'
+
+                                                    />
+                                                </Grid>
+                                                <Grid item sm={12} xs={12}>
+                                                    <Button
+                                                        type="submit"
+                                                        variant="outlined" color="secondary"
+                                                        style={{ margin: '10px 0', width: '100%' }}
+                                                        className="btn btn--e-transparent-brand-b-2"
+                                                    >Cập nhật địa chỉ</Button>
+                                                </Grid>
+                                            </form>
                                         </Grid>
                                     </div>
                                 </div>

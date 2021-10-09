@@ -74,9 +74,9 @@ export default function HistoryOrder(props) {
                                                                             {item.id}
                                                                         </Link>
                                                                     </td>
-                                                                    <td>{item.create_time}</td>
+                                                                    <td>{item.createdDate}</td>
                                                                     <td>{item.description}</td>
-                                                                    <td>{currency(item.total_price)}</td>
+                                                                    <td>{currency(item.total_price + item.ship_fee)}</td>
                                                                     <td>{item.status_order_name}</td>
                                                                 </tr>
                                                             )

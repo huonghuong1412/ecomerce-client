@@ -65,7 +65,7 @@ export default function LoginPage(props) {
                                                 label={
                                                     <span>
                                                         <span style={{ color: "red" }}>*</span>
-                                                        Tên tài khoản
+                                                        Tên đăng nhập hoặc Email
                                                     </span>
                                                 }
                                                 validators={["required"]}

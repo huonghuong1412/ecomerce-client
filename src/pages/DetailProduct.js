@@ -236,7 +236,7 @@ function DetailProduct(props) {
                                     <div className="left-thumbnail">
                                         {
                                             <img
-                                                src={`${API_URL}/images/product/${product.images[index]}`}
+                                                src={`${product.images[index]}`}
                                                 alt=""
                                                 style={{ width: '444px', height: '444px', objectFit: 'contain' }} />
                                         }
@@ -295,7 +295,6 @@ function DetailProduct(props) {
                                                     </div>
                                                 ) : ''
                                             }
-
                                             <div id="info-1" className="collapse in">
                                                 <div className="input-label">
                                                     <span>Số lượng</span>
@@ -343,19 +342,6 @@ function DetailProduct(props) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="row sm-gutter section__item">
-                                <div className="col l-12 m-12 c-12">
-                                    <div className="home-product-category-item">
-                                        <h3 className="home-product-title">
-                                            Sản phẩm tương tự
-                                        </h3>
-                                    </div>
-                                </div>
-                                {
-                                    loading ? <ProductItemSkeleton total={productByBrands.length} /> : <ProductItem products={productByBrands} />
-                                }
-                            </div>
-
                             <div className="row sm-gutter section__item">
                                 <div className="col l-12 m-12 c-12">
                                     <div className="home-product-category-item">

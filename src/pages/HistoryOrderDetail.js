@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import useTimeout from "hooks/useTimeout";
 import Loading from "components/Loading/Loading";
 import { getUserLogin } from "actions/services/UserActions";
-import { API_URL } from "actions/constants/constants";
+import { calculateShipTime } from 'actions/services/GHNServices'
 import CustomerReviewForm from "components/form/CustomerReviewForm";
 toast.configure({
     autoClose: 2000,
@@ -73,6 +73,7 @@ function HistoryOrderDetail(props) {
     const [orderInfo, setOrderInfo] = useState({});
     const [loading, setLoading] = useState(true);
     const [product, setProduct] = useState({});
+    const [shipTime, setShipTime] = useState('')
     const [user, setUser] = useState({
         id: '',
         fullName: '',
@@ -117,11 +118,26 @@ function HistoryOrderDetail(props) {
         getUserLogin()
             .then(res => {
                 setUser(res.data);
+                calculateShipTime({
+                    from_district_id: 1542,
+                    from_ward_code: "1B1507",
+                    to_district_id: res.data.district_id,
+                    to_ward_code: res.data.ward_id,
+                    service_id: 53321
+                })
+                    .then((res1) => setShipTime(res1.data.data))
+                    .catch(err => console.log(err))
             })
             .catch(err => console.log(err))
     }
-    useEffect(() => {
 
+    // "from_district_id": 1750,
+    // "from_ward_code": "511110",
+    // "to_district_id": 3255,
+    // "to_ward_code": "1B2811",
+    // "service_id": 53321
+
+    useEffect(() => {
         document.title = "Đơn hàng của tôi | Tiki"
         getUser();
         getData();
@@ -171,8 +187,9 @@ function HistoryOrderDetail(props) {
                                                             <div className="gQjSfs">
                                                                 <div className="title">Hình thức giao hàng</div>
                                                                 <div className="content">
-                                                                    <p>{orderInfo?.shipment_name}</p>
-                                                                    <p>Phí vận chuyển: {currency(orderInfo?.shipment_fee)}</p>
+                                                                    <p>Giao hàng tiêu chuẩn</p>
+                                                                    <p>Thời gian giao dự tính: {new Date(shipTime?.leadtime * 1000).toLocaleDateString()}</p>
+                                                                    <p>Phí vận chuyển: {currency(orderInfo?.ship_fee)}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="gQjSfs">
@@ -202,7 +219,7 @@ function HistoryOrderDetail(props) {
                                                                             <tr key={index}>
                                                                                 <td>
                                                                                     <div className="product-item">
-                                                                                        <img src={`${API_URL}/images/product/${item?.mainImage}`} alt="Giày Thể Thao Nữ Biti’s Hunter X – 2K18 – DSUH00100DEN - Stardust Night (Size 35)" />
+                                                                                        <img src={item?.mainImage} alt="Giày Thể Thao Nữ Biti’s Hunter X – 2K18 – DSUH00100DEN - Stardust Night (Size 35)" />
                                                                                         <div className="product-info">
                                                                                             <Link className="product-name" to={`/san-pham/${item?.product_id}/${item?.product_slug}`}>{item?.product_name}</Link>
                                                                                             <p className="product-sku">SKU: {item?.product_id}</p>
@@ -235,11 +252,11 @@ function HistoryOrderDetail(props) {
                                                                 </tr>
                                                                 <tr>
                                                                     <td colSpan={4}><span>Phí vận chuyển</span></td>
-                                                                    <td>{currency(orderInfo?.shipment_fee)}</td>
+                                                                    <td>{currency(orderInfo?.ship_fee)}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colSpan={4}><span>Tổng cộng</span></td>
-                                                                    <td><span className="sum">{currency(orderInfo.total_price)}</span></td>
+                                                                    <td><span className="sum">{currency(orderInfo.total_price + orderInfo?.ship_fee)}</span></td>
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
@@ -267,7 +284,7 @@ function HistoryOrderDetail(props) {
                     </div>
                 </div>
             </div>
-            <CustomerReviewForm open={openForm} onClose={handleCloseForm} product={product} user={user?.fullName}/>
+            <CustomerReviewForm open={openForm} onClose={handleCloseForm} product={product} user={user?.fullName} />
         </>
     );
 }

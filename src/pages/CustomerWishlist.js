@@ -5,7 +5,6 @@ import useTimeout from 'hooks/useTimeout';
 import { deleteProductLiked, getListProductLiked } from 'actions/services/ProductServices'
 import { Link } from 'react-router-dom';
 import { currency } from 'utils/FormatCurrency';
-import { API_URL } from 'actions/constants/constants';
 import { getUserLogin } from 'actions/services/UserActions';
 export default function CustomerWishlist(props) {
 
@@ -69,7 +68,7 @@ export default function CustomerWishlist(props) {
                                                         <div className="thumbnail">
                                                             <Link to={`/san-pham/${item.productId}/${item.slug}`}>
                                                                 <div className="thumbnail-img">
-                                                                    <img className="image" alt="" src={`${API_URL}/images/product/${item.mainImage}`} />
+                                                                    <img className="image" alt="" src={item.mainImage} />
                                                                 </div>
                                                             </Link>
                                                         </div>

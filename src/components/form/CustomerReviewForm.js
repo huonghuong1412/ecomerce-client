@@ -1,5 +1,4 @@
 import { Dialog } from '@material-ui/core';
-import { API_URL } from 'actions/constants/constants';
 import { addComment } from 'actions/services/CommentServices';
 import React, { useState } from 'react'
 import ReactStars from "react-rating-stars-component";
@@ -75,7 +74,7 @@ export default function CustomerReviewForm(props) {
                 </div>
                 <form className="write-review__inner">
                     <div className="write-review__product">
-                        <img src={`${API_URL}/images/product/${product?.mainImage}`} alt="" className="write-review__product-img" />
+                        <img src={product.mainImage} alt="" className="write-review__product-img" />
                         <div className="write-review__product-wrap">
                             <div className="write-review__product-name">{product?.product_name}</div>
                             <div className="write-review__product-seller">{'ABC'}</div>

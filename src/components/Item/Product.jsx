@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { currency } from "../../utils/FormatCurrency";
-import { API_URL } from "../../actions/constants/constants";
 
 export default function Product(props) {
   const { products } = props;
@@ -20,9 +19,7 @@ export default function Product(props) {
                 <div
                   className="home-product-item__img"
                   style={{
-                    backgroundImage: `url(${
-                      API_URL + "/images/product/" + item.mainImage
-                    })`,
+                    backgroundImage: `url(${item.mainImage})`,
                   }}
                 />
                 <h4 className="home-product-item__name">{item.name}</h4>

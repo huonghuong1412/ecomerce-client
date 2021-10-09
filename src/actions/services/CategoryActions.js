@@ -29,6 +29,6 @@ export const getAllsubCategory = () => {
 export const getAllBrandByCategoryCode = (category) => {
     return axios({
         method: 'GET',
-        url: `${API_URL}/api/brand/category/${category}`
+        url: `${API_URL}/api/brand/category?category=${category}`
     })
 }

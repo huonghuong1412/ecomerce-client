@@ -3,6 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { getSubCategoryByCategoryCode } from "actions/services/CategoryServices";
 // import qs from "query-string";
 import { getAllBrandByCategoryCode } from "actions/services/CategoryActions";
+import "./style.css";
 
 const list_price = [
   {
@@ -10,7 +11,7 @@ const list_price = [
     prices: [
       {
         label: "Dưới 50.000",
-        value: "50000",
+        value: "0,50000",
       },
       {
         label: "Từ 50.000 - 120.000",
@@ -31,7 +32,7 @@ const list_price = [
     prices: [
       {
         label: "Dưới 5.000.000",
-        value: "5000000",
+        value: "0,5000000",
       },
       {
         label: "Từ 5.000.000 - 10.000.000",
@@ -52,7 +53,7 @@ const list_price = [
     prices: [
       {
         label: "Dưới 500.000",
-        value: "500000",
+        value: "0,500000",
       },
       {
         label: "Từ 500.000 - 5.000.000",
@@ -73,7 +74,7 @@ const list_price = [
     prices: [
       {
         label: "Dưới 40.000",
-        value: "40000",
+        value: "0,40000",
       },
       {
         label: "Từ 40.000 - 140.000",
@@ -91,12 +92,39 @@ const list_price = [
   },
 ];
 
+const list_sort = [
+  {
+    label: 'Giá thấp đến cao',
+    sortBy: 'price',
+    sortValue: 'asc'
+  },
+  {
+    label: 'Giá cao đến thấp',
+    sortBy: 'price',
+    sortValue: 'desc'
+  },
+  {
+    label: 'Tên A-Z',
+    sortBy: 'name',
+    sortValue: 'asc'
+  },
+  {
+    label: 'Tên Z-A',
+    sortBy: 'name',
+    sortValue: 'desc'
+  },
+]
+
 export default function Filter(props) {
   const { category } = props;
   const history = useHistory();
 
   const [subcategories, setSubcategories] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [filterPrice, setFilterPrice] = useState({
+    begin_price: '',
+    end_price: ''
+  })
 
   const params = new URLSearchParams(window.location.search);
   const sortBy = params.get("sort_by") ? params.get("sort_by") : "";
@@ -109,15 +137,9 @@ export default function Filter(props) {
       .then((res) => setSubcategories(res.data))
       .catch(() => setSubcategories({}));
     getAllBrandByCategoryCode(category)
-      .then((res) => setBrands(res.data))
+      .then((res) => setBrands(res.data.content))
       .catch((err) => console.log(err));
-
   }, [category, sortBy, sortValue, price_search, brand]);
-
-  // const [query, setQuery] = useState({
-  //   brand: [],
-  //   price: [],
-  // });
 
   const addQuery = (key, value) => {
     let pathname = window.location.pathname;
@@ -129,42 +151,35 @@ export default function Filter(props) {
     });
   };
 
-  const removeQuery = (key) => {
-    let pathname = window.location.pathname;
-    let searchParams = new URLSearchParams(window.location.search);
-    searchParams.delete(key);
-    history.push({
-             pathname: pathname,
-             search: searchParams.toString()
-       });
-   };
-
-  // const handleSubmit = () => {
+  // const removeQuery = (key) => {
   //   let pathname = window.location.pathname;
   //   let searchParams = new URLSearchParams(window.location.search);
-  //   if (query.brand.length > 0) {
-  //     searchParams.set("brand", query.brand.join(","));
-  //   }
-  //   if (query.price.length > 0) {
-  //     searchParams.set("price", query.price.join(","));
-  //   }
+  //   searchParams.delete(key);
   //   history.push({
   //     pathname: pathname,
   //     search: searchParams.toString(),
   //   });
   // };
 
-  // const handleChange = (e) => {
-  //   const checked = e.target.checked;
-  //   const checkedValue = e.target.value;
+  const handleChange = (e) => {
+    setFilterPrice({
+      ...filterPrice,
+      [e.target.name]: e.target.value
+    })
+  }
 
-  //   if (checked) {
-  //     setQuery({
-  //       ...query,
-  //       [e.target.name]: checkedValue,
-  //     });
-  //   }
-  // };
+  const handleSubmitPrice = () => {
+    const {begin_price, end_price} = filterPrice;
+    if(begin_price === '') {
+      addQuery('price', `0,${end_price}`)
+    } else if(end_price === '') {
+      addQuery('price', `0,${begin_price}`)
+    } else if(parseInt(begin_price) > parseInt(end_price)) {
+      addQuery('price', `${end_price},${begin_price}`)
+    } else {
+      addQuery('price', `${begin_price},${end_price}`)
+    }
+  }
 
   return (
     <>
@@ -189,182 +204,57 @@ export default function Filter(props) {
         <div className="filter__bar">
           <h3 className="category__heading">Sắp xếp</h3>
           <ul className="category-list">
-            <li className="category-item category-item__filter">
-              <label className="item  item--seller">
-                <label className="style__Checkbox">
-                  <input
-                    type="radio"
-                    name="sort"
-                    checked={sortBy === "price" && sortValue === "asc"}
-                    readOnly
-                    onClick={() => {
-                      history.push("?sort_by=price&sort_value=asc");
-                    }}
-                  />
-                  <div>
-                    <span>Giá thấp đến cao</span>
+            {list_sort.map((item, index) => {
+              return (
+                <li className="category-item category-item__filter" key={index}>
+                  <div className="item" onClick={() => {
+                    addQuery("sort_by", item.sortBy)
+                    addQuery("sort_value", item.sortValue)
+                  }}>
+                    <span className={sortBy === item.sortBy && sortValue === item.sortValue ? 'selected' : ''}>{item.label}</span>
                   </div>
-                </label>
-              </label>
-            </li>
-            <li className="category-item category-item__filter">
-              <label className="item  item--seller">
-                <label className="style__Checkbox">
-                  <input
-                    type="radio"
-                    name="sort"
-                    checked={sortBy === "price" && sortValue === "desc"}
-                    readOnly
-                    onClick={() => {
-                      history.push("?sort_by=price&sort_value=desc");
-                    }}
-                  />
-                  <div>
-                    <span>Giá cao đến thấp</span>
-                  </div>
-                </label>
-              </label>
-            </li>
-            <li className="category-item category-item__filter">
-              <label className="item  item--seller">
-                <label className="style__Checkbox">
-                  <input
-                    type="radio"
-                    name="sort"
-                    checked={sortBy === "name" && sortValue === "asc"}
-                    readOnly
-                    onClick={() => {
-                      history.push("?sort_by=name&sort_value=asc");
-                    }}
-                  />
-                  <div>
-                    <span>Tên A-Z</span>
-                  </div>
-                </label>
-              </label>
-            </li>
-            <li className="category-item category-item__filter">
-              <label className="item  item--seller">
-                <label className="style__Checkbox">
-                  <input
-                    type="radio"
-                    name="sort"
-                    checked={sortBy === "name" && sortValue === "desc"}
-                    readOnly
-                    onClick={() => {
-                      history.push("?sort_by=name&sort_value=desc");
-                    }}
-                  />
-                  <div>
-                    <span>Tên Z-A</span>
-                  </div>
-                </label>
-              </label>
-            </li>
+                </li>
+              );
+            })}
           </ul>
         </div>
         <div className="filter__bar">
           <h3 className="category__heading">Giá</h3>
           <ul className="category-list">
-            {/* <li className="category-item category-item__filter">
-              <label className="item  item--seller">
-                <label className="style__Checkbox">
-                  <input
-                    type="radio"
-                    name="price"
-                    value={""}
-                    checked={price_search === null}
-                    onChange={handleChange}
-                    onClick={() => removeQuery("price")}
-                  />
-                  <div>
-                    <span>Tất cả</span>
-                  </div>
-                </label>
-              </label>
-            </li> */}
             {list_price
               .filter((item) => item.category === category)[0]
               .prices.map((price, index) => {
                 return (
-                  <li
-                    className="category-item category-item__filter"
-                    key={index}
-                  >
-                    <label className="item  item--seller">
-                      <label className="style__Checkbox">
-                        <input
-                          type="radio"
-                          name="price"
-                          value={price.value}
-                          readOnly
-                          checked={price_search === price.value}
-                          onClick={() => addQuery("price", price.value)}
-                        />
-                        <div>
-                          <span>{price.label}</span>
-                        </div>
-                      </label>
-                    </label>
+                  <li className="category-item category-item__filter" key={index}>
+                    <div className="item" onClick={() => addQuery("price", price.value)}>
+                      <span className={price_search === price.value ? 'selected' : ''}>{price.label}</span>
+                    </div>
                   </li>
                 );
               })}
+            <li className="category-item category-item__filter category-item__filter-form">
+              <div className="price-small-text">Chọn khoảng giá</div>
+              <div className="input-group">
+                <input pattern="[0-9]*" placeholder="Giá từ" value={filterPrice.begin_price} name="begin_price" onChange={handleChange} />
+                <span>-</span>
+                <input pattern="[0-9]*" placeholder="Giá đến" value={filterPrice.end_price} name="end_price" onChange={handleChange} />
+              </div >
+              <button onClick={handleSubmitPrice}>Áp dụng</button>
+            </li>
           </ul>
         </div>
         <div className="filter__bar">
           <h3 className="category__heading">Thương Hiệu</h3>
           <ul className="category-list">
-          <li className="category-item category-item__filter">
-              <label className="item  item--seller">
-                <label className="style__Checkbox">
-                  <input
-                    type="radio"
-                    name="price"
-                    value={""}
-                    checked={brand === null || brand === ''}
-                    readOnly
-                    onClick={() => removeQuery("brand")}
-                  />
-                  <div>
-                    <span>Tất cả</span>
+            {brands.map((item, index) => {
+              return (
+                <li className="category-item category-item__filter" key={index}>
+                  <div className="item" onClick={() => addQuery("brand", item.code)}>
+                    <span className={brand === item.code ? 'selected' : ''}>{item.name}</span>
                   </div>
-                </label>
-              </label>
-            </li>
-            {brands.map((item) => (
-              <li className="category-item category-item__filter" key={item.id}>
-                <label className="item  item--seller">
-                  <label className="style__Checkbox">
-                    <input
-                      type="radio"
-                      name={item.name}
-                      value={item.code}
-                      checked={item.code === brand}
-                      readOnly
-                      // onChange={(e) => {
-                      //   if (e.target.checked) {
-                      //     setQuery({
-                      //       ...query,
-                      //       brand: [...query.brand, e.target.value],
-                      //     });
-                      //   } else {
-                      //     setQuery({
-                      //       ...query,
-                      //       brand: query.brand.filter(
-                      //         (item) => item !== e.target.value
-                      //       ),
-                      //     });
-                      //   }
-                      // }}
-                      onClick={() => {addQuery("brand", item.code)}}
-                    />
-                    <div>
-                      <span>{item.name}</span>
-                    </div>
-                  </label>
-                </label>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

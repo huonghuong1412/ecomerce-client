@@ -16,17 +16,13 @@ function ListProductPage(props) {
     const [loading, setLoading] = useState(true);
     const params = new URLSearchParams(window.location.search)
     const page = params.get('page');
-
+    const sortBy = params.get('sort_by') ? params.get('sort_by') : '';
+    const sortValue = params.get('sort_value') ? params.get('sort_value') : '';
+    const keyword = params.get('keyword') ? params.get('keyword') : '';
+    const price = params.get('price') ? params.get('price') : '';
+    const brand = params.get('brand') ? params.get('brand') : '';
     useEffect(() => {
         document.title = "Danh sách sản phẩm giá cực tốt"
-
-        const params = new URLSearchParams(window.location.search)
-        const page = params.get('page');
-        const sortBy = params.get('sort_by');
-        const sortValue = params.get('sort_value');
-        const keyword = params.get('keyword');
-        const price = params.get('price');
-        const brand = params.get('brand');
         let searchObject = {};
         searchObject.keyword = keyword ? keyword : '';
         searchObject.page = page ? parseInt(page) : 1;
@@ -53,7 +49,7 @@ function ListProductPage(props) {
                 })
                 .catch(err => console.log(err))
         }
-    }, [page, match])
+    }, [page, match, brand, keyword, sortBy, sortValue, price])
 
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);

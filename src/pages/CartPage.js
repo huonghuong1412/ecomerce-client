@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { currency } from "utils/FormatCurrency"
 import { Link, useHistory } from 'react-router-dom';
@@ -6,14 +6,16 @@ import { API_URL } from 'actions/constants/constants'
 import { deleteItemInCart, getCartInfo, getDetailCart, updateQuantityItem, checkQuantityItemInCart } from 'actions/services/CartActions'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"; import Loading from 'components/Loading/Loading';
+import useTimeout from 'hooks/useTimeout';
 ;
 
 function CartPage(props) {
 
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart.cart);
-    const isFetching = useSelector(state => state.cart.isFetching);
+    // const isFetching = useSelector(state => state.cart.isFetching);
     const history = useHistory();
+    const [loading, setLoading] = useState(true);
 
     const handleDeleteItem = (product_id) => {
         deleteItemInCart(product_id)
@@ -107,8 +109,6 @@ function CartPage(props) {
             })
     }
 
-
-
     useEffect(() => {
 
         document.title = "Giỏ hàng | Tiki"
@@ -120,6 +120,8 @@ function CartPage(props) {
         }
     }, [dispatch, props.history, token])
 
+    useTimeout(() => setLoading(false), loading ? 1000 : null);
+
     return (
         <>
             <div className="row sm-gutter section__content">
@@ -128,7 +130,7 @@ function CartPage(props) {
                         <div className="bkMhdM">
                             <h4 className="productsV2__title">Giỏ hàng</h4>
                             {
-                                isFetching ? <Loading /> : (
+                                loading ? <Loading /> : (
                                     <>
                                         {
                                             cart?.cart_details.length > 0 ? (
@@ -162,7 +164,7 @@ function CartPage(props) {
                                                                                                 <div className="col-1">
                                                                                                     <div className="intended__images false">
                                                                                                         <Link className="intended__img" to={`/san-pham/${item.product_id}/${item.slug}`}>
-                                                                                                            <img src={`${API_URL + "/images/product/" + item.mainImage}`} alt="" />
+                                                                                                            <img src={item.mainImage} alt="" />
                                                                                                         </Link>
                                                                                                         <div className="intended__content">
                                                                                                             <Link className="intended__name" to={`/san-pham/${item.product_id}/${item.slug}`}>

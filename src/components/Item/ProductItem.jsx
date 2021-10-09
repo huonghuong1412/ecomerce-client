@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { currency } from "../../utils/FormatCurrency";
-import {API_URL} from '../../actions/constants/constants'
 function ProductItem(props) {
   const { type, books, laptops, phones, products } = props;
   let productList = [];
@@ -19,18 +18,17 @@ function ProductItem(props) {
     <>
       {productList.map((item) => {
         const price = currency(item.price);
-        // const list_price = currency(item.list_price);
         return (
           <div className="col l-2 m-2 c-6" key={item.id}>
             <Link to={`/san-pham/${item.id}/${item.slug}`} className="home-product-item-link">
               <div className="home-product-item">
                 <div
                   className="home-product-item__img"
-                  style={{ backgroundImage: `url(${API_URL + "/images/product/" +  item.mainImage})` }}
+                  style={{ backgroundImage: `url(${item.mainImage})`,
+                }}
                 />
                 <h4 className="home-product-item__name">{item.name}</h4>
                 <div className="home-product-item-price">
-                  {/* <span className="home-product-item-price-old">{list_price}</span> */}
                   <span className="home-product-item-price-new">{price}</span>
                   <span className="home-product-item-seller">Đã bán {item.seller_count}</span>
                 </div>

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom'
 import { currency } from 'utils/FormatCurrency'
-import { API_URL, IMAGE_FOLDER } from 'actions/constants/constants'
 import { makePaymentVnpay } from 'actions/services/PaymentActions'
 import AddressForm from 'components/form/AddressForm';
 import { addOrder } from 'actions/services/OrderActions'
@@ -12,35 +11,57 @@ import "react-toastify/dist/ReactToastify.css";
 import { getUserLogin } from 'actions/services/UserActions';
 import Loading from 'components/Loading/Loading';
 import { getPaymentMethods } from 'actions/services/PaymentServices';
-import { getShipMethods } from 'actions/services/ShipmentServices';
-
+import { calculateShipFee } from 'actions/services/GHNServices';
+import _ from 'lodash'
+import useTimeout from 'hooks/useTimeout';
 
 function PaymentPage(props) {
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart.cart);
-    const loading = useSelector(state => state.cart.isFetching);
+    // const isFetching = useSelector(state => state.cart.isFetching);
     const [user, setUser] = useState({})
     const [type, setType] = useState(1);
-    const [shipment, setShipment] = useState({
-        code: 'noi-thanh',
-        fee: 20000
-    });
     const [openAddress, setOpenAddress] = useState(false);
     const [payMethods, setPayMethods] = useState([])
-    const [shipMethods, setShipMethods] = useState([])
+    const [shipInfo, setShipInfo] = useState({})
+    const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
 
-    const getUser = () => {
+    const getUser = useCallback(() => {
         getUserLogin()
             .then(res => {
                 setUser(res.data);
             })
             .catch(err => console.log(err))
-    }
+    }, [])
+
+    const getCalculateShipFee = useCallback(() => {
+        if (!_.isEmpty(user)) {
+            calculateShipFee({
+                from_district_id: 1542,
+                service_id: 53321,
+                service_type_id: null,
+                to_district_id: user?.district_id,
+                to_ward_code: user?.ward_id,
+                weight: cart?.weight,
+                length: cart?.length,
+                width: cart?.width,
+                height: cart?.height
+            })
+                .then((res1 => {
+                    setShipInfo(res1.data.data)
+                }))
+                .catch(err => console.log(err))
+        }
+    }, [cart?.height, cart?.length, cart?.weight, cart?.width, user])
 
     useEffect(() => {
         getUser();
-    }, [])
+    }, [getUser])
+
+    useEffect(() => {
+        getCalculateShipFee();
+    }, [getCalculateShipFee])
 
     const handleClickOpenAddress = () => {
         setOpenAddress(true);
@@ -67,14 +88,6 @@ function PaymentPage(props) {
             .catch(err => console.log(err))
     }
 
-    const getShipMethodsList = () => {
-        getShipMethods()
-            .then((res) => {
-                setShipMethods(res.data.content)
-            })
-            .catch(err => console.log(err))
-    }
-
     useEffect(() => {
 
         document.title = "Thông tin thanh toán | Tiki"
@@ -85,14 +98,15 @@ function PaymentPage(props) {
             props.history.push('/login');
         }
         getPayMethodsList();
-        getShipMethodsList();
     }, [dispatch, props.history, token])
+
+    useTimeout(() => setLoading(false), loading ? 1500 : null);
 
     const handlePayment = () => {
         let orderInfo = {}
 
-        orderInfo.vnp_OrderInfo = "Thanh toan don hang";
-        orderInfo.vnp_Amount = cart?.total_price + shipment?.fee;
+        orderInfo.vnp_OrderInfo = "thanh toan doan hang";
+        orderInfo.vnp_Amount = cart?.total_price;
 
         if (type === 2) {
             let now = new Date();
@@ -114,9 +128,8 @@ function PaymentPage(props) {
             }
 
             const order = {
-                create_time: create_time,
                 username: user.username,
-                total_price: orderInfo.vnp_Amount,
+                total_price: orderInfo.vnp_Amount + shipInfo?.total,
                 total_item: cart?.items_count,
                 order_details: order_details,
                 orderInfo: orderInfo.vnp_OrderInfo,
@@ -124,7 +137,9 @@ function PaymentPage(props) {
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
-                shipment: shipment?.code
+                ward_code: user?.ward_id,
+                district_id: user?.district_id,
+                ship_fee: shipInfo?.total
             }
 
             addOrder(order)
@@ -165,17 +180,18 @@ function PaymentPage(props) {
                 status: 0
             }
             const order = {
-                create_time: create_time,
                 username: user.username,
                 total_price: orderInfo.vnp_Amount,
                 total_item: cart?.items_count,
                 order_details: order_details,
                 orderInfo: orderInfo.vnp_OrderInfo,
                 address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
+                ward_code: user?.ward_id,
+                district_id: user?.district_id,
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
-                shipment: shipment?.code
+                ship_fee: shipInfo?.total
             }
             addOrder(order)
                 .then((res) => {
@@ -204,7 +220,7 @@ function PaymentPage(props) {
                 <div className="col l-12 m-12 c-12">
                     <div className="home-product">
                         {
-                            loading ? <Loading /> : (
+                            (loading) ? <Loading /> : (
                                 <div className="bkMhdM">
                                     {
                                         cart?.cart_details.length === 0 ? (
@@ -219,78 +235,60 @@ function PaymentPage(props) {
                                         <div className="col l-9 m-12 c-12">
                                             <div className="deellp">
                                                 <div className="kRoZux">
-                                                    <h3 className="title">1. Thông tin sản phẩm</h3>
+                                                    <h3 className="title">1. Chọn hình thức giao hàng</h3>
                                                     <div className="cDxQbC">
                                                         <div className="iLupwL">
                                                             <div className="productsV2-content">
+                                                                <div className="method-inner">
+                                                                    <div>
+                                                                        <label className="HafWE">
+                                                                            <input type="radio" readOnly name="shipping-methods" defaultValue={1} defaultChecked />
+                                                                            <span className="radio-fake" />
+                                                                            <span className="label">
+                                                                                Giao Tiết Kiệm
+                                                                            </span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
                                                                 <div className="infinite-scroll-component" style={{ height: 'auto', overflow: 'auto' }}>
-                                                                    <div className="jfwAio">
-                                                                        <div className="sellers">
-                                                                            <ul className="fhrjkV">
-                                                                                {
-                                                                                    cart?.cart_details.map((item, index) => {
-                                                                                        return (
-                                                                                            <li className="iMeYki" key={index}>
-                                                                                                <div className="row">
-                                                                                                    <div className="col-1">
-                                                                                                        <div className="intended__images false">
-                                                                                                            <Link className="intended__img" to={`/san-pham/${item.product_id}/${item.slug}`}>
-                                                                                                                <img src={`${IMAGE_FOLDER + item.mainImage}`} alt="" />
-                                                                                                            </Link>
-                                                                                                            <div className="intended__content">
-                                                                                                                <Link className="intended__name" to={`/san-pham/${item.product_id}/${item.slug}`}>
-                                                                                                                    {item.name}
-                                                                                                                </Link>
-                                                                                                                <span className="intended__not-bookcare">SL: x{item.quantity}</span>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div className="col-2">
-                                                                                                        <span className="intended__real-prices">{currency(item.price)}</span>
-                                                                                                    </div>
-                                                                                                    <div className="col-4">
-                                                                                                        <span className="intended__final-prices">{currency(item.price * item.quantity)}</span>
+                                                                    <ul className="fhrjkV">
+                                                                        {
+                                                                            cart?.cart_details.map((item, index) => {
+                                                                                return (
+                                                                                    <li className="iMeYki" key={index}>
+                                                                                        <div className="row">
+                                                                                            <div className="col-1">
+                                                                                                <div className="intended__images false">
+                                                                                                    <Link className="intended__img" to={`/san-pham/${item.product_id}/${item.slug}`}>
+                                                                                                        <img src={`${item.mainImage}`} alt="" />
+                                                                                                    </Link>
+                                                                                                    <div className="intended__content">
+                                                                                                        <Link className="intended__name" to={`/san-pham/${item.product_id}/${item.slug}`}>
+                                                                                                            {item.name}
+                                                                                                        </Link>
+                                                                                                        <span className="intended__not-bookcare">SL: x{item.quantity}</span>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                            </li>
-                                                                                        )
-                                                                                    })
-                                                                                }
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
+                                                                                            </div>
+                                                                                            <div className="col-2">
+                                                                                                <span className="intended__real-prices">{currency(item.price)}</span>
+                                                                                            </div>
+                                                                                            <div className="col-4">
+                                                                                                <span className="intended__final-prices">{currency(item.price * item.quantity)}</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </ul>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="styles__Section-sc-18qxeou-0 kRoZux">
-                                                    <h3 className="title">2. Chọn hình thức giao hàng</h3>
-                                                    <div className="dnENUJ">
-                                                        <ul className="list">
-                                                            {
-                                                                shipMethods.map((item, index) => {
-                                                                    return (
-                                                                        <li className="dWHFNX" key={index}>
-                                                                            <label className="HafWE">
-                                                                                <input type="radio" readOnly name="shipCode" onChange={(e) => setShipment(item)} value={item} required defaultChecked={item?.code === shipment?.code}/><span className="radio-fake" />
-                                                                                <span className="label">
-                                                                                    <div className="fbjKoD">
-                                                                                        <div className="method-content">
-                                                                                            <div className="method-content__name"><span>{item.name} - {currency(item.fee)}</span></div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </span>
-                                                                            </label>
-                                                                        </li>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div className="styles__Section-sc-18qxeou-0 kRoZux">
-                                                    <h3 className="title">3. Chọn hình thức thanh toán</h3>
+                                                <div className="kRoZux">
+                                                    <h3 className="title">2. Chọn hình thức thanh toán</h3>
                                                     <div className="dnENUJ">
                                                         <ul className="list">
                                                             {
@@ -301,7 +299,6 @@ function PaymentPage(props) {
                                                                                 <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(item.type)} value={item.type} defaultChecked={item?.type === type} /><span className="radio-fake" />
                                                                                 <span className="label">
                                                                                     <div className="fbjKoD">
-                                                                                        <img className="method-icon" width={32} src={`${API_URL}/images/${item.icon}`} alt="cod" />
                                                                                         <div className="method-content">
                                                                                             <div className="method-content__name"><span>{item.name}</span></div>
                                                                                         </div>
@@ -349,12 +346,12 @@ function PaymentPage(props) {
                                                                     </li>
                                                                     <li className="prices__item">
                                                                         <span className="prices__text">Phí vận chuyển</span>
-                                                                        <span className="prices__value">{currency(shipment?.fee)}</span>
+                                                                        <span className="prices__value">{currency(shipInfo?.total)}</span>
                                                                     </li>
                                                                 </ul>
                                                                 <p className="prices__total">
                                                                     <span className="prices__text">Tổng cộng</span>
-                                                                    <span className="prices__value prices__value--final">{currency(cart?.total_price + shipment?.fee)}
+                                                                    <span className="prices__value prices__value--final">{currency(cart?.total_price + shipInfo?.total)}
                                                                         <i>(Đã bao gồm VAT nếu có)</i>
                                                                     </span>
                                                                 </p>
@@ -371,7 +368,9 @@ function PaymentPage(props) {
                     </div>
                 </div>
             </div>
-            <AddressForm open={openAddress} onClose={handleCloseAddress} />
+           {
+               openAddress ?  <AddressForm open={openAddress} onClose={handleCloseAddress} /> : ''
+           }
         </>
     )
 }

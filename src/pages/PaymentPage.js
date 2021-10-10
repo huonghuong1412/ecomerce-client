@@ -39,7 +39,7 @@ function PaymentPage(props) {
         if (!_.isEmpty(user)) {
             calculateShipFee({
                 from_district_id: 1542,
-                service_id: 53321,
+                service_id: 53320,
                 service_type_id: null,
                 to_district_id: user?.district_id,
                 to_ward_code: user?.ward_id,
@@ -100,13 +100,28 @@ function PaymentPage(props) {
         getPayMethodsList();
     }, [dispatch, props.history, token])
 
+    const calculateShipFeeIfTotalMorethan3Mil = (total) => {
+        let fee = shipInfo.total;
+        if(total < 3000000) {
+            fee += 0;
+        } else {
+            fee += 0.005*total;
+        }
+        return fee;
+    }
+
+    const calculateTotalOrder = (total) => {
+        let fee = calculateShipFeeIfTotalMorethan3Mil(total);
+        return fee + total;
+    }
+
     useTimeout(() => setLoading(false), loading ? 1500 : null);
 
     const handlePayment = () => {
         let orderInfo = {}
 
         orderInfo.vnp_OrderInfo = "thanh toan doan hang";
-        orderInfo.vnp_Amount = cart?.total_price;
+        orderInfo.vnp_Amount = calculateTotalOrder(cart?.total_price);
 
         if (type === 2) {
             let now = new Date();
@@ -129,7 +144,7 @@ function PaymentPage(props) {
 
             const order = {
                 username: user.username,
-                total_price: orderInfo.vnp_Amount + shipInfo?.total,
+                total_price: orderInfo.vnp_Amount,
                 total_item: cart?.items_count,
                 order_details: order_details,
                 orderInfo: orderInfo.vnp_OrderInfo,
@@ -139,9 +154,8 @@ function PaymentPage(props) {
                 name: user.fullName,
                 ward_code: user?.ward_id,
                 district_id: user?.district_id,
-                ship_fee: shipInfo?.total
+                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price)
             }
-
             addOrder(order)
                 .then((res) => {
                     localStorage.setItem('order_id', res.data.id);
@@ -191,7 +205,7 @@ function PaymentPage(props) {
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
-                ship_fee: shipInfo?.total
+                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price)
             }
             addOrder(order)
                 .then((res) => {
@@ -344,14 +358,24 @@ function PaymentPage(props) {
                                                                         <span className="prices__text">Tạm tính</span>
                                                                         <span className="prices__value">{currency(cart?.total_price)}</span>
                                                                     </li>
+                                                                    {/* <li className="prices__item">
+                                                                        <span className="prices__text">Phí vận chuyển</span>
+                                                                        <span className="prices__value">{currency(cart?.total_price <= 3000000 ? shipInfo?.total : shipInfo?.total + 0.005*cart?.total_price)}</span>
+                                                                    </li> */}
                                                                     <li className="prices__item">
                                                                         <span className="prices__text">Phí vận chuyển</span>
-                                                                        <span className="prices__value">{currency(shipInfo?.total)}</span>
+                                                                        <span className="prices__value">{currency(calculateShipFeeIfTotalMorethan3Mil(cart?.total_price))}</span>
                                                                     </li>
                                                                 </ul>
-                                                                <p className="prices__total">
+                                                                {/* <p className="prices__total">
                                                                     <span className="prices__text">Tổng cộng</span>
                                                                     <span className="prices__value prices__value--final">{currency(cart?.total_price + shipInfo?.total)}
+                                                                        <i>(Đã bao gồm VAT nếu có)</i>
+                                                                    </span>
+                                                                </p> */}
+                                                                <p className="prices__total">
+                                                                    <span className="prices__text">Tổng cộng</span>
+                                                                    <span className="prices__value prices__value--final">{currency(calculateTotalOrder(cart?.total_price))}
                                                                         <i>(Đã bao gồm VAT nếu có)</i>
                                                                     </span>
                                                                 </p>

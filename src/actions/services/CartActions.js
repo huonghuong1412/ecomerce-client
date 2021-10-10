@@ -8,6 +8,27 @@ import {
 import axios from 'axios'
 const token = localStorage.getItem('token');
 const headers = { Authorization: `Bearer ${token}` }
+// axios.defaults.headers.get['Authorization'] = `Bearer ${token}` // for POST requests
+
+// const axiosInstance = axios.create({
+//     baseURL: API_URL,
+//     headers: {
+//         Authorization: {
+//             toString() {
+//                 return `Bearer ${localStorage.getItem('token')}`
+//             }
+//         }
+//     }
+// })
+
+// axiosInstance.interceptors.request.use(
+//     function (config) {
+//         if(config.headers.Authorization.toString().length < 50) {
+//             delete config.headers.Authorization;
+//         }
+//         return config;
+//     }
+// )
 
 // get thông tin chi tiết giỏ hàng
 export const getDetailCart = () => {

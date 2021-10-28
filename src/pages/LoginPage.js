@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Grid, makeStyles } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { login } from 'actions/services/UserActions';
 import { useEffect } from 'react';
 
@@ -16,6 +16,7 @@ export default function LoginPage(props) {
 
     const dispatch = useDispatch();
     const classes = useStyles();
+    const history = useHistory();
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -36,7 +37,8 @@ export default function LoginPage(props) {
             username,
             password
         }
-        dispatch(login(data, props.history));
+        dispatch(login(data, history));
+        // dispatch(login(data));
     }
     return (
         <>

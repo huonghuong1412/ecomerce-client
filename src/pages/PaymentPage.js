@@ -15,6 +15,17 @@ import { calculateShipFee } from 'actions/services/GHNServices';
 import _ from 'lodash'
 import useTimeout from 'hooks/useTimeout';
 
+const shipmethods = [
+    {
+        type: 1,
+        name: 'Giao hàng nhanh'
+    },
+    {
+        type: 2,
+        name: "Giao hàng tiết kiệm"
+    }
+]
+
 function PaymentPage(props) {
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart.cart);
@@ -26,6 +37,7 @@ function PaymentPage(props) {
     const [shipInfo, setShipInfo] = useState({})
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
+    const [shipType, setShipType] = useState(1);
 
     const getUser = useCallback(() => {
         getUserLogin()
@@ -39,7 +51,7 @@ function PaymentPage(props) {
         if (!_.isEmpty(user)) {
             calculateShipFee({
                 from_district_id: 1542,
-                service_id: 53320,
+                service_id: shipType === 1 ? 53320 : 53321,
                 service_type_id: null,
                 to_district_id: user?.district_id,
                 to_ward_code: user?.ward_id,
@@ -53,7 +65,7 @@ function PaymentPage(props) {
                 }))
                 .catch(err => console.log(err))
         }
-    }, [cart?.height, cart?.length, cart?.weight, cart?.width, user])
+    }, [cart?.height, cart?.length, cart?.weight, cart?.width, shipType, user])
 
     useEffect(() => {
         getUser();
@@ -102,10 +114,10 @@ function PaymentPage(props) {
 
     const calculateShipFeeIfTotalMorethan3Mil = (total) => {
         let fee = shipInfo.total;
-        if(total < 3000000) {
+        if (total < 3000000) {
             fee += 0;
         } else {
-            fee += 0.005*total;
+            fee += 0.005 * total;
         }
         return fee;
     }
@@ -129,6 +141,7 @@ function PaymentPage(props) {
             const order_details = cart?.cart_details.map(item => {
                 return {
                     product_id: item.product_id,
+                    color: item.color,
                     amount: item.quantity,
                     price: item.price,
                     total_price: item.price * item.quantity
@@ -154,7 +167,8 @@ function PaymentPage(props) {
                 name: user.fullName,
                 ward_code: user?.ward_id,
                 district_id: user?.district_id,
-                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price)
+                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price),
+                ship_type: shipType
             }
             addOrder(order)
                 .then((res) => {
@@ -181,6 +195,7 @@ function PaymentPage(props) {
             const order_details = cart?.cart_details.map(item => {
                 return {
                     product_id: item.product_id,
+                    color: item.color,
                     amount: item.quantity,
                     price: item.price,
                     total_price: item.price * item.quantity
@@ -205,7 +220,8 @@ function PaymentPage(props) {
                 payment: payment,
                 phone: user.phone,
                 name: user.fullName,
-                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price)
+                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price),
+                ship_type: shipType
             }
             addOrder(order)
                 .then((res) => {
@@ -249,21 +265,10 @@ function PaymentPage(props) {
                                         <div className="col l-9 m-12 c-12">
                                             <div className="deellp">
                                                 <div className="kRoZux">
-                                                    <h3 className="title">1. Chọn hình thức giao hàng</h3>
+                                                    <h3 className="title">1. Thông tin sản phẩm</h3>
                                                     <div className="cDxQbC">
                                                         <div className="iLupwL">
                                                             <div className="productsV2-content">
-                                                                <div className="method-inner">
-                                                                    <div>
-                                                                        <label className="HafWE">
-                                                                            <input type="radio" readOnly name="shipping-methods" defaultValue={1} defaultChecked />
-                                                                            <span className="radio-fake" />
-                                                                            <span className="label">
-                                                                                Giao Tiết Kiệm
-                                                                            </span>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
                                                                 <div className="infinite-scroll-component" style={{ height: 'auto', overflow: 'auto' }}>
                                                                     <ul className="fhrjkV">
                                                                         {
@@ -302,7 +307,32 @@ function PaymentPage(props) {
                                                     </div>
                                                 </div>
                                                 <div className="kRoZux">
-                                                    <h3 className="title">2. Chọn hình thức thanh toán</h3>
+                                                    <h3 className="title">2. Chọn hình thức giao hàng</h3>
+                                                    <div className="dnENUJ">
+                                                        <ul className="list">
+                                                            {
+                                                                shipmethods.map((item, index) => {
+                                                                    return (
+                                                                        <li className="dWHFNX" key={index}>
+                                                                            <label className="HafWE">
+                                                                                <input type="radio" readOnly name="ship-methods" onChange={(e) => setShipType(item.type)} value={item.type} defaultChecked={item?.type === type} /><span className="radio-fake" />
+                                                                                <span className="label">
+                                                                                    <div className="fbjKoD">
+                                                                                        <div className="method-content">
+                                                                                            <div className="method-content__name"><span>{item.name}</span></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </span>
+                                                                            </label>
+                                                                        </li>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div className="kRoZux">
+                                                    <h3 className="title">3. Chọn hình thức thanh toán</h3>
                                                     <div className="dnENUJ">
                                                         <ul className="list">
                                                             {
@@ -392,9 +422,9 @@ function PaymentPage(props) {
                     </div>
                 </div>
             </div>
-           {
-               openAddress ?  <AddressForm open={openAddress} onClose={handleCloseAddress} /> : ''
-           }
+            {
+                openAddress ? <AddressForm open={openAddress} onClose={handleCloseAddress} /> : ''
+            }
         </>
     )
 }

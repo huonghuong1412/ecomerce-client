@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { currency } from "utils/FormatCurrency"
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
 import { getCurrentUser } from 'actions/services/UserActions'
 import { getAllProductByBrand, getOneItem } from 'actions/services/ProductServices'
@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 function DetailProduct(props) {
 
     const dispatch = useDispatch();
+    const history = useHistory();
     const { match } = props;
 
     const [product, setProduct] = useState({});
@@ -33,6 +34,8 @@ function DetailProduct(props) {
     const [comments, setComments] = useState([]);
     const username = localStorage.getItem('username')
     const user = useSelector(state => state.auth.auth);
+    const params = new URLSearchParams(window.location.search)
+    const color = params.get('color') ? params.get('color') : '';
 
     const getUser = useCallback(() => {
         dispatch(getCurrentUser())
@@ -49,9 +52,20 @@ function DetailProduct(props) {
         images[index].className = "active";
     };
 
+    const addQuery = (key, value) => {
+        let pathname = window.location.pathname;
+        let searchParams = new URLSearchParams(window.location.search);
+        searchParams.set(key, value);
+        history.push({
+          pathname: pathname,
+          search: searchParams.toString(),
+        });
+      };
+
     useEffect(() => {
         const id = match.params.id;
-        getOneItem(id)
+        
+        getOneItem(id, color)
             .then((res) => {
                 setProduct(res.data);
             })
@@ -71,7 +85,7 @@ function DetailProduct(props) {
                 .catch(() => setProductLiked(false))
         }
 
-    }, [match.params.id, username])
+    }, [color, match.params.id, username])
 
     useEffect(() => {
         if (myRef.current) {
@@ -103,13 +117,14 @@ function DetailProduct(props) {
             const data = {
                 cart_details: [{
                     product_id: product?.id,
-                    quantity
+                    quantity,
+                    color: color
                 }]
             }
             if (product?.in_stock > 0 && quantity <= product?.in_stock) {
                 addProductToCart(data)
                     .then((res) => {
-                        toast.info(res.data.message, {
+                        toast.info(res.message, {
                             position: "bottom-center",
                             theme: 'dark',
                             autoClose: 2000,
@@ -295,6 +310,32 @@ function DetailProduct(props) {
                                                     </div>
                                                 ) : ''
                                             }
+                                            <div className="product_pick_color">
+                                                <div className="prco_label">
+                                                    Có <strong>{product?.inventories.length} Màu sắc</strong>.
+                                                    Bạn đang chọn <strong>{color ? color : product?.inventories[0].color}</strong></div>
+                                                <div className="color color_cover">
+                                                    {
+                                                        product?.inventories.map((item, index) => {
+                                                            return (
+                                                                <button
+                                                                    key={index}
+                                                                    className={`opt-var opt-var-97020 ${color === item.color || product?.inventories.length === 1 || index === 0 ? 'active': ''}`}
+                                                                    title={item.color}
+                                                                    onClick={() => addQuery('color', item.color)}
+                                                                >
+                                                                    <span>{item.color}</span>
+                                                                    <input
+                                                                        type="hidden" />
+                                                                    <span className="prv-price">
+                                                                        <span>{currency(product?.price)}</span>
+                                                                    </span>
+                                                                </button>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                            </div>
                                             <div id="info-1" className="collapse in">
                                                 <div className="input-label">
                                                     <span>Số lượng</span>
@@ -364,42 +405,14 @@ function DetailProduct(props) {
                                                         <td>{product.brand?.madeIn}</td>
                                                     </tr>
                                                     {
-                                                        product.type === 1 ? (
-                                                            <>
-                                                                <tr>
-                                                                    <td>Công ty phát hành</td>
-                                                                    <td>{product?.brand.name}</td>
+                                                        product.product_specs.map((item, index) => {
+                                                            return (
+                                                                <tr key={index}>
+                                                                    <td>{item.attributeName}</td>
+                                                                    <td>{item.attributeValue}</td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td>Tác giả</td>
-                                                                    <td>
-                                                                        {product.authors.map((item) =>
-                                                                            <span key={item.code}>{item.name}&nbsp;&nbsp;</span>
-                                                                        )}
-                                                                    </td>
-                                                                </tr>
-                                                                {product.product_specs.map((item, index) => {
-                                                                    return (
-                                                                        <tr key={index}>
-                                                                            <td>{item.attributeName}</td>
-                                                                            <td>{item.attributeValue}</td>
-                                                                        </tr>
-                                                                    )
-                                                                })}
-                                                            </>
-                                                        ) : <tr></tr>
-                                                    }
-                                                    {
-                                                        product.type === 2 ? (
-                                                            product.product_specs.map((item, index) => {
-                                                                return (
-                                                                    <tr key={index}>
-                                                                        <td>{item.attributeName}</td>
-                                                                        <td>{item.attributeValue}</td>
-                                                                    </tr>
-                                                                )
-                                                            })
-                                                        ) : <tr></tr>
+                                                            )
+                                                        })
                                                     }
                                                 </tbody>
                                             </table>
@@ -491,7 +504,7 @@ function DetailProduct(props) {
                         </div>
                     </div>
                 </div>
-            ) : <DetailProductSkeleton product={product} />
+            ) : <DetailProductSkeleton />
             }
         </>
     )

@@ -6,9 +6,11 @@ import * as services from 'actions/services/ProductServices'
 import useTimeout from 'hooks/useTimeout'
 import ProductItem from 'components/Item/ProductItem'
 import ProductItemSkeleton from 'components/Item/ProductItemSkeleton'
+import ProductTopSale from 'components/Item/ProductTopSale'
 
 function HomePage(props) {
     const [products, setProducts] = useState([]);
+    const [topSale, setTopSale] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
 
@@ -31,9 +33,18 @@ function HomePage(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page])
 
+    const getTopSaleProduct = () => {
+        services.topSaleProduct()
+            .then(res => {
+                setTopSale(res.data.content);
+            })
+            .catch(err => console.log(err))
+    }
+
     useEffect(() => {
         document.title = "Mua hàng online giá tốt, hàng chuẩn, ship nhanh"
         getNewData();
+        getTopSaleProduct();
     }, [getNewData])
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
@@ -44,6 +55,22 @@ function HomePage(props) {
             <Promotion />
             <Category />
             <div className="row sm-gutter section__content">
+                <div className="col l-12 m-12 c-12">
+                    <div className="home-product">
+                        <div className="row sm-gutter section__item">
+                            <div className="col l-12 m-12 c-12">
+                                <div className="home-product-category-item">
+                                    <h3 className="home-product-title">
+                                        Sản phẩm bán chạy nhất
+                                    </h3>
+                                </div>
+                            </div>
+                            {
+                                loading ? <ProductItemSkeleton total={products.length} /> : <ProductTopSale products={topSale} />
+                            }
+                        </div>
+                    </div>
+                </div>
                 <div className="col l-12 m-12 c-12">
                     <div className="home-product">
                         <div className="row sm-gutter section__item">

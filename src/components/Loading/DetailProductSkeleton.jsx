@@ -2,7 +2,6 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 
 function DetailProductSkeleton(props) {
-  const { product } = props;
   return (
     <div className="row sm-gutter section__content">
       <div className="breadcrumb">
@@ -52,30 +51,10 @@ function DetailProductSkeleton(props) {
                 <div className="content has-table">
                   <table>
                     <tbody>
-                      {/* <Skeleton duration={2} /> */}
-                      {product.type === 1 ? (
-                        <>
-                          <tr>
-                            <td>
-                              <Skeleton duration={1} />
-                            </td>
-                            <td>
-                              <Skeleton duration={1} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <Skeleton duration={1} />
-                            </td>
-                            <td>
-                              {product.authors.map((item) => (
-                                <span key={item.code}>
-                                  <Skeleton duration={1} />
-                                </span>
-                              ))}
-                            </td>
-                          </tr>
-                          {product.product_specs.map((item, index) => {
+                      {
+                        Array(10)
+                          .fill()
+                          .map((item, index) => {
                             return (
                               <tr key={index}>
                                 <td>
@@ -87,26 +66,6 @@ function DetailProductSkeleton(props) {
                               </tr>
                             );
                           })}
-                        </>
-                      ) : (
-                        <tr></tr>
-                      )}
-                      {product.type === 2 ? (
-                        product.product_specs.map((item, index) => {
-                          return (
-                            <tr key={index}>
-                              <td>
-                                <Skeleton duration={1} />
-                              </td>
-                              <td>
-                                <Skeleton duration={1} />
-                              </td>
-                            </tr>
-                          );
-                        })
-                      ) : (
-                        <tr></tr>
-                      )}
                     </tbody>
                   </table>
                 </div>
@@ -129,7 +88,7 @@ function DetailProductSkeleton(props) {
           </div>
         </div>
       </div>
-      <Skeleton duration={1} style={{height: '100vh', width: 200}} />
+      <Skeleton duration={1} style={{ height: '100vh', width: 200 }} />
     </div>
   );
 }

@@ -11,7 +11,7 @@
     -ms-touch-action: pan-y;
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
-    height: 300px;
+    height: 450px;
 }
 
 .slick-list {
@@ -20,7 +20,7 @@
     overflow: hidden;
     margin: 0;
     padding: 0;
-    height: 300px;
+    height: 450px;
 }
 
 .slick-list:focus {
@@ -107,13 +107,13 @@
 
 .slick-slider {
     width: 100%;
-    height: 300px;
+    height: 450px;
 }
 
 
 .features-slide {
 	padding-top: 0;
-	height: 300px;
+	height: 450px;
 	width: 100%;
 	position: relative
 }
@@ -121,15 +121,15 @@
 .features-slide-item {
 	background-color: transparent;
 	min-width: 100%;
-	height: 300px;
+	height: 450px;
 	transition: all .3s ease;
 	position: relative
 }
 
 .features-slide-img {
-    height: 300px;
+    height: 450px;
     width: 100%;
-    object-fit: cover;
+    object-fit: contain
 }
 
 .slick-prev {

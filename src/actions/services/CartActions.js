@@ -5,44 +5,25 @@ import {
 import {
     API_URL
 } from '../constants/constants'
-import axios from 'axios'
-const token = localStorage.getItem('token');
-const headers = { Authorization: `Bearer ${token}` }
-// axios.defaults.headers.get['Authorization'] = `Bearer ${token}` // for POST requests
+import axiosClient from 'actions/constants/axiosClient';
+// import axios from 'axios'
+// const token = localStorage.getItem('token');
+// const headers = { Authorization: `Bearer ${token}` }
 
-// const axiosInstance = axios.create({
-//     baseURL: API_URL,
-//     headers: {
-//         Authorization: {
-//             toString() {
-//                 return `Bearer ${localStorage.getItem('token')}`
-//             }
-//         }
-//     }
-// })
-
-// axiosInstance.interceptors.request.use(
-//     function (config) {
-//         if(config.headers.Authorization.toString().length < 50) {
-//             delete config.headers.Authorization;
-//         }
-//         return config;
-//     }
-// )
 
 // get thông tin chi tiết giỏ hàng
 export const getDetailCart = () => {
     return dispatch => {
-        axios({
+        axiosClient({
             method: 'GET',
             url: `${API_URL}/api/carts/mine/items`,
-            headers: headers,
+            // headers: headers,
         })
             .then((res) => {
                 getCartInfo();
                 dispatch({
                     type: GET_ALL_ITEM_IN_CART,
-                    payload: res.data
+                    payload: res
                 })
             })
             .catch(err => console.log(err))
@@ -53,15 +34,15 @@ export const getDetailCart = () => {
 // get thông tin giỏ hàng (số lượng sản phẩm, status, số lượng item)
 export const getCartInfo = () => {
     return dispatch => {
-        axios({
+        axiosClient({
             method: 'GET',
             url: `${API_URL}/api/carts/mine/info`,
-            headers: headers,
+            // headers: headers,
         })
             .then((res) => {
                 dispatch({
                     type: GET_CART_INFO,
-                    payload: res.data
+                    payload: res
                 })
             })
             .catch(err => console.log(err))
@@ -71,9 +52,9 @@ export const getCartInfo = () => {
 
 // thêm sản phẩm vào giỏ hàng
 export const addProductToCart = (data) => {
-    return axios({
+    return axiosClient({
         method: "POST",
-        headers: headers,
+        // headers: headers,
         url: `${API_URL}/api/carts/mine/items`,
         data: data,
     })
@@ -82,9 +63,9 @@ export const addProductToCart = (data) => {
 
 // sửa số lượng sản phẩm trong giỏ hàng
 export const updateQuantityItem = (data) => {
-    return axios({
+    return axiosClient({
         method: "PUT",
-        headers: headers,
+        // headers: headers,
         url: `${API_URL}/api/carts/mine/items/update`,
         data: data,
     })
@@ -92,9 +73,9 @@ export const updateQuantityItem = (data) => {
 
 // xoá sản phẩm trong giỏ hàng
 export const deleteItemInCart = (data) => {
-    return axios({
+    return axiosClient({
         method: "DELETE",
-        headers: headers,
+        // headers: headers,
         url: `${API_URL}/api/carts/mine/items/remove?product_id=${data}`,
         data: data,
     })
@@ -102,19 +83,19 @@ export const deleteItemInCart = (data) => {
 
 // kiểm tra số lượng trước khi đặt hàng
 export const checkQuantityItemInCart = (data) => {
-    return axios({
+    return axiosClient({
         method: 'POST',
         url: `${API_URL}/api/carts/mine/items/check_quantity`,
         data: data,
-        headers: headers,
+        // headers: headers,
     })
 }
 
 
 export const completeCart = () => {
-    return axios({
+    return axiosClient({
         method: "DELETE",
-        headers: headers,
+        // headers: headers,
         url: `${API_URL}/api/carts/mine/items/remove_all`,
     })
 }

@@ -60,6 +60,7 @@ export const getErrors = (errors) => {
 }
 
 export const login = (user, history) => {
+// export const login = (user) => {
     const { username, password } = user;
     return dispatch => {
         axios({
@@ -68,23 +69,25 @@ export const login = (user, history) => {
             data: { username, password }
         })
             .then((res) => {
-                toast.success('Đăng nhập thành công!', {
-                    position: "bottom-center",
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+                // toast.success('Đăng nhập thành công!', {
+                //     position: "bottom-center",
+                //     autoClose: 1500,
+                //     hideProgressBar: false,
+                //     closeOnClick: true,
+                //     pauseOnHover: true,
+                //     draggable: true,
+                //     progress: undefined,
+                // });
                 const token = res.data.token;
                 const username = res.data.username;
                 localStorage.setItem('token', token);
                 localStorage.setItem('username', username);
                 const decoded = jwtDecode(token);
                 dispatch(setCurrentUser(decoded));
-                dispatch(getCartInfo())
+                dispatch(getCartInfo());
                 history.goBack();
+                // history.push('/')
+                // window.location.href = "/"
             })
             .catch(err => {
                 toast.error('Tài khoản hoặc mật khẩu không chính xác!', {
@@ -165,6 +168,7 @@ export const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         dispatch(setCurrentUser({}));
+        window.location.reload();
         setHeader();
     }
 }

@@ -14,12 +14,18 @@ export const getProductList = (searchObject) => {
     return axios.get(`${API_URL}/api/product/search?page=${searchObject.page}&keyword=${searchObject.keyword}`)
 }
 
+// ds san pham ban chay
+export const topSaleProduct = () => {
+    return axios.get(`${API_URL}/api/product/top_sale`)
+}
+
+
 export const getProductByCategory = (searchObject) => {
     return axios.get(`${API_URL}/api/product/danh-muc/${searchObject.category}?page=${searchObject.page}&keyword=${searchObject.keyword}`)
 }
 
-export const getOneItem = (id) => {
-    return axios.get(`${API_URL}/api/product/san-pham/${id}`);
+export const getOneItem = (id, color) => {
+    return axios.get(`${API_URL}/api/product/san-pham/${id}?color=${color}`);
 }
 
 

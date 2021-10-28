@@ -19,20 +19,20 @@ function NextButton({ onClick }) {
 export default function Slide() {
   const slideItems = [
     {
-      img: "https://cdn.tgdd.vn/bachhoaxanh/banners/2505/laupro-2-28062021133311.jpg",
-      link: "/quan-ao",
+      img: "https://salt.tikicdn.com/cache/w1080/ts/banner/46/8d/a5/9e1b5189721b5d7d907d779c562b97b6.png",
+      link: "/laptop",
     },
     {
       img: "https://salt.tikicdn.com/ts/banner/9b/8b/a0/ff13d673e466f0a53ec335c392feda2e.png",
       link: "/sach",
     },
     {
-      img: "https://salt.tikicdn.com/cache/w824/ts/banner/51/a5/d4/8412280f9df1a15fcbf699e2357e7dc3.png.jpg",
-      link: "/sach",
+      img: "https://salt.tikicdn.com/cache/w1080/ts/banner/31/f0/7e/14e65836534912005bc59307661335e9.png",
+      link: "/dien-thoai",
     },
     {
       img: "https://salt.tikicdn.com/cache/w824/ts/banner/51/a5/d4/8412280f9df1a15fcbf699e2357e7dc3.png.jpg",
-      link: "/sach",
+      link: "/may-tinh-bang",
     },
   ];
 

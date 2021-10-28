@@ -20,7 +20,7 @@ function CartPage(props) {
     const handleDeleteItem = (product_id) => {
         deleteItemInCart(product_id)
             .then((res) => {
-                toast.info(res.data.message, {
+                toast.info(res.message, {
                     position: "bottom-center",
                     theme: 'dark',
                     autoClose: 2000,
@@ -48,8 +48,8 @@ function CartPage(props) {
         // dispatch(updateQuantityItem(data))
         updateQuantityItem(data)
             .then((res) => {
-                if(res.data.message !== "SUCCESS") {
-                    toast.info(res.data.message, {
+                if(res.message !== "SUCCESS") {
+                    toast.info(res.message, {
                         position: "bottom-center",
                         theme: 'dark',
                         autoClose: 2000,
@@ -64,7 +64,7 @@ function CartPage(props) {
                 dispatch(getDetailCart());
             })
             .catch((err) => {
-                toast.warning(err.response.data.message, {
+                toast.warning(err, {
                     position: "bottom-center",
                     theme: 'dark',
                     autoClose: 2000,
@@ -82,10 +82,10 @@ function CartPage(props) {
     const checkQuantity = () => {
         checkQuantityItemInCart(cart)
             .then((res) => {
-                if (res.data.message === "SUCCESS") {
+                if (res.message === "SUCCESS") {
                     history.push("/checkout/payment")
                 } else {
-                    toast.info(res.data.message, {
+                    toast.info(res.message, {
                         position: "bottom-center",
                         autoClose: 2000,
                         hideProgressBar: false,

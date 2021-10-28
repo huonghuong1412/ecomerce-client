@@ -7,23 +7,61 @@ import "./style.css";
 
 const list_price = [
   {
-    category: "sach",
+    category: "may-anh",
     prices: [
       {
-        label: "Dưới 50.000",
-        value: "0,50000",
+        label: "Dưới 800.000",
+        value: "0,800000",
       },
       {
-        label: "Từ 50.000 - 120.000",
-        value: "50000,120000",
+        label: "Từ 800.000 - 4.000.000",
+        value: "800000,4000000",
       },
       {
-        label: "Từ 120.000 - 300.000",
-        value: "120000,300000",
+        label: "Trên 4.000.000",
+        value: "4000000,10000000000",
+      },
+    ],
+  },
+  {
+    category: "tivi",
+    prices: [
+      {
+        label: "Dưới 10.000.000",
+        value: "0,10000000",
       },
       {
-        label: "Trên 300.000",
-        value: "300000,10000000000",
+        label: "Từ 10.000.000 - 15.000.000",
+        value: "10000000,15000000",
+      },
+      {
+        label: "Từ 15.000.000 - 25.000.000",
+        value: "15000000,25000000",
+      },
+      {
+        label: "Trên 25.000.000",
+        value: "25000000,10000000000",
+      },
+    ],
+  },
+  {
+    category: "may-giat",
+    prices: [
+      {
+        label: "Dưới 6.000.000",
+        value: "0,6000000",
+      },
+      {
+        label: "Từ 6.000.000 - 10.000.000",
+        value: "6000000,10000000",
+      },
+      {
+        label: "Từ 10.000.000 - 16.000.000",
+        value: "10000000,16000000",
+      },
+      {
+        label: "Trên 16.000.000",
+        value: "14000000,10000000000",
       },
     ],
   },
@@ -61,7 +99,7 @@ const list_price = [
       },
       {
         label: "Từ 5.000.000 - 20.000.000",
-        value: "8000000,20000000",
+        value: "5000000,20000000",
       },
       {
         label: "Trên 20.000.000",
@@ -70,23 +108,23 @@ const list_price = [
     ],
   },
   {
-    category: "bach-hoa",
+    category: "may-tinh-bang",
     prices: [
       {
-        label: "Dưới 40.000",
-        value: "0,40000",
+        label: "Dưới 1.000.000",
+        value: "0,1000000",
       },
       {
-        label: "Từ 40.000 - 140.000",
-        value: "40000,140000",
+        label: "Từ 1.000.000 - 5.000.000",
+        value: "1000000,5000000",
       },
       {
-        label: "Từ 140.000 - 420.000",
-        value: "140000,420000",
+        label: "Từ 5.000.000 - 20.000.000",
+        value: "5000000,20000000",
       },
       {
-        label: "Trên 420.000",
-        value: "420000,10000000000",
+        label: "Trên 20.000.000",
+        value: "20000000,10000000000",
       },
     ],
   },
@@ -137,7 +175,7 @@ export default function Filter(props) {
       .then((res) => setSubcategories(res.data))
       .catch(() => setSubcategories({}));
     getAllBrandByCategoryCode(category)
-      .then((res) => setBrands(res.data.content))
+      .then((res) => setBrands(res.data))
       .catch((err) => console.log(err));
   }, [category, sortBy, sortValue, price_search, brand]);
 

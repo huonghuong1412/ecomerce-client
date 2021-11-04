@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { updateStatusPayment, checkTradingCode } from 'actions/services/OrderActions'
+import { updateStatusPayment, checkTradingCode, getDetailOrderByIdAfterPayment, updateStatusSendMail } from 'actions/services/OrderActions'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
+import { sendMail } from 'actions/services/SendMailService';
 
 function ResultOrderPage(props) {
     const params = new URLSearchParams(window.location.search)
@@ -63,6 +64,32 @@ function ResultOrderPage(props) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        getDetailOrderByIdAfterPayment(order_id)
+            .then(res => {
+                if (res.data.send_status === 0) {
+                    const data = {
+                        to: res.data.email,
+                        from: "huonghuongnewton@gmail.com",
+                        subject: `Xác nhận đơn hàng #${res.data.id}`,
+                        id: res.data.id,
+                        order: res.data
+                    }
+                    return sendMail(data)
+                } else {
+                    return;
+                }
+            })
+            .then(result => {
+                if(result.data.message) {
+                    return updateStatusSendMail(result.data.message)
+                } else {
+                    return;
+                }
+            })
+            .catch(err => console.log(err))
+    }, [order_id])
 
     return (
         <>

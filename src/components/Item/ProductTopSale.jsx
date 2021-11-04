@@ -9,8 +9,8 @@ function ProductTopSale(props) {
             {products.map((item) => {
                 const price = currency(item.price);
                 return (
-                    <div className="col l-2 m-2 c-6" key={item.id}>
-                        <Link to={`/san-pham/${item.id}/${item.slug}`} className="home-product-item-link">
+                    <div className="col l-2 m-2 c-6" key={item.slug}>
+                        <Link to={`/san-pham/${item.product_id}/${item.slug}`} className="home-product-item-link">
                             <div className="home-product-item">
                                 <div
                                     className="home-product-item__img"

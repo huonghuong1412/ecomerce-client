@@ -120,7 +120,6 @@ function CustomerPassword(props) {
                                                 <Grid item sm={12} xs={12}>
                                                     <TextValidator
                                                         className="input-text"
-
                                                         type="password"
                                                         name="password"
                                                         value={user?.password}
@@ -139,7 +138,6 @@ function CustomerPassword(props) {
                                                 <Grid item sm={12} xs={12}>
                                                     <TextValidator
                                                         className="input-text"
-
                                                         type="password"
                                                         name="passwordNew"
                                                         value={user?.passwordNew}
@@ -157,7 +155,6 @@ function CustomerPassword(props) {
                                                 <Grid item sm={12} xs={12}>
                                                     <TextValidator
                                                         className="input-text"
-
                                                         type="password"
                                                         name="passwordNewConfirm"
                                                         value={user?.passwordNewConfirm}

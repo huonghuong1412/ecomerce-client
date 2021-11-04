@@ -157,6 +157,8 @@ function PaymentPage(props) {
 
             const order = {
                 username: user.username,
+                email: user.email,
+                customer_name: user?.fullName,
                 total_price: orderInfo.vnp_Amount,
                 total_item: cart?.items_count,
                 order_details: order_details,
@@ -210,6 +212,8 @@ function PaymentPage(props) {
             }
             const order = {
                 username: user.username,
+                email: user.email,
+                customer_name: user?.fullName,
                 total_price: orderInfo.vnp_Amount,
                 total_item: cart?.items_count,
                 order_details: order_details,

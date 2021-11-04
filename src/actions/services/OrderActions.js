@@ -37,6 +37,14 @@ export const getDetailOrderById = (id) => {
     })
 }
 
+export const getDetailOrderByIdAfterPayment = (id) => {
+    return axios({
+        method: 'GET',
+        url: `${API_URL}/api/order/chi-tiet/${id}`,
+        headers: headers,
+    })
+}
+
 export const cancelOrder = (id) => {
     // return axios.put(`${API_URL}/api/order/cancel/${id}`)
     return axios({
@@ -52,6 +60,14 @@ export const updateStatusPayment = (data) => {
         method: 'PUT',
         url: `${API_URL}/api/order/pay-success/${data.order_id}`,
         data: data,
+        headers: headers,
+    })
+}
+
+export const updateStatusSendMail = (id) => {
+    return axios({
+        method: 'PUT',
+        url: `${API_URL}/api/order/send-email/${id}`,
         headers: headers,
     })
 }

@@ -2223,6 +2223,7 @@ h4.heading {
 .product_pick_color .color {
   margin: 0;
   display: inline-flex;
+  flex-wrap: wrap;
 }
 
 .product_pick_color button {
@@ -2242,6 +2243,7 @@ h4.heading {
   box-sizing: border-box;
   transition: all .5s ease;
   margin-right: 5px;
+  margin-top: 5px;
 }
 
 .product_pick_color button.active, .product_pick_color button:hover {

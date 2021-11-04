@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { currency } from "utils/FormatCurrency"
 import { Link, useHistory } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
@@ -8,7 +8,6 @@ import { getAllProductByBrand, getOneItem } from 'actions/services/ProductServic
 import { addLikeProduct, deleteProductLiked, getProductLiked } from 'actions/services/ProductServices'
 import { getAllCommentByProductId } from 'actions/services/CommentServices'
 import { addProductToCart, getCartInfo } from 'actions/services/CartActions'
-import AddressForm from 'components/form/AddressForm';
 import "react-toastify/dist/ReactToastify.css";
 import useTimeout from 'hooks/useTimeout';
 import DetailProductSkeleton from 'components/Loading/DetailProductSkeleton';
@@ -30,10 +29,8 @@ function DetailProduct(props) {
     const [index, setIndex] = useState(0);
     const [productByBrands, setProductByBrands] = useState([]);
     const [productLiked, setProductLiked] = useState(false);
-    const [openAddress, setOpenAddress] = useState(false);
     const [comments, setComments] = useState([]);
     const username = localStorage.getItem('username')
-    const user = useSelector(state => state.auth.auth);
     const params = new URLSearchParams(window.location.search)
     const color = params.get('color') ? params.get('color') : '';
 
@@ -107,7 +104,7 @@ function DetailProduct(props) {
     }, [product])
 
     useEffect(() => {
-        document.title = `${product?.name} | Tiki`
+        document.title = product.name ? `${product?.name} | Tiki` : "Thông tin sản phẩm | Tiki"
     }, [product?.name])
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
@@ -153,15 +150,6 @@ function DetailProduct(props) {
             props.history.push('/login')
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    const handleClickOpenAddress = () => {
-        setOpenAddress(true);
-    };
-
-    const handleCloseAddress = () => {
-        setOpenAddress(false);
-        getUser();
     }
 
     const displayComment = (numStar) => {
@@ -300,16 +288,6 @@ function DetailProduct(props) {
                                                 <span className="product-price__list-price">{currency(product.list_price)}</span>
                                                 <span className="product-price__discount">{product.percent_discount}% giảm</span>
                                             </p>
-                                            {
-                                                username ? (
-                                                    <div className="ship-info">
-                                                        <span className="text">Giao đến</span>
-                                                        <span className="address">{`${user?.district},${user?.city}`}</span>
-                                                        <span className="address-change" onClick={handleClickOpenAddress} >Đổi địa chỉ</span>
-                                                        <AddressForm open={openAddress} onClose={handleCloseAddress} />
-                                                    </div>
-                                                ) : ''
-                                            }
                                             <div className="product_pick_color">
                                                 <div className="prco_label">
                                                     Có <strong>{product?.inventories.length} Màu sắc</strong>.
@@ -320,7 +298,7 @@ function DetailProduct(props) {
                                                             return (
                                                                 <button
                                                                     key={index}
-                                                                    className={`opt-var opt-var-97020 ${color === item.color || product?.inventories.length === 1 || index === 0 ? 'active': ''}`}
+                                                                    className={`opt-var opt-var-97020 ${color === item.color || product?.inventories.length === 1 || (index === 0 && !color) ? 'active': ''}`}
                                                                     title={item.color}
                                                                     onClick={() => addQuery('color', item.color)}
                                                                 >

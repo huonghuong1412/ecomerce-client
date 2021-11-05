@@ -1,12 +1,48 @@
-import { Dialog } from '@material-ui/core';
+import { Dialog, makeStyles } from '@material-ui/core';
 import { addComment } from 'actions/services/CommentServices';
 import React, { useState } from 'react'
 import ReactStars from "react-rating-stars-component";
 import { toast } from 'react-toastify';
 
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+        minWidth: 600,
+        overflow: 'hidden',
+        maxHeight: '100vh'
+    },
+    input: {
+        display: 'none',
+    },
+    button: {
+        padding: '12px 24px',
+        fontWeight: 600,
+        fontSize: '1.3rem',
+        marginRight: 15
+    },
+    textInput: {
+        fontSize: '1.3rem',
+        overflow: 'hidden'
+    },
+    title: {
+        textAlign: 'center',
+        fontSize: 24,
+    },
+    padding: {
+        paddingLeft: 30,
+        paddingRight: 30,
+        paddingBottom: 20,
+        paddingTop: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 13
+    }
+}))
+
 export default function CustomerReviewForm(props) {
 
     const { onClose, open, product, user } = props;
+    const classes = useStyles();
 
     const [rating, setRating] = useState(0);
     const [content, setContent] = useState('');
@@ -64,10 +100,7 @@ export default function CustomerReviewForm(props) {
     };
 
     return (
-        <Dialog onClose={onClose} open={open} style={{
-            minWidth: 650,
-            padding: 30
-        }}>
+        <Dialog onClose={onClose} open={open} className={classes.formControl}>
             <div className="iwgwUj write-review">
                 <div className="write-review__close" onClick={handleCloseForm}>
                     <img src="https://salt.tikicdn.com/ts/upload/9b/80/20/6d09a37c46316cbdaf5024c6520c9801.jpg" alt="" />

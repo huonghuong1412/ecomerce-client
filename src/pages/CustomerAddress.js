@@ -1,13 +1,14 @@
 import { Button, Grid, makeStyles, TextField } from '@material-ui/core';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { getUserLogin } from 'actions/services/UserActions';
 import AccountNavbar from 'components/AccountNavbar/AccountNavbar.';
 import Loading from 'components/Loading/Loading'
+import Select from 'react-select'
 import { updateAddressUser } from 'actions/services/AddressActions'
-import { getListProvince, getListDistrict, getListWard } from 'actions/services/GHNServices'
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import useTimeout from 'hooks/useTimeout';
+import useLocationForm from 'hooks/useLocationForm';
 toast.configure({
     autoClose: 2000,
     draggable: false,
@@ -43,12 +44,6 @@ const CustomerAddress = (props) => {
 
     const classes = useStyles();
 
-    const [data, setData] = useState({
-        listCity: [],
-        listDistrict: [],
-        listWard: []
-    })
-
     const [user, setUser] = useState({
         id: '',
         fullName: '',
@@ -56,30 +51,22 @@ const CustomerAddress = (props) => {
         city: '',
         district: '',
         ward: '',
-        house: ''
-    })
-
-    const [addressUser, setAddressUser] = useState({
-        city: '',
+        house: '',
         city_id: 0,
-        district: '',
         district_id: 0,
-        ward: '',
         ward_id: '',
-        house: ''
     })
     const [loading, setLoading] = useState(true);
+    const { state, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm((user?.city_id !== null) ? true : false);
 
-    const getListCity = () => {
-        getListProvince()
-            .then((res) => {
-                setData({
-                    ...data,
-                    listCity: res.data.data.sort((a, b) => a.ProvinceID - b.ProvinceID),
-                })
-            })
-            .catch(err => console.log(err))
-    }
+    const {
+        cityOptions,
+        districtOptions,
+        wardOptions,
+        selectedCity,
+        selectedDistrict,
+        selectedWard,
+    } = state;
 
     const handleChange = (e) => {
         const value = e.target.value;
@@ -91,37 +78,34 @@ const CustomerAddress = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        updateAddressUser(user)
+        const data = { ...user };
+        data.city = state.selectedCity.label;
+        data.district = state.selectedDistrict.label;
+        data.ward = state.selectedWard.label;
+        data.house = user.house;
+        data.city_id = state.selectedCity.value;
+        data.district_id = state.selectedDistrict.value;
+        data.ward_id = state.selectedWard.value;
+        updateAddressUser(data)
             .then((res) => {
                 toast.success("Cập nhật thông tin thành công.")
-                setAddressUser(res.data)
                 getUser();
             })
             .catch(err => console.log(err))
     }
 
-    const getUser = () => {
+    const getUser = useCallback(() => {
         getUserLogin()
             .then(res => {
                 setUser(res.data);
-                setAddressUser({
-                    city: res.data.city,
-                    district: res.data.district,
-                    ward: res.data.ward,
-                    house: res.data.house,
-                })
             })
             .catch(err => console.log(err))
-    }
+    }, [])
 
     useEffect(() => {
-
         document.title = "Số địa chỉ | Tiki"
-
         getUser();
-        getListCity();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [getUser])
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
@@ -138,156 +122,44 @@ const CustomerAddress = (props) => {
                                     </div>
                                     <div className="col l-9-4 m-9 c-9">
                                         <Grid container>
-                                            <Grid item md={12}>
-                                                <div className="group">
-                                                    <h4 className="heading">Thông tin khách hàng</h4>
-                                                    <div className="content has-table">
-                                                        <table>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>Họ tên</td>
-                                                                    <td>{user.fullName}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Username</td>
-                                                                    <td>{user.username}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Email</td>
-                                                                    <td>{user.email}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Số điện thoại</td>
-                                                                    <td>{user.phone}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Ngày sinh</td>
-                                                                    <td>{user.dateOfBirth}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Địa chỉ</td>
-                                                                    <td>{addressUser.house + ", " + addressUser.ward + ", " + addressUser.district + ", " + addressUser.city}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </Grid>
                                             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                                                 <Grid item sm={12} xs={12}>
-                                                    {/* <label className="select">
-                                                    <select required="required" name='city' onChange={changeCity} value={user?.city}>
-                                                        <option value="">-- Thành phố --</option>
-                                                        {
-                                                            data.listCity.map((item) => {
-                                                                return (
-                                                                    <option key={item.provinceid} value={item.provinceid}>{item.name}</option>
-                                                                )
-                                                            })
-                                                        }
-                                                    </select>
-                                                </label> */}
                                                     <div className="input-group">
-                                                        <label className="select">
-                                                            <select required name='city' onChange={(e) => {
-                                                                setUser({
-                                                                    ...user,
-                                                                    city: data.listCity.filter(item => item.ProvinceID === parseInt(e.target.value))[0]?.ProvinceName || "",
-                                                                    city_id: parseInt(e.target.value)
-                                                                })
-                                                                getListDistrict(e.target.value)
-                                                                    .then((res) => setData({
-                                                                        ...data,
-                                                                        listDistrict: res.data.data,
-                                                                        listWard: []
-                                                                    }))
-                                                                    .catch(() => alert("ERROR"))
-                                                            }} value={user.city_id}>
-                                                                <option value="">-- Thành phố --</option>
-                                                                {
-                                                                    data.listCity.map((item) => {
-                                                                        return (
-                                                                            <option key={item.ProvinceID} value={item.ProvinceID}>{item.ProvinceName ? item.ProvinceName : user.city}</option>
-                                                                        )
-                                                                    })
-                                                                }
-                                                            </select>
-                                                        </label>
+                                                        <Select
+                                                            name="ProvinceID"
+                                                            key={`ProvinceID_${selectedCity?.value}`}
+                                                            isDisabled={cityOptions.length === 0}
+                                                            options={cityOptions}
+                                                            onChange={(option) => onCitySelect(option)}
+                                                            placeholder="Tỉnh/Thành"
+                                                            defaultValue={selectedCity}
+                                                        />
                                                     </div>
                                                 </Grid>
                                                 <Grid item sm={12} xs={12}>
-                                                    {/* <label className="select">
-                                                    <select required="required" name='district' onChange={changeDistrict} value={user?.district}>
-                                                        <option>-- Quận/Huyện --</option>
-                                                        {
-                                                            data.listDistrict.map((item) => {
-                                                                return (
-                                                                    <option key={item.districtid} value={item.districtid}>{item.name}</option>
-                                                                )
-                                                            })
-                                                        }
-                                                    </select>
-                                                </label> */}
                                                     <div className="input-group">
-                                                        <label className="select">
-                                                            <select required name='district' onChange={(e) => {
-                                                                setUser({
-                                                                    ...user,
-                                                                    district: data.listDistrict.filter(item => item.DistrictID === parseInt(e.target.value))[0]?.DistrictName || "",
-                                                                    district_id: parseInt(e.target.value)
-                                                                })
-                                                                getListWard(e.target.value)
-                                                                    .then((res) => setData({
-                                                                        ...data,
-                                                                        listWard: res.data.data,
-                                                                    }))
-                                                                    .catch(() => alert("ERROR"))
-                                                            }} value={user.district_id}>
-                                                                <option>-- Quận/Huyện --</option>
-                                                                {
-                                                                    data.listDistrict.sort((a, b) => a.DistrictID - b.DistrictID).map((item) => {
-                                                                        return (
-                                                                            <option key={item.DistrictID} value={item.DistrictID}>{item.DistrictName}</option>
-                                                                        )
-                                                                    })
-                                                                }
-                                                            </select>
-                                                        </label>
+                                                        <Select
+                                                            name="DistrictID"
+                                                            key={`DistrictID_${selectedDistrict?.value}`}
+                                                            isDisabled={districtOptions.length === 0}
+                                                            options={districtOptions}
+                                                            onChange={(option) => onDistrictSelect(option)}
+                                                            placeholder="Quận/Huyện"
+                                                            defaultValue={selectedDistrict}
+                                                        />
                                                     </div>
                                                 </Grid>
                                                 <Grid item sm={12} xs={12}>
-                                                    {/* <label className="select">
-                                                    <select required="required" name='ward' onChange={handleChange} value={user?.ward}>
-                                                        <option>-- Xã/Phường --</option>
-                                                        {
-                                                            data.listWard.map((item) => {
-                                                                return (
-                                                                    <option key={item.wardid} value={item.wardid}>{item.name}</option>
-                                                                )
-                                                            })
-                                                        }
-                                                    </select>
-                                                </label> */}
                                                     <div className="input-group">
-                                                        <label className="select">
-                                                            <select required name='ward' onChange={(e) => {
-                                                                setUser({
-                                                                    ...user,
-                                                                    ward: data.listWard.filter(item => item.WardCode === e.target.value)[0]?.WardName || "",
-                                                                    ward_id: e.target.value
-                                                                })
-
-                                                            }} value={user.ward_id}>
-                                                                <option>-- Xã/Phường --</option>
-                                                                {
-                                                                    data.listWard.map((item) => {
-                                                                        return (
-                                                                            <option key={item.WardCode} value={item.WardCode}>{item.WardName}</option>
-                                                                        )
-                                                                    })
-                                                                }
-                                                            </select>
-                                                        </label>
+                                                        <Select
+                                                            name="WardCode"
+                                                            key={`WardCode_${selectedWard?.value}`}
+                                                            isDisabled={wardOptions.length === 0}
+                                                            options={wardOptions}
+                                                            placeholder="Phường/Xã"
+                                                            onChange={(option) => onWardSelect(option)}
+                                                            defaultValue={selectedWard}
+                                                        />
                                                     </div>
                                                 </Grid>
 
@@ -300,7 +172,6 @@ const CustomerAddress = (props) => {
                                                         className={classes.textInput}
                                                         onChange={handleChange}
                                                         label='Địa chỉ nhà'
-
                                                     />
                                                 </Grid>
                                                 <Grid item sm={12} xs={12}>
@@ -324,4 +195,4 @@ const CustomerAddress = (props) => {
     )
 }
 
-export default CustomerAddress
+export default CustomerAddress;

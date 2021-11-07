@@ -31,6 +31,10 @@ export default function LoginPage(props) {
         }
      }, [props.history])
 
+     const handleRedirectGoogle = () => {
+        window.location.href = 'https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/oauth2/google&response_type=code&client_id=4324503554-bt9sjojk5ml20lo40oq7tau8uni5pp5c.apps.googleusercontent.com&approval_prompt=force';
+     }
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const data = {
@@ -111,7 +115,7 @@ export default function LoginPage(props) {
                                         </Grid>
                                         <Grid item sm={12} xs={12}>
                                             <div className="auth-form__social">
-                                                <Link to="/" className="auth-form__social-google btn btn--size-s btn--width-icon">
+                                                <Link to="#" onClick={handleRedirectGoogle} className="auth-form__social-google btn btn--size-s btn--width-icon">
                                                     <i className="auth-form__social-icon fab fa-google"></i>
                                                     <span className="auth-form__social-text">Kết nối với Google</span>
                                                 </Link>

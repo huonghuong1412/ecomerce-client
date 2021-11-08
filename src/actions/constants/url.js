@@ -1,0 +1,1 @@
+export const callback_url_facebook = "https://a4ad-123-24-233-164.ngrok.io/oauth2/facebook"

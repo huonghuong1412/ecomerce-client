@@ -5,16 +5,17 @@ import { useState } from "react";
 import { getAllCategory } from "actions/services/CategoryActions";
 import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
-import { logout, setCurrentUser } from "actions/services/UserActions";
+import { getCurrentUser, logout, setCurrentUser } from "actions/services/UserActions";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Cart from "./Cart";
-import {API_URL} from 'actions/constants/constants'
+import { API_URL } from 'actions/constants/constants'
 function Header(props) {
   const [category, setCategory] = useState([]);
   const [keyword, setKeyword] = useState("");
   const history = useHistory();
   const dispatch = useDispatch();
-  const profile = useSelector((state) => state.auth.user);
+  // const profile = useSelector((state) => state.auth.user);
+  const auth = useSelector((state) => state.auth.auth);
   const token = localStorage.getItem("token");
   const search_keyword = [];
   const list_search = localStorage.getItem('search_keyword') ? JSON.parse(localStorage.getItem('search_keyword')) : [];
@@ -22,6 +23,7 @@ function Header(props) {
     if (token) {
       const decoded = jwtDecode(token);
       dispatch(setCurrentUser(decoded));
+      dispatch(getCurrentUser())
     }
   }, [dispatch, token]);
 
@@ -65,7 +67,7 @@ function Header(props) {
                     </Link>
                     <Link to="/" className="header__qr-link">
                       <img
-                       src={`${API_URL}/images/appstore.png`}
+                        src={`${API_URL}/images/appstore.png`}
                         alt="App store"
                         className="header__qr-download-img"
                       />
@@ -102,7 +104,7 @@ function Header(props) {
                 <li className="header__navbar--item header__navbar-user">
                   <AccountCircleIcon />
                   <span className="header__navbar-user-name">
-                    {profile.sub}
+                    {auth.fullName}
                   </span>
                   <ul className="header__navbar-user-menu">
                     <li className="header__navbar-user-item">
@@ -222,7 +224,7 @@ function Header(props) {
                   <ul className="header__search-history-list">
                     {list_search?.map((item, index) => {
                       return (
-                        <li className="header__search-history-item"  key={index}>
+                        <li className="header__search-history-item" key={index}>
                           <Link to={`/search?keyword=${item}`}>
                             {item}
                           </Link>

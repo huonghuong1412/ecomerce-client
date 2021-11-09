@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, TextField } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Loading from 'components/Loading/Loading'
 import { getUserLogin, updateInfo } from 'actions/services/UserActions';
@@ -172,22 +172,16 @@ function CustomerProfile(props) {
                                                 </Grid>
 
                                                 <Grid item sm={12} xs={12}>
-                                                    <TextValidator
+                                                    <TextField
                                                         className="input-text"
                                                         style={{ margin: '5px 0' }}
                                                         type="date"
                                                         name="dateOfBirth"
+                                                        variant="standard"
                                                         value={user?.dateOfBirth}
                                                         onChange={handleInputChange}
-                                                        placeholder=""
-                                                        label={
-                                                            <span>
-                                                                <span style={{ color: "red" }}>*</span>
-                                                                Ngày sinh
-                                                            </span>
-                                                        }
-                                                        validators={["required"]}
-                                                        errorMessages={["Ngày sinh không được để trống"]}
+                                                        placeholder="Ngày sinh"
+                                                        label={"Ngày sinh"}
                                                     />
                                                 </Grid>
                                                 <Grid item sm={12} xs={12}>

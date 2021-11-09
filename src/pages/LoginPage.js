@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { login } from 'actions/services/UserActions';
 import { useEffect } from 'react';
-import { callback_url_facebook } from 'actions/constants/url';
+import { LOGIN_URL_FACEBOOK, LOGIN_URL_GOOGLE, LOGIN_URL_ZALO } from 'actions/constants/url';
 
 const useStyles = makeStyles({
     text: {
@@ -33,11 +33,15 @@ export default function LoginPage(props) {
      }, [props.history])
 
      const handleRedirectGoogle = () => {
-        window.location.href = 'https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/oauth2/google&response_type=code&client_id=4324503554-bt9sjojk5ml20lo40oq7tau8uni5pp5c.apps.googleusercontent.com&approval_prompt=force';
+        window.location.href = LOGIN_URL_GOOGLE;
      }
 
      const handleRedirectFacebook = () => {
-        window.location.href = `https://www.facebook.com/dialog/oauth?client_id=677457713240896&redirect_uri=${callback_url_facebook}&scope=email,public_profile&display=page`;
+        window.location.href = LOGIN_URL_FACEBOOK;
+     }
+
+     const handleRedirectZalo = () => {
+        window.location.href = LOGIN_URL_ZALO;
      }
 
     const handleSubmit = (e) => {
@@ -123,6 +127,15 @@ export default function LoginPage(props) {
                                                 <Link to="#" onClick={handleRedirectGoogle} className="auth-form__social-google btn btn--size-s btn--width-icon">
                                                     <i className="auth-form__social-icon fab fa-google"></i>
                                                     <span className="auth-form__social-text">Kết nối với Google</span>
+                                                </Link>
+                                            </div>
+                                        </Grid>
+                                        <Grid item sm={12} xs={12}>
+                                            <div className="auth-form__social">
+                                                <Link to="#" onClick={handleRedirectZalo} className="auth-form__social-zalo btn btn--size-s btn--width-icon">
+                                                    {/* <i className="auth-form__social-icon fab fa-google"></i> */}
+                                                    <img className="auth-form__social-icon" src="https://brasol.vn/public/ckeditor/uploads/tin-tuc/brasol.vn-logo-zalo-vector-logo-zalo-vector.png" alt="" />
+                                                    <span className="auth-form__social-text">Kết nối với Zalo</span>
                                                 </Link>
                                             </div>
                                         </Grid>

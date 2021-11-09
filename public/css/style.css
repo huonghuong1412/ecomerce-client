@@ -686,8 +686,8 @@ input:focus::-webkit-datetime-edit{ color: #000; }
     font-size: 1.6rem;
 }
 
-.auth-form__social-instagram {
-    background-color: #e92185;
+.auth-form__social-zalo {
+    background-color: #4287f5;
     color: var(--white-color);
     height: 45px;
     font-size: 1.6rem;
@@ -695,6 +695,12 @@ input:focus::-webkit-datetime-edit{ color: #000; }
 
 .auth-form__social-facebook>.auth-form__social-icon {
     font-size: 1.8rem;
+}
+
+.auth-form__social-zalo>img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
 }
 
 .btn--size-s {

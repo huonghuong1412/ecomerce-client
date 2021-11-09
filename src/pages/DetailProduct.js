@@ -481,6 +481,7 @@ function DetailProduct(props) {
                             </div>
                         </div>
                     </div>
+		<div class="zalo-comment-plugin" data-appid="2004406068292141065" data-size="5" data-href=""></div>
                 </div>
             ) : <DetailProductSkeleton />
             }

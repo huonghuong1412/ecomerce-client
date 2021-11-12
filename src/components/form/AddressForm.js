@@ -7,6 +7,7 @@ import { updateAddressUser } from 'actions/services/AddressActions'
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import useLocationForm from 'hooks/useLocationForm';
+import { useHistory } from 'react-router';
 toast.configure({
     autoClose: 2000,
     draggable: false,
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '12px 24px',
         fontWeight: 600,
         fontSize: '1.3rem',
-        marginRight: 15
+        marginRight: 5
     },
     textInput: {
         fontSize: '1.3rem',
@@ -51,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const AddressForm = (props) => {
     const classes = useStyles();
     const { onClose, open } = props;
+    const history = useHistory();
 
     const [user, setUser] = useState({
         id: '',
@@ -66,7 +68,7 @@ const AddressForm = (props) => {
         district_id: 0,
         ward_id: '',
     })
-    const { state, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm((user?.city_id !== null) ? true : false);
+    const { state, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm();
 
     const {
         cityOptions,
@@ -143,9 +145,11 @@ const AddressForm = (props) => {
         <>
             {
                 <Dialog onClose={onClose} open={open} className={classes.formControl}>
-                    <IconButton aria-label="delete" onClick={onClose} className="close-icon">
-                        <CloseIcon fontSize="large" />
-                    </IconButton>
+                    {
+                        user?.city_id ? <IconButton aria-label="delete" onClick={onClose} className="close-icon">
+                            <CloseIcon fontSize="large" />
+                        </IconButton> : ''
+                    }
                     <Grid className={classes.padding} container spacing={2}>
                         <Grid item sm={12} xs={12}>
                             <h3 className={classes.title}>
@@ -154,10 +158,11 @@ const AddressForm = (props) => {
                         </Grid>
                         <Grid item sm={12} xs={12}>
                             <TextField
+                                required={true}
                                 className="input-text"
                                 type="text"
                                 name="fullName"
-                                value={user?.fullName}
+                                value={user?.fullName || ''}
                                 onChange={handleChange}
                                 label={
                                     <span>
@@ -169,10 +174,11 @@ const AddressForm = (props) => {
                         </Grid>
                         <Grid item sm={12} xs={12}>
                             <TextField
+                                required={true}
                                 className="input-text"
                                 type="number"
                                 name="phone"
-                                value={user?.phone}
+                                value={user?.phone || ''}
                                 onChange={handleChange}
                                 label={
                                     <span>
@@ -184,10 +190,11 @@ const AddressForm = (props) => {
                         </Grid>
                         <Grid item sm={12} xs={12}>
                             <TextField
+                                required={true}
                                 className="input-text"
                                 type="text"
                                 name="email"
-                                value={user?.email}
+                                value={user?.email || ''}
                                 onChange={handleChange}
                                 label={
                                     <span>
@@ -235,20 +242,27 @@ const AddressForm = (props) => {
                             <TextField
                                 type="text"
                                 name="house"
-                                value={user?.house}
+                                value={user?.house || ''}
                                 fullWidth
+                                required={true}
                                 className={classes.textInput}
                                 onChange={handleChange}
                                 label='Địa chỉ nhà'
                             />
                         </Grid>
-                        <Grid item sm={12} xs={12}>
+                        <Grid container justify="flex-end">
+                            <Button
+                                onClick={() => history.push('/checkout/cart')}
+                                variant="outlined"
+                                // fullWidth
+                                className={classes.button}
+                            >Trở lại</Button>
                             <Button
                                 onClick={handleSubmit}
                                 variant="outlined" color="secondary"
-                                fullWidth
+                                // fullWidth
                                 className={classes.button}
-                            >Cập nhật địa chỉ</Button>
+                            >Cập nhật</Button>
                         </Grid>
                     </Grid>
                 </Dialog>

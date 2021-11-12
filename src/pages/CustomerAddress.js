@@ -52,14 +52,14 @@ const CustomerAddress = (props) => {
         district: '',
         ward: '',
         house: '',
-        city_id: 0,
-        district_id: 0,
+        city_id: null,
+        district_id: null,
         ward_id: '',
     })
     const [loading, setLoading] = useState(true);
     const { state, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm(user?.city_id !== null ? true : false);
 
-    console.log(user?.city_id !== null ? true : false)
+    // console.log(user?.city_id !== null ? true : false)
 
     const {
         cityOptions,

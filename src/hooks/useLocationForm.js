@@ -58,7 +58,7 @@ async function fetchInitialData() {
 }
 
 
-function useLocationForm(shouldFetchInitialLocation) {
+function useLocationForm() {
     const [state, setState] = useState({
         cityOptions: [],
         districtOptions: [],
@@ -67,8 +67,21 @@ function useLocationForm(shouldFetchInitialLocation) {
         selectedDistrict: null,
         selectedWard: null,
     });
+    const [shouldFetchInitialLocation, setShouldFetchInitialLocation] = useState(false);
 
     const { selectedCity, selectedDistrict } = state;
+
+    useEffect(() => {
+        (async function () {
+            const initialData = await fetchInitialData();
+            if(initialData.selectedCity) {
+                setShouldFetchInitialLocation(true);
+            } else {
+                setShouldFetchInitialLocation(false);
+            }
+            
+        })();
+    }, []);
 
     useEffect(() => {
         (async function () {
@@ -87,8 +100,8 @@ function useLocationForm(shouldFetchInitialLocation) {
                 })
             }
         })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shouldFetchInitialLocation]);
 
     useEffect(() => {
         (async function () {

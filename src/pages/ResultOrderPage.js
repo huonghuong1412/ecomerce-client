@@ -1,17 +1,25 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { updateStatusPayment, checkTradingCode, getDetailOrderByIdAfterPayment, updateStatusSendMail } from 'actions/services/OrderActions'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import { sendMail } from 'actions/services/SendMailService';
+import { getStatusByAppTransIDZaloPay } from 'actions/services/PaymentActions';
+import Loading from 'components/Loading/Loading';
 
 function ResultOrderPage(props) {
+
+    const [loading, setLoading] = useState(true);
+
     const params = new URLSearchParams(window.location.search)
     const order_id = params.get('order_id') ? params.get('order_id') : localStorage.getItem('order_id');
-    const vnp_BankCode = params.get('vnp_BankCode')
-    const vnp_ResponseCode = params.get('vnp_ResponseCode')
-    const vnp_TransactionNo = params.get('vnp_TransactionNo')
+    const vnp_BankCode = params.get('vnp_BankCode') ? params.get('vnp_BankCode') : null;
+    const vnp_ResponseCode = params.get('vnp_ResponseCode') ? params.get('vnp_ResponseCode') : null;
+    const vnp_TransactionNo = params.get('vnp_TransactionNo') ? params.get('vnp_TransactionNo') : null;
 
+    const status = params.get('status') ? params.get('status') : null;
+    const bankcode = params.get('bankcode') ? params.get('bankcode') : null;
+    const apptransid = params.get('apptransid') ? params.get('apptransid') : null;
 
     const handleUpdatePayment = () => {
         if (vnp_ResponseCode === "00") {
@@ -23,21 +31,7 @@ function ResultOrderPage(props) {
             checkTradingCode(vnp_TransactionNo)
                 .then(res => {
                     if (res.data === false) {
-                        updateStatusPayment(data)
-                            .then((res) => {
-                                props.history.push(`/success/payment?order_id=${order_id}`);
-                                localStorage.removeItem('order_id');
-                                toast.success(res.data.message, {
-                                    position: "bottom-center",
-                                    theme: 'dark',
-                                    autoClose: 2000,
-                                    hideProgressBar: false,
-                                    closeOnClick: true,
-                                    pauseOnHover: true,
-                                    draggable: true,
-                                    progress: undefined,
-                                });
-                            })
+                        return updateStatusPayment(data)
                     } else {
                         toast.warning('Thanh toán đơn hàng không thành công', {
                             position: "bottom-center",
@@ -51,6 +45,73 @@ function ResultOrderPage(props) {
                         });
                     }
                 })
+                .then((res) => {
+                    setLoading(false);
+                    props.history.push(`/success/payment?order_id=${order_id}`);
+                    localStorage.removeItem('order_id');
+                    toast.success(res.data.message, {
+                        position: "bottom-center",
+                        theme: 'dark',
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                })
+                .catch(err => console.log(err));
+        }
+        if (status === "1") {
+            const data = {
+                order_id: parseInt(order_id),
+                bankName: bankcode,
+                tradingCode: apptransid
+            }
+            getStatusByAppTransIDZaloPay(apptransid)
+                .then(res => {
+                    if (res.data.returncode === 1 && res.data.isprocessing === false) {
+                        return checkTradingCode(apptransid);
+                    } else {
+                        toast.error(res.data.returnmessage, {
+                            position: "bottom-center",
+                            theme: 'dark',
+                            autoClose: 2000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                    }
+                })
+                .then(result => {
+                    if (result.data === false) {
+                        return updateStatusPayment(data);
+                    } else {
+                        return;
+                    }
+                })
+                .then(result => {
+                    setLoading(false);
+                    if (result.data) {
+                        props.history.push(`/success/payment?order_id=${order_id}`);
+                        localStorage.removeItem('order_id');
+                        toast.success(result.data.message, {
+                            position: "bottom-center",
+                            theme: 'dark',
+                            autoClose: 2000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                    } else {
+                        return;
+                    }
+                })
+                .catch(err => console.log(err));
         }
 
     }
@@ -59,8 +120,11 @@ function ResultOrderPage(props) {
 
         document.title = "Kết quả thanh toán | Tiki"
 
-        if (vnp_TransactionNo) {
+        if ((vnp_TransactionNo === null && apptransid) || (vnp_TransactionNo && apptransid === null)) {
             handleUpdatePayment();
+        }
+        if(order_id) {
+            setLoading(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -82,7 +146,7 @@ function ResultOrderPage(props) {
                 }
             })
             .then(result => {
-                if(result.data.message) {
+                if (result.data.message) {
                     return updateStatusSendMail(result.data.message)
                 } else {
                     return;
@@ -118,20 +182,24 @@ function ResultOrderPage(props) {
                         </div>
                     </div>
                 </div>
-                <div className="col l-12 m-12 c-12">
-                    <div className="order-info">
-                        <div className="order-info__left">
-                            <img src="https://salt.tikicdn.com/ts/upload/63/fc/e8/50c078ea9bf9a4627176d3574db7a446.jpg" height={178} width={195} alt="" />
+                {
+                    loading ? <Loading /> : (
+                        <div className="col l-12 m-12 c-12">
+                            <div className="order-info">
+                                <div className="order-info__left">
+                                    <img src="https://salt.tikicdn.com/ts/upload/63/fc/e8/50c078ea9bf9a4627176d3574db7a446.jpg" height={178} width={195} alt="" />
+                                </div>
+                                <div className="order-info__content">
+                                    <h3 className="thanks-msg">Cảm ơn bạn đã mua hàng tại Taka!</h3>
+                                    <p>Mã số đơn hàng của bạn:</p>
+                                    <div className="order-number">{order_id}</div>
+                                    <p>Bạn có thể xem lại <Link to="/customer/order/history">đơn hàng của tôi</Link>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="order-info__content">
-                            <h3 className="thanks-msg">Cảm ơn bạn đã mua hàng tại Taka!</h3>
-                            <p>Mã số đơn hàng của bạn:</p>
-                            <div className="order-number">{order_id}</div>
-                            <p>Bạn có thể xem lại <Link to="/customer/order/history">đơn hàng của tôi</Link>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                    )
+                }
             </div>
         </>
     )

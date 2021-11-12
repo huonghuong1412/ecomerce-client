@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom'
 import { currency } from 'utils/FormatCurrency'
-import { makePaymentVnpay } from 'actions/services/PaymentActions'
+import { makePaymentVnpay, makePaymentZaloPay } from 'actions/services/PaymentActions'
 import AddressForm from 'components/form/AddressForm';
 import { addOrder } from 'actions/services/OrderActions'
 import { completeCart, getCartInfo, getDetailCart } from 'actions/services/CartActions';
@@ -26,10 +26,15 @@ const shipmethods = [
     }
 ]
 
+const icon_bank = [
+    "https://frontend.tikicdn.com/_desktop-next/static/img/icons/checkout/icon-payment-method-cod.svg",
+    "https://salt.tikicdn.com/ts/upload/76/80/08/62e0faf2af2869ba93da5f79a9dc4c4b.png",
+    "https://frontend.tikicdn.com/_desktop-next/static/img/icons/checkout/icon-payment-method-zalo-pay.svg",
+]
+
 function PaymentPage(props) {
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart.cart);
-    // const isFetching = useSelector(state => state.cart.isFetching);
     const [user, setUser] = useState({})
     const [type, setType] = useState(1);
     const [openAddress, setOpenAddress] = useState(false);
@@ -80,8 +85,8 @@ function PaymentPage(props) {
     };
 
     const handleCloseAddress = () => {
-        setOpenAddress(false);
         getUser();
+        setOpenAddress(false);
     }
 
     const handleCompleteCart = () => {
@@ -95,7 +100,7 @@ function PaymentPage(props) {
     const getPayMethodsList = () => {
         getPaymentMethods()
             .then((res) => {
-                setPayMethods(res.data.content)
+                setPayMethods(res.data.content.sort((a, b) => a.id - b.id))
             })
             .catch(err => console.log(err))
     }
@@ -111,6 +116,14 @@ function PaymentPage(props) {
         }
         getPayMethodsList();
     }, [dispatch, props.history, token])
+
+    useEffect(() => {
+        if (user?.city && user?.district && user?.ward) {
+            setOpenAddress(false);
+        } else {
+            handleClickOpenAddress();
+        }
+    }, [user?.city, user?.district, user?.ward])
 
     const calculateShipFeeIfTotalMorethan3Mil = (total) => {
         let fee = shipInfo.total;
@@ -132,10 +145,75 @@ function PaymentPage(props) {
     const handlePayment = () => {
         let orderInfo = {}
 
-        orderInfo.vnp_OrderInfo = "thanh toan doan hang";
+        orderInfo.appuser = user.username;
+        orderInfo.amount = calculateTotalOrder(cart?.total_price);
+
+        orderInfo.vnp_OrderInfo = "Thanh toan doan hang";
         orderInfo.vnp_Amount = calculateTotalOrder(cart?.total_price);
 
-        if (type === 2) {
+        if (type === 3) {
+            let now = new Date();
+            const create_time = now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear();
+            const order_details = cart?.cart_details.map(item => {
+                return {
+                    product_id: item.product_id,
+                    color: item.color,
+                    amount: item.quantity,
+                    price: item.price,
+                    total_price: item.price * item.quantity
+                }
+            })
+            const payment = {
+                type: 1,
+                method_code: 'zalopay',
+                datePayment: create_time,
+                tradingCode: null,
+                status: 0
+            }
+
+            const order = {
+                username: user.username,
+                email: user.email,
+                customer_name: user?.fullName,
+                total_price: orderInfo.amount,
+                total_item: cart?.items_count,
+                order_details: order_details,
+                orderInfo: "Thanh toan don hang",
+                address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
+                payment: payment,
+                phone: user.phone,
+                name: user.fullName,
+                ward_code: user?.ward_id,
+                district_id: user?.district_id,
+                ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price),
+                ship_type: shipType
+            }
+            addOrder(order)
+                .then((res) => {
+                    localStorage.setItem('order_id', res.data.id);
+                    orderInfo.order_id = res.data.id;
+                    makePaymentZaloPay(res.data, orderInfo)
+                        .then((res1) => {
+                            if (res1.data.returncode === 1) {
+                                window.location.href = res1.data.orderurl;
+                            } else {
+                                toast.warning('Có lỗi xảy ra, mời thực hiện lại!');
+                            }
+
+                        })
+                    handleCompleteCart();
+                })
+                .catch(() => toast.error('Đặt hàng không thành công, mời thực hiện lại!', {
+                    position: "bottom-center",
+                    theme: 'dark',
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                }))
+        } else if (type === 2) {
             let now = new Date();
             const create_time = now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear();
             const order_details = cart?.cart_details.map(item => {
@@ -347,6 +425,7 @@ function PaymentPage(props) {
                                                                                 <input type="radio" readOnly name="payment-methods" onChange={(e) => setType(item.type)} value={item.type} defaultChecked={item?.type === type} /><span className="radio-fake" />
                                                                                 <span className="label">
                                                                                     <div className="fbjKoD">
+                                                                                    <img className="method-icon" width="32" src={icon_bank[index]} alt="" />
                                                                                         <div className="method-content">
                                                                                             <div className="method-content__name"><span>{item.name}</span></div>
                                                                                         </div>
@@ -373,13 +452,20 @@ function PaymentPage(props) {
                                                 <div className="title">
                                                     <span>Thông tin giao hàng</span>
                                                     <Link to="#" onClick={handleClickOpenAddress} >Sửa</Link>
-                                                </div><div className="address">
+                                                </div>
+                                                <div className="address">
                                                     <span className="name">
                                                         {user?.fullName} | {user?.phone}
                                                     </span>
-                                                    <span className="street">
-                                                        {user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : ''}
-                                                    </span>
+                                                    {
+                                                        (user?.city && user?.district && user?.ward) ? (
+                                                            <span className="street">
+                                                                {user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : ''}
+                                                            </span>
+                                                        ) : <span className="street">
+                                                            Vui lòng cập nhật thông tin giao hàng
+                                                        </span>
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="cart-total">
@@ -390,28 +476,40 @@ function PaymentPage(props) {
                                                                 <ul className="prices__items">
                                                                     <li className="prices__item">
                                                                         <span className="prices__text">Tạm tính</span>
-                                                                        <span className="prices__value">{currency(cart?.total_price)}</span>
+                                                                        {
+                                                                            (user?.city && user?.district && user?.ward) ? (
+                                                                                <span className="prices__value">{currency(cart?.total_price)}</span>
+                                                                            ) : <span className="prices__value">
+                                                                                {currency(0)}
+                                                                            </span>
+                                                                        }
+
                                                                     </li>
-                                                                    {/* <li className="prices__item">
-                                                                        <span className="prices__text">Phí vận chuyển</span>
-                                                                        <span className="prices__value">{currency(cart?.total_price <= 3000000 ? shipInfo?.total : shipInfo?.total + 0.005*cart?.total_price)}</span>
-                                                                    </li> */}
                                                                     <li className="prices__item">
                                                                         <span className="prices__text">Phí vận chuyển</span>
-                                                                        <span className="prices__value">{currency(calculateShipFeeIfTotalMorethan3Mil(cart?.total_price))}</span>
+                                                                        {
+                                                                            (user?.city && user?.district && user?.ward) ? (
+                                                                                <span className="prices__value">{currency(calculateShipFeeIfTotalMorethan3Mil(cart?.total_price))}</span>
+                                                                            ) : <span className="prices__value">
+                                                                                {currency(0)}
+                                                                            </span>
+                                                                        }
                                                                     </li>
                                                                 </ul>
-                                                                {/* <p className="prices__total">
-                                                                    <span className="prices__text">Tổng cộng</span>
-                                                                    <span className="prices__value prices__value--final">{currency(cart?.total_price + shipInfo?.total)}
-                                                                        <i>(Đã bao gồm VAT nếu có)</i>
-                                                                    </span>
-                                                                </p> */}
                                                                 <p className="prices__total">
                                                                     <span className="prices__text">Tổng cộng</span>
-                                                                    <span className="prices__value prices__value--final">{currency(calculateTotalOrder(cart?.total_price))}
-                                                                        <i>(Đã bao gồm VAT nếu có)</i>
-                                                                    </span>
+                                                                    {
+                                                                        (user?.city && user?.district && user?.ward) ? (
+                                                                            <span className="prices__value prices__value--final">
+                                                                                {currency(calculateTotalOrder(cart?.total_price))}
+                                                                                <i>(Đã bao gồm VAT nếu có)</i>
+                                                                            </span>
+                                                                        ) : <span className="prices__value prices__value--final">
+                                                                            {currency(0)}
+                                                                            <i>(Đã bao gồm VAT nếu có)</i>
+                                                                        </span>
+                                                                    }
+
                                                                 </p>
                                                             </div>
                                                         </div>

@@ -144,13 +144,13 @@ function Header(props) {
           </nav>
           <div className="header-width-search">
             <div className="header__logo">
-              <Link to="/" className="header__logo-link">
+              <a href="/" className="header__logo-link">
                 <img
                   className="header__logo-img"
                   src="https://salt.tikicdn.com/ts/upload/ae/f5/15/2228f38cf84d1b8451bb49e2c4537081.png"
                   alt=""
                 />
-              </Link>
+              </a>
             </div>
             <div className="header__category">
               <div className="header__category--inner">

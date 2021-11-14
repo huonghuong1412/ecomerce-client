@@ -133,7 +133,7 @@ function CartPage(props) {
                                 loading ? <Loading /> : (
                                     <>
                                         {
-                                            cart?.cart_details.length > 0 ? (
+                                            cart?.cart_details && cart?.cart_details.length > 0 ? (
                                                 <div className="row sm-gutter">
                                                     <div className="col l-9 m-12 c-12">
                                                         <div className="productsV2-heading">

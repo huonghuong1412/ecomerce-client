@@ -32,3 +32,20 @@ export const getStatusByAppTransIDZaloPay = (apptransid) => {
         params: {apptransid: apptransid}
     })
 }
+
+// momo
+export const makePaymentMomo = (params) => {
+    return axios({
+        method: 'POST',
+        params: { amount: params.amount, order_id: params.order_id },
+        url: `${API_URL}/api/momo/create-order`
+    })
+}
+
+export const transactionStatusMomo = (params) => {
+    return axios({
+        method: 'POST',
+        params: { requestId: params.requestId, orderId: params.orderId },
+        url: `${API_URL}/api/momo/transactionStatus`
+    })
+}

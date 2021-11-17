@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { API_URL } from '../constants/constants'
 const headers = {
     token: process.env.REACT_APP_GHN_TOKEN,
     shopid: process.env.REACT_APP_GHN_SHOPID
@@ -41,8 +42,17 @@ export const calculateShipFee = (data) => {
         headers: headers
     })
 }
-// tinh thoi gian du kien giao hang
 
+export const calculateShipFeeGHN = (params) => {
+    const {from_district_id, height, length, weight, width, to_district_id, to_ward_code, service_id} = params;
+    return axios({
+        method: 'GET',
+        params: {from_district_id, to_district_id, to_ward_code, length, weight, width, height, service_id},
+        url: `${API_URL}/api/services/ship/ghn/ship-fee`
+    })
+}
+
+// tinh thoi gian du kien giao hang
 export const calculateShipTime = (data) => {
     return axios({
         method: 'POST',

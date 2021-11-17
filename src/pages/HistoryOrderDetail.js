@@ -118,15 +118,6 @@ function HistoryOrderDetail(props) {
         getUserLogin()
             .then(res => {
                 setUser(res.data);
-                calculateShipTime({
-                    from_district_id: 1542,
-                    from_ward_code: "1B1507",
-                    to_district_id: res.data.district_id,
-                    to_ward_code: res.data.ward_id,
-                    service_id: 53321
-                })
-                    .then((res1) => setShipTime(res1.data.data))
-                    .catch(err => console.log(err))
             })
             .catch(err => console.log(err))
     }
@@ -141,8 +132,21 @@ function HistoryOrderDetail(props) {
         document.title = "Đơn hàng của tôi | Tiki"
         getUser();
         getData();
+        if (orderInfo?.ship_type === 1) {
+            calculateShipTime({
+                from_district_id: 1542,
+                from_ward_code: "1B1507",
+                to_district_id: orderInfo?.district_id,
+                to_ward_code: orderInfo?.ward_code,
+                service_id: 53320
+            })
+                .then((res) => setShipTime(res.data.data))
+                .catch(err => console.log(err))
+        } else {
+            setShipTime('');
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.match.params.id]);
+    }, [orderInfo?.ship_type, props.match.params.id]);
 
     useTimeout(() => setLoading(false), loading ? 500 : null);
 
@@ -178,7 +182,7 @@ function HistoryOrderDetail(props) {
                                                                 <div className="content">
                                                                     <p className="name">{userInfo.user_fullname}</p>
                                                                     <p className="address">
-                                                                        <span>Địa chỉ: </span>{orderInfo.address}
+                                                                        <span>Địa chỉ: </span>{orderInfo.address + ',' + orderInfo.ward + ', ' + orderInfo.district + ', ' + orderInfo.province}
                                                                     </p>
                                                                     <p className="phone"><span>Điện thoại: </span>{userInfo.phone}
                                                                     </p>
@@ -187,8 +191,16 @@ function HistoryOrderDetail(props) {
                                                             <div className="gQjSfs">
                                                                 <div className="title">Hình thức giao hàng</div>
                                                                 <div className="content">
-                                                                    <p>Giao hàng tiêu chuẩn</p>
-                                                                    <p>Thời gian giao dự tính: {new Date(shipTime?.leadtime * 1000).toLocaleDateString()}</p>
+                                                                    <p>
+                                                                        <img src="https://salt.tikicdn.com/ts/upload/2a/47/46/0e038f5927f3af308b4500e5b243bcf6.png" width="56" alt="TikiFast" />
+                                                                    </p>
+                                                                    {/* <p>Giao hàng tiêu chuẩn</p> */}
+                                                                    {
+                                                                        shipTime !== '' ? (
+                                                                            <p>Thời gian giao dự tính: {new Date(shipTime?.leadtime * 1000).toLocaleDateString()}</p>
+                                                                        ) : ''
+                                                                    }
+                                                                    <p>Được giao bởi: {orderInfo?.ship_type === 2 ? 'Giao Hàng Tiết Kiệm' : 'Giao Hàng Nhanh'}</p>
                                                                     <p>Phí vận chuyển: {currency(orderInfo?.ship_fee)}</p>
                                                                 </div>
                                                             </div>

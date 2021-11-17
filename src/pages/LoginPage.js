@@ -27,22 +27,24 @@ export default function LoginPage(props) {
         document.title = "Đăng nhập | Tiki"
 
         let isAuth = localStorage.getItem('token')
-        if(isAuth && isAuth !== 'undefined') {
-           props.history.goBack();
+        if (isAuth && isAuth !== 'undefined') {
+            props.history.goBack();
         }
-     }, [props.history])
+    }, [props.history])
 
-     const handleRedirectGoogle = () => {
-        window.location.href = LOGIN_URL_GOOGLE;
-     }
+    const handleRedirectGoogle = () => {
+        // window.location.href = LOGIN_URL_GOOGLE;
+        // window.open(LOGIN_URL_GOOGLE);
+        window.open(LOGIN_URL_GOOGLE, "_self", '').close();
+    }
 
-     const handleRedirectFacebook = () => {
+    const handleRedirectFacebook = () => {
         window.location.href = LOGIN_URL_FACEBOOK;
-     }
+    }
 
-     const handleRedirectZalo = () => {
+    const handleRedirectZalo = () => {
         window.location.href = LOGIN_URL_ZALO;
-     }
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();

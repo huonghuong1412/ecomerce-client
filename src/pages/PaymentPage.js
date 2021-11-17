@@ -11,9 +11,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { getUserLogin } from 'actions/services/UserActions';
 import Loading from 'components/Loading/Loading';
 import { getPaymentMethods } from 'actions/services/PaymentServices';
-import { calculateShipFee } from 'actions/services/GHNServices';
+import { calculateShipFeeGHN } from 'actions/services/GHNServices';
 import _ from 'lodash'
 import useTimeout from 'hooks/useTimeout';
+import { calculateShipFeeGHTK } from 'actions/services/GHTKServices';
 
 const shipmethods = [
     {
@@ -22,7 +23,7 @@ const shipmethods = [
     },
     {
         type: 2,
-        name: "Giao Tiết Kiệm"
+        name: "Giao Hàng Tiết Kiệm"
     }
 ]
 
@@ -55,23 +56,39 @@ function PaymentPage(props) {
 
     const getCalculateShipFee = useCallback(() => {
         if (!_.isEmpty(user)) {
-            calculateShipFee({
-                from_district_id: 1542,
-                service_id: shipType === 1 ? 53320 : 53321,
-                service_type_id: null,
-                to_district_id: user?.district_id,
-                to_ward_code: user?.ward_id,
-                weight: cart?.weight,
-                length: cart?.length,
-                width: cart?.width,
-                height: cart?.height
-            })
-                .then((res1 => {
-                    setShipInfo(res1.data.data)
+            if(shipType === 1) {
+                calculateShipFeeGHN({
+                    from_district_id: 1542,
+                    service_id: 53320,
+                    service_type_id: null,
+                    to_district_id: user?.district_id,
+                    to_ward_code: user?.ward_id,
+                    weight: cart?.weight,
+                    length: cart?.length,
+                    width: cart?.width,
+                    height: cart?.height
+                })
+                    .then((res => {
+                        setShipInfo(res.data)
+                    }))
+                    .catch(err => console.log(err))
+            } else {
+                calculateShipFeeGHTK({
+                    pick_province: 'Hà Nội', 
+                    pick_district: 'Quận Hà Đông', 
+                    province: user?.city, 
+                    district: user?.district, 
+                    weight: cart?.weight,
+                    deliver_option: 'none', 
+                    value: cart?.total_price
+                })
+                .then((res => {
+                    setShipInfo(res.data)
                 }))
                 .catch(err => console.log(err))
+            }
         }
-    }, [cart?.height, cart?.length, cart?.weight, cart?.width, shipType, user])
+    }, [cart?.height, cart?.length, cart?.total_price, cart?.weight, cart?.width, shipType, user])
 
     useEffect(() => {
         getUser();
@@ -119,11 +136,11 @@ function PaymentPage(props) {
     }, [dispatch, props.history, token])
 
     const calculateShipFeeIfTotalMorethan3Mil = (total) => {
-        let fee = shipInfo.total;
+        let fee = shipInfo?.total_ship_fee;
         if (total < 3000000) {
             fee += 0;
         } else {
-            fee += 0.005 * total;
+            fee = 0;
         }
         return fee;
     }
@@ -160,7 +177,7 @@ function PaymentPage(props) {
                     return {
                         product_id: item.product_id,
                         color: item.color,
-                        amount: item.quantity,
+                        quantity: item.quantity,
                         price: item.price,
                         total_price: item.price * item.quantity
                     }
@@ -181,10 +198,13 @@ function PaymentPage(props) {
                     total_item: cart?.items_count,
                     order_details: order_details,
                     orderInfo: "Thanh toan don hang",
-                    address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
+                    address: user ? user?.house : "",
+                    province: user ? user?.city : "",
+                    district: user ? user?.district : "",
+                    ward: user ? user?.ward : "",
                     payment: payment,
-                    phone: user.phone,
-                    name: user.fullName,
+                    phone: user?.phone,
+                    name: user?.fullName,
                     ward_code: user?.ward_id,
                     district_id: user?.district_id,
                     ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price),
@@ -222,7 +242,7 @@ function PaymentPage(props) {
                     return {
                         product_id: item.product_id,
                         color: item.color,
-                        amount: item.quantity,
+                        quantity: item.quantity,
                         price: item.price,
                         total_price: item.price * item.quantity
                     }
@@ -243,10 +263,13 @@ function PaymentPage(props) {
                     total_item: cart?.items_count,
                     order_details: order_details,
                     orderInfo: "Thanh toan don hang",
-                    address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
+                    address: user ? user?.house : "",
+                    province: user ? user?.city : "",
+                    district: user ? user?.district : "",
+                    ward: user ? user?.ward : "",
                     payment: payment,
-                    phone: user.phone,
-                    name: user.fullName,
+                    phone: user?.phone,
+                    name: user?.fullName,
                     ward_code: user?.ward_id,
                     district_id: user?.district_id,
                     ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price),
@@ -284,7 +307,7 @@ function PaymentPage(props) {
                     return {
                         product_id: item.product_id,
                         color: item.color,
-                        amount: item.quantity,
+                        quantity: item.quantity,
                         price: item.price,
                         total_price: item.price * item.quantity
                     }
@@ -340,7 +363,7 @@ function PaymentPage(props) {
                     return {
                         product_id: item.product_id,
                         color: item.color,
-                        amount: item.quantity,
+                        quantity: item.quantity,
                         price: item.price,
                         total_price: item.price * item.quantity
                     }

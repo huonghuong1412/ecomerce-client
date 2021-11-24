@@ -1,73 +1,64 @@
-import axios from 'axios'
+import axiosClient from 'actions/constants/axiosClient';
+// import axios from 'axios'
 import { API_URL } from '../constants/constants'
 
-const token = localStorage.getItem('token');
-const headers = { Authorization: `Bearer ${token}` }
+// const token = localStorage.getItem('token');
+// const headers = { Authorization: `Bearer ${token}` }
 
 export const getAllOrderByUser = () => {
-    return axios({
+    return axiosClient({
         method: 'GET',
-        url: `${API_URL}/api/order/user`,
-        headers: headers,
+        url: `${API_URL}/api/order/user`
     })
 }
 
 export const addOrder = (order) => {
-    return axios({
+    return axiosClient({
         method: 'POST',
         url: `${API_URL}/api/order`,
-        data: order,
-        headers: headers,
+        data: order
     })
 }
 
 export const checkTradingCode = (tradingCode) => {
-    return axios({
+    return axiosClient({
         method: 'GET',
-        url: `${API_URL}/api/order/checkCode?tradingCode=${tradingCode}`,
-        headers: headers,
+        url: `${API_URL}/api/order/checkCode?tradingCode=${tradingCode}`
     })
 }
 
 export const getDetailOrderById = (id) => {
-    return axios({
+    return axiosClient({
         method: 'GET',
-        url: `${API_URL}/api/order/detail-full/${id}`,
-        headers: headers,
+        url: `${API_URL}/api/order/detail-full/${id}`
     })
 }
 
 export const getDetailOrderByIdAfterPayment = (id) => {
-    return axios({
+    return axiosClient({
         method: 'GET',
-        url: `${API_URL}/api/order/chi-tiet/${id}`,
-        headers: headers,
+        url: `${API_URL}/api/order/chi-tiet/${id}`
     })
 }
 
 export const cancelOrder = (id) => {
-    // return axios.put(`${API_URL}/api/order/cancel/${id}`)
-    return axios({
+    return axiosClient({
         method: 'PUT',
-        url: `${API_URL}/api/order/cancel/${id}`,
-        headers: headers,
+        url: `${API_URL}/api/order/cancel/${id}`
     })
 }
 
 export const updateStatusPayment = (data) => {
-    // return axios.put(`${API_URL}/api/order/pay-success/${data.order_id}`, data)
-    return axios({
+    return axiosClient({
         method: 'PUT',
         url: `${API_URL}/api/order/pay-success/${data.order_id}`,
-        data: data,
-        headers: headers,
+        data: data
     })
 }
 
 export const updateStatusSendMail = (id) => {
-    return axios({
+    return axiosClient({
         method: 'PUT',
         url: `${API_URL}/api/order/send-email/${id}`,
-        headers: headers,
     })
 }

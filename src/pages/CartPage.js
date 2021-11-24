@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { currency } from "utils/FormatCurrency"
 import { Link, useHistory } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
-import { deleteItemInCart, getCartInfo, getDetailCart, updateQuantityItem, checkQuantityItemInCart } from 'actions/services/CartActions'
+import { deleteItemInCart, getCartInfo, getDetailCart, updateQuantityItem, checkQuantityItemInCart, selectedItemToOrder } from 'actions/services/CartActions'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"; import Loading from 'components/Loading/Loading';
 import useTimeout from 'hooks/useTimeout';
@@ -13,7 +13,6 @@ function CartPage(props) {
 
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart.cart);
-    // const isFetching = useSelector(state => state.cart.isFetching);
     const history = useHistory();
     const [loading, setLoading] = useState(true);
 
@@ -48,7 +47,7 @@ function CartPage(props) {
         // dispatch(updateQuantityItem(data))
         updateQuantityItem(data)
             .then((res) => {
-                if(res.message !== "SUCCESS") {
+                if (res.message !== "SUCCESS") {
                     toast.info(res.message, {
                         position: "bottom-center",
                         theme: 'dark',
@@ -120,6 +119,13 @@ function CartPage(props) {
         }
     }, [dispatch, props.history, token])
 
+    const handleCheckedItemToOrder = (id) => {
+        selectedItemToOrder(id)
+            .then(() => dispatch(getDetailCart()))
+            .catch(err => console.log(err))
+            
+    }
+
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
     return (
@@ -162,7 +168,13 @@ function CartPage(props) {
                                                                                         <li className="iMeYki" key={index}>
                                                                                             <div className="row">
                                                                                                 <div className="col-1">
-                                                                                                    <div className="intended__images false">
+                                                                                                    <div className="intended__images">
+                                                                                                        <div className="intended__checkbox">
+                                                                                                            <label className="intended__checkbox-label">
+                                                                                                                <input type="checkbox" readOnly checked={item.selected === 1} />
+                                                                                                                <span className="checkbox-fake" onClick={() => handleCheckedItemToOrder(item.product_id)}></span>
+                                                                                                            </label>
+                                                                                                        </div>
                                                                                                         <Link className="intended__img" to={`/san-pham/${item.product_id}/${item.slug}`}>
                                                                                                             <img src={item.mainImage} alt="" />
                                                                                                         </Link>

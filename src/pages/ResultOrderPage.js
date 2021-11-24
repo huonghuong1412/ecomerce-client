@@ -61,7 +61,7 @@ function ResultOrderPage(props) {
                     setLoading(false);
                     props.history.push(`/success/payment?order_id=${order_id}`);
                     localStorage.removeItem('order_id');
-                    toast.success(res.data.message, {
+                    toast.success(res.message, {
                         position: "bottom-center",
                         theme: 'dark',
                         autoClose: 2000,
@@ -106,10 +106,10 @@ function ResultOrderPage(props) {
                 })
                 .then(result => {
                     setLoading(false);
-                    if (result.data) {
+                    if (result) {
                         props.history.push(`/success/payment?order_id=${order_id}`);
                         localStorage.removeItem('order_id');
-                        toast.success(result.data.message, {
+                        toast.success(result.message, {
                             position: "bottom-center",
                             theme: 'dark',
                             autoClose: 2000,
@@ -136,7 +136,7 @@ function ResultOrderPage(props) {
                     if (res.data.errorCode === 0 || res.data.errorCode === "0") {
                         return checkTradingCode(transId);
                     } else {
-                        toast.error(res.data.localMessage, {
+                        toast.error(res.localMessage, {
                             position: "bottom-center",
                             theme: 'dark',
                             autoClose: 2000,
@@ -157,10 +157,10 @@ function ResultOrderPage(props) {
                 })
                 .then(result => {
                     setLoading(false);
-                    if (result.data) {
+                    if (result) {
                         props.history.push(`/success/payment?order_id=${order_id}`);
                         localStorage.removeItem('order_id');
-                        toast.success(result.data.message, {
+                        toast.success(result.message, {
                             position: "bottom-center",
                             theme: 'dark',
                             autoClose: 2000,
@@ -193,14 +193,14 @@ function ResultOrderPage(props) {
     useEffect(() => {
         getDetailOrderByIdAfterPayment(order_id)
             .then(res => {
-                setOrderDetail(res.data);
-                if (res.data.send_status === 0) {
+                setOrderDetail(res);
+                if (res.send_status === 0) {
                     const data = {
-                        to: res.data.email,
+                        to: res.email,
                         from: "huonghuongnewton@gmail.com",
-                        subject: `Xác nhận đơn hàng #${res.data.id}`,
-                        id: res.data.id,
-                        order: res.data
+                        subject: `Xác nhận đơn hàng #${res.id}`,
+                        id: res.id,
+                        order: res
                     }
                     return sendMail(data)
                 } else {

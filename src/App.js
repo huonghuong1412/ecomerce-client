@@ -30,13 +30,14 @@ import CustomerProfile from 'pages/CustomerProfile';
 import CustomerPassword from 'pages/CustomerPassword';
 import CustomerReview from 'pages/CustomerReview';
 import OAuth2RedirectHandler from 'components/Oauth2Handler/OAuth2RedirectHandler';
-import Header2 from 'components/Header/Header2';
+// import Header2 from 'components/Header/Header2';
 const ListProductPage = React.lazy(() => import('./pages/ListProductPage'));
 
 function App() {
 
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     if (token) {
       const decoded = jwtDecode(token);
@@ -51,9 +52,7 @@ function App() {
     <Suspense fallback={''}>
       <Router>
         <ScrollToTop />
-        {
-          window.location.pathname.includes('/checkout/payment') || window.location.pathname.includes('/success/payment') ? <Header2 /> : <Header />
-        }
+        <Header />
         <div className="app__container">
           <div className="grid wide">
 

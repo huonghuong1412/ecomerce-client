@@ -18,6 +18,7 @@ import Loading from "components/Loading/Loading";
 import { getUserLogin } from "actions/services/UserActions";
 import { calculateShipTime } from 'actions/services/GHNServices'
 import CustomerReviewForm from "components/form/CustomerReviewForm";
+import TrackingOrder from "components/Tracking/TrackingOrder";
 toast.configure({
     autoClose: 2000,
     draggable: false,
@@ -96,7 +97,7 @@ function HistoryOrderDetail(props) {
         const id = props.match.params.id;
         cancelOrder(id)
             .then((res) => {
-                toast.success(res.data.message);
+                toast.success(res.message);
                 getData();
             })
             .catch(() =>
@@ -108,9 +109,9 @@ function HistoryOrderDetail(props) {
         const id = props.match.params.id;
         getDetailOrderById(id)
             .then((res) => {
-                setOrders(res.data.order_details);
-                setUserInfo(res.data.user);
-                setOrderInfo(res.data.order_info);
+                setOrders(res.order_details);
+                setUserInfo(res.user);
+                setOrderInfo(res.order_info);
             })
             .catch((err) => console.log(err));
     };
@@ -121,12 +122,6 @@ function HistoryOrderDetail(props) {
             })
             .catch(err => console.log(err))
     }
-
-    // "from_district_id": 1750,
-    // "from_ward_code": "511110",
-    // "to_district_id": 3255,
-    // "to_ward_code": "1B2811",
-    // "service_id": 53321
 
     useEffect(() => {
         document.title = "Đơn hàng của tôi | Tiki"
@@ -201,6 +196,11 @@ function HistoryOrderDetail(props) {
                                                                         ) : ''
                                                                     }
                                                                     <p>Được giao bởi: {orderInfo?.ship_type === 2 ? 'Giao Hàng Tiết Kiệm' : 'Giao Hàng Nhanh'}</p>
+                                                                    {
+                                                                       orderInfo?.ship_order_code &&  orderInfo?.ship_order_code !== null ? (
+                                                                            <p>Mã vận đơn: {orderInfo?.ship_order_code}</p>
+                                                                        ) : ''
+                                                                    }
                                                                     <p>Phí vận chuyển: {currency(orderInfo?.ship_fee)}</p>
                                                                 </div>
                                                             </div>
@@ -211,6 +211,11 @@ function HistoryOrderDetail(props) {
                                                                     <p className="">{orderInfo.status_payment_name}</p>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item sm={12}>
+                                                        <div className="Nbknf">
+                                                            <TrackingOrder order={orderInfo} />
                                                         </div>
                                                     </Grid>
                                                     <Grid item xs={12}>

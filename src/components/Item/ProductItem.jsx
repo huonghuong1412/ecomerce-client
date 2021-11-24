@@ -2,21 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { currency } from "../../utils/FormatCurrency";
 function ProductItem(props) {
-  const { type, books, laptops, phones, products } = props;
-  let productList = [];
-  if (type === "book") {
-    productList = books;
-  }  else if (type === "laptop") {
-    productList = laptops;
-  } else if (type === "phone") {
-    productList = phones;
-  } else {
-    productList = products;
-  }
+  const { products } = props;
   
   return (
     <>
-      {productList.map((item) => {
+      {products.map((item) => {
         const price = currency(item.price);
         return (
           <div className="col l-2 m-2 c-6" key={item.id}>

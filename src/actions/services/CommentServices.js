@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {API_URL} from 'actions/constants/constants'
+import axiosClient from 'actions/constants/axiosClient';
 
 const token = localStorage.getItem('token');
 const headers = { Authorization: `Bearer ${token}` }
@@ -23,10 +24,9 @@ export const getAllCommentByUser = () => {
 }
 
 export const addComment = (data) => {
-    return axios({
+    return axiosClient({
         method: "POST",
         data: data,
-        headers: headers,
         url: `${API_URL}/api/comment`
     })
 }

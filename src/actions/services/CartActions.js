@@ -1,6 +1,7 @@
 import {
     GET_CART_INFO,
-    GET_ALL_ITEM_IN_CART
+    GET_ALL_ITEM_IN_CART,
+    GET_ALL_ITEM_IN_CART_SELECTED
 } from '../constants/constants'
 import {
     API_URL
@@ -90,6 +91,37 @@ export const checkQuantityItemInCart = (data) => {
         // headers: headers,
     })
 }
+
+// chọn sản phẩm trong giỏ để đặt hàng
+export const selectedItemToOrder = (data) => {
+    return axiosClient({
+        method: 'POST',
+        url: `${API_URL}/api/carts/mine/items/selected`,
+        params: {product_id: data}
+        // headers: headers,
+    })
+}
+
+// lấy danh sách giỏ hàng đã chọn sản phẩm để đặt hàng
+export const getDetailCartSelected = (data) => {
+    return dispatch => {
+        axiosClient({
+            method: 'GET',
+            url: `${API_URL}/api/carts/mine/items/selected`,
+            // headers: headers,
+        })
+            .then((res) => {
+                console.log(res.data);
+                getCartInfo();
+                dispatch({
+                    type: GET_ALL_ITEM_IN_CART_SELECTED,
+                    payload: res
+                })
+            })
+            .catch(err => console.log(err))
+    }
+}
+
 
 
 export const completeCart = () => {

@@ -4,7 +4,7 @@ import { currency } from "utils/FormatCurrency"
 import { Link, useHistory } from 'react-router-dom';
 import { API_URL } from 'actions/constants/constants'
 import { getCurrentUser } from 'actions/services/UserActions'
-import { getAllProductByBrand, getOneItem } from 'actions/services/ProductServices'
+import { addViewedProduct, getListProductMostPopular, getListProductViewedByUser, getOneItem } from 'actions/services/ProductServices'
 import { addLikeProduct, deleteProductLiked, getProductLiked } from 'actions/services/ProductServices'
 import { getAllCommentByProductId } from 'actions/services/CommentServices'
 import { addProductToCart, getCartInfo } from 'actions/services/CartActions'
@@ -27,8 +27,10 @@ function DetailProduct(props) {
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [index, setIndex] = useState(0);
-    const [productByBrands, setProductByBrands] = useState([]);
+    // const [productByBrands, setProductByBrands] = useState([]);
     const [productLiked, setProductLiked] = useState(false);
+    const [productViewed, setProductViewedd] = useState([]);
+    const [mostPopularProduct, setMostPopularProduct] = useState([]);
     const [comments, setComments] = useState([]);
     const username = localStorage.getItem('username')
     const params = new URLSearchParams(window.location.search)
@@ -54,25 +56,37 @@ function DetailProduct(props) {
         let searchParams = new URLSearchParams(window.location.search);
         searchParams.set(key, value);
         history.push({
-          pathname: pathname,
-          search: searchParams.toString(),
+            pathname: pathname,
+            search: searchParams.toString(),
         });
-      };
+    };
 
-    useEffect(() => {
+    const getComment = useCallback(() => {
         const id = match.params.id;
-        
-        getOneItem(id, color)
-            .then((res) => {
-                setProduct(res.data);
-            })
-            .catch(err => console.log(err));
         getAllCommentByProductId(id)
             .then((res) => {
                 setComments(res.data)
             })
             .catch(err => alert(err))
+    }, [match.params.id])
+
+    useEffect(() => {
+        const id = match.params.id;
+        getOneItem(id, color)
+            .then((res) => {
+                setProduct(res.data);
+            })
+            .catch(err => console.log(err));
+        getComment();
         if (username) {
+            addViewedProduct({productId: id})
+                .then(() => {})
+                .catch(() => {})
+            getListProductViewedByUser()
+                .then((res) => {
+                    setProductViewedd(res)
+                })
+                .catch(() => setProductViewedd([]))
             getProductLiked(id)
                 .then((res) => {
                     if (res.data === true) {
@@ -82,7 +96,8 @@ function DetailProduct(props) {
                 .catch(() => setProductLiked(false))
         }
 
-    }, [color, match.params.id, username])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [color, getComment, match.params.id, username])
 
     useEffect(() => {
         if (myRef.current) {
@@ -95,12 +110,15 @@ function DetailProduct(props) {
     }, [getUser])
 
     useEffect(() => {
-        const { id, brand } = product;
-        if (id) {
-            getAllProductByBrand(id, brand?.code)
-                .then(res => setProductByBrands(res.data))
-                .catch(() => alert('ERR'))
-        }
+        // const { id, brand } = product;
+        // if (id) {
+        //     getAllProductByBrand(id, brand?.code)
+        //         .then(res => setProductByBrands(res.data))
+        //         .catch(() => alert('ERR'))
+        // }
+        getListProductMostPopular()
+            .then(res => setMostPopularProduct(res.data))
+            .catch(() => setMostPopularProduct([]))
     }, [product])
 
     useEffect(() => {
@@ -298,7 +316,7 @@ function DetailProduct(props) {
                                                             return (
                                                                 <button
                                                                     key={index}
-                                                                    className={`opt-var opt-var-97020 ${color === item.color || product?.inventories.length === 1 || (index === 0 && !color) ? 'active': ''}`}
+                                                                    className={`opt-var opt-var-97020 ${color === item.color || product?.inventories.length === 1 || (index === 0 && !color) ? 'active' : ''}`}
                                                                     title={item.color}
                                                                     onClick={() => addQuery('color', item.color)}
                                                                 >
@@ -471,12 +489,24 @@ function DetailProduct(props) {
                                 <div className="col l-12 m-12 c-12">
                                     <div className="home-product-category-item">
                                         <h3 className="home-product-title">
-                                            Sản phẩm cùng thương hiệu
+                                            Sản phẩm phổ biến nhất
                                         </h3>
                                     </div>
                                 </div>
                                 {
-                                    loading ? <ProductItemSkeleton total={productByBrands.length} /> : <ProductItem products={productByBrands} />
+                                    loading ? <ProductItemSkeleton total={mostPopularProduct.length} /> : <ProductItem products={mostPopularProduct} />
+                                }
+                            </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
+                                            Sản phẩm bạn đã xem
+                                        </h3>
+                                    </div>
+                                </div>
+                                {
+                                    loading ? <ProductItemSkeleton total={productViewed.length} /> : <ProductItem products={productViewed} />
                                 }
                             </div>
                         </div>

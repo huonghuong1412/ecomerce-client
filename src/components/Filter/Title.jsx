@@ -9,8 +9,14 @@ export default function Title(props) {
     title = "Laptop";
   } else if (type === "dien-thoai") {
     title = "Điện thoại";
-  } else if (type === "bach-hoa") {
-    title = "Bách hoá online";
+  } else if (type === "may-tinh-bang") {
+    title = "Máy tính bảng";
+  } else if (type === "tivi") {
+    title = "Tivi";
+  } else if (type === "may-anh") {
+    title = "Máy ảnh - Máy quay";
+  } else if (type === "may-giat") {
+    title = "Máy giặt";
   }
 
   return (

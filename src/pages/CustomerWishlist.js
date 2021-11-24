@@ -19,7 +19,7 @@ export default function CustomerWishlist(props) {
 
     const getData = useCallback(() => {
         getListProductLiked()
-            .then((res) => setListProductLiked(res.data))
+            .then((res) => setListProductLiked(res))
             .catch(() => alert('ERROR'))
     }, [])
     const getUser = () => {

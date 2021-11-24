@@ -397,6 +397,62 @@ input[type="number"] {
   display: flex;
 }
 
+.intended__checkbox {
+  position: relative;
+  top: 35px;
+}
+
+.intended__checkbox-label {
+  display: inline-block;
+}
+
+.intended__checkbox-label input[type="checkbox"] {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  visibility: hidden;
+  clip: rect(0px, 0px, 0px, 0px);
+  opacity: 0;
+}
+
+.intended__checkbox-label .checkbox-fake {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgb(196, 196, 207);
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0px 12px 0px 0px;
+  position: relative;
+  z-index: 1;
+  color: rgb(196, 196, 207);
+  background: transparent;
+  cursor: pointer;
+}
+
+.intended__checkbox-label .checkbox-fake::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+  height: 6px;
+  border-left: 2px solid rgb(255, 255, 255);
+  border-bottom: 2px solid rgb(255, 255, 255);
+  transform: scale(0) rotate(-45deg);
+  transition: transform 0.3s ease 0s;
+}
+
+.intended__checkbox-label input[type="checkbox"]:checked + .checkbox-fake {
+  border-color: rgb(11, 116, 229);
+  background-color: rgb(11, 116, 229);
+}
+
+.intended__checkbox-label input[type="checkbox"]:checked + .checkbox-fake::before {
+    transform: scale(1) rotate(-45deg);
+}
+
 .iMeYki .intended__img {
   width: 80px;
   height: 80px;

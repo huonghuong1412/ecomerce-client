@@ -4,6 +4,7 @@ const initialState = {
     message: '',
     cartInfo: {},
     cart: {},
+    cartSelected: {},
     isFetching: true
 }
 
@@ -14,6 +15,12 @@ const cartReducer = (state = initialState, action) => {
             return {
                 ...state,
                 cart: action.payload,
+                isFetching: false
+            }
+        case types.GET_ALL_ITEM_IN_CART_SELECTED:
+            return {
+                ...state,
+                cartSelected: action.payload,
                 isFetching: false
             }
         case types.GET_CART_INFO:

@@ -32,7 +32,7 @@ export default function HistoryOrder(props) {
 
         getAllOrderByUser()
             .then((res) => {
-                setOrders(res.data);
+                setOrders(res);
             })
             .catch((err) => {
                 console.log(err);

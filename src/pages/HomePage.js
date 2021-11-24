@@ -11,6 +11,7 @@ import ProductTopSale from 'components/Item/ProductTopSale'
 function HomePage(props) {
     const [products, setProducts] = useState([]);
     const [topSale, setTopSale] = useState([]);
+    const [mostPopularProduct, setMostPopularProduct] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
 
@@ -41,11 +42,18 @@ function HomePage(props) {
             .catch(err => console.log(err))
     }
 
+    const getPopularProduct = useCallback(() => {
+        services.getListProductMostPopular()
+            .then(res => setMostPopularProduct(res.data))
+            .catch(() => setMostPopularProduct([]))
+    }, [])
+
     useEffect(() => {
         document.title = "Mua hàng online giá tốt, hàng chuẩn, ship nhanh"
         getNewData();
         getTopSaleProduct();
-    }, [getNewData])
+        getPopularProduct();
+    }, [getNewData, getPopularProduct])
 
     useTimeout(() => setLoading(false), loading ? 1000 : null);
 
@@ -67,6 +75,22 @@ function HomePage(props) {
                             </div>
                             {
                                 loading ? <ProductItemSkeleton total={products.length} /> : <ProductTopSale products={topSale} />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div className="col l-12 m-12 c-12">
+                    <div className="home-product">
+                        <div className="row sm-gutter section__item">
+                            <div className="col l-12 m-12 c-12">
+                                <div className="home-product-category-item">
+                                    <h3 className="home-product-title">
+                                        Sản phẩm phổ biến nhất
+                                    </h3>
+                                </div>
+                            </div>
+                            {
+                                loading ? <ProductItemSkeleton total={mostPopularProduct.length} /> : <ProductTopSale products={mostPopularProduct} />
                             }
                         </div>
                     </div>

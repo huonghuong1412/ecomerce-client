@@ -2,9 +2,10 @@ import axios from 'axios'
 import {
     API_URL
 } from 'actions/constants/constants'
+import axiosClient from 'actions/constants/axiosClient';
 axios.defaults.baseURL = API_URL;
-const token = localStorage.getItem('token');
-const headers = { Authorization: `Bearer ${token}` }
+// const token = localStorage.getItem('token');
+// const headers = { Authorization: `Bearer ${token}` }
 
 // get
 export const getProductListByCategoryAndSubcategory = (searchObject) => {
@@ -47,36 +48,58 @@ export const getBrandByCode = (brandCode) => {
 // -------   SP Da Thich   --------
 
 export const addLikeProduct = (data) => {
-    return axios({
+    return axiosClient({
         method: 'POST',
         url: `${API_URL}/api/liked/user`,
-        data: data,
-        headers: headers,
+        data: data
     })
 }
 
 export const getProductLiked = (productId) => {
-    return axios({
+    return axiosClient({
         method: 'GET',
-        url: `${API_URL}/api/liked/product?productId=${productId}`,
-        headers: headers,
+        url: `${API_URL}/api/liked/product?productId=${productId}`
     });
 }
 
 // get ds sp yeu thich
 export const getListProductLiked = () => {
-    return axios({
+    return axiosClient({
         method: 'GET',
-        url: `${API_URL}/api/liked/products`,
-        headers: headers,
+        url: `${API_URL}/api/liked/products`
     });
 }
 
 // bo thich san pham
 export const deleteProductLiked = (productId) => {
-    return axios({
+    return axiosClient({
         method: 'DELETE',
-        url: `${API_URL}/api/liked/user?productId=${productId}`,
-        headers: headers,
+        url: `${API_URL}/api/liked/user?productId=${productId}`
     })
+}
+
+// -------   SP Da XEM   --------
+
+export const addViewedProduct = (data) => {
+    return axiosClient({
+        method: 'POST',
+        url: `${API_URL}/api/viewed/add`,
+        data: data
+    })
+}
+
+// get ds sp yeu thich
+export const getListProductViewedByUser = () => {
+    return axiosClient({
+        method: 'GET',
+        url: `${API_URL}/api/viewed/products`
+    });
+}
+
+// get ds sp pho bien nhat
+export const getListProductMostPopular = () => {
+    return axios({
+        method: 'GET',
+        url: `${API_URL}/api/viewed/most-popular`
+    });
 }

@@ -44,10 +44,10 @@ export const calculateShipFee = (data) => {
 }
 
 export const calculateShipFeeGHN = (params) => {
-    const {from_district_id, height, length, weight, width, to_district_id, to_ward_code, service_id} = params;
+    const { from_district_id, height, length, weight, width, to_district_id, to_ward_code, service_id } = params;
     return axios({
         method: 'GET',
-        params: {from_district_id, to_district_id, to_ward_code, length, weight, width, height, service_id},
+        params: { from_district_id, to_district_id, to_ward_code, length, weight, width, height, service_id },
         url: `${API_URL}/api/services/ship/ghn/ship-fee`
     })
 }
@@ -59,5 +59,14 @@ export const calculateShipTime = (data) => {
         url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime',
         data: data,
         headers: headers
+    })
+}
+
+//tra cuu trang thai don hang
+export const checkOrderInfoGHN = (data) => {
+    return axios({
+        method: 'GET',
+        url: `${API_URL}/api/services/ship/ghn/checkorderinfo`,
+        params: { order_code: data }
     })
 }

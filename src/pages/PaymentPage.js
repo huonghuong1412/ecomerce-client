@@ -5,7 +5,7 @@ import { currency } from 'utils/FormatCurrency'
 import { makePaymentVnpay, makePaymentZaloPay, makePaymentMomo } from 'actions/services/PaymentActions'
 import AddressForm from 'components/form/AddressForm';
 import { addOrder } from 'actions/services/OrderActions'
-import { completeCart, getCartInfo, getDetailCart } from 'actions/services/CartActions';
+import { completeCart, getCartInfo, getDetailCartSelected } from 'actions/services/CartActions';
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import { getUserLogin } from 'actions/services/UserActions';
@@ -36,7 +36,7 @@ const icon_bank = [
 
 function PaymentPage(props) {
     const dispatch = useDispatch();
-    const cart = useSelector(state => state.cart.cart);
+    const cart = useSelector(state => state.cart.cartSelected);
     const [user, setUser] = useState({})
     const [type, setType] = useState(1);
     const [openAddress, setOpenAddress] = useState(false);
@@ -56,7 +56,7 @@ function PaymentPage(props) {
 
     const getCalculateShipFee = useCallback(() => {
         if (!_.isEmpty(user)) {
-            if(shipType === 1) {
+            if (shipType === 1) {
                 calculateShipFeeGHN({
                     from_district_id: 1542,
                     service_id: 53320,
@@ -74,18 +74,18 @@ function PaymentPage(props) {
                     .catch(err => console.log(err))
             } else {
                 calculateShipFeeGHTK({
-                    pick_province: 'Hà Nội', 
-                    pick_district: 'Quận Hà Đông', 
-                    province: user?.city, 
-                    district: user?.district, 
+                    pick_province: 'Hà Nội',
+                    pick_district: 'Quận Hà Đông',
+                    province: user?.city,
+                    district: user?.district,
                     weight: cart?.weight,
-                    deliver_option: 'none', 
+                    deliver_option: 'none',
                     value: cart?.total_price
                 })
-                .then((res => {
-                    setShipInfo(res.data)
-                }))
-                .catch(err => console.log(err))
+                    .then((res => {
+                        setShipInfo(res.data)
+                    }))
+                    .catch(err => console.log(err))
             }
         }
     }, [cart?.height, cart?.length, cart?.total_price, cart?.weight, cart?.width, shipType, user])
@@ -128,7 +128,7 @@ function PaymentPage(props) {
         document.title = "Thông tin thanh toán | Tiki"
 
         if (token) {
-            dispatch(getDetailCart())
+            dispatch(getDetailCartSelected())
         } else {
             props.history.push('/login');
         }
@@ -137,11 +137,6 @@ function PaymentPage(props) {
 
     const calculateShipFeeIfTotalMorethan3Mil = (total) => {
         let fee = shipInfo?.total_ship_fee;
-        if (total < 3000000) {
-            fee += 0;
-        } else {
-            fee = 0;
-        }
         return fee;
     }
 
@@ -155,6 +150,17 @@ function PaymentPage(props) {
     const handlePayment = () => {
         if (cart?.cart_details.length === 0) {
             toast.error('Đặt hàng không thành công. Giỏ hàng không có sản phẩm!', {
+                position: "bottom-center",
+                theme: 'dark',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            })
+        } else if ((user?.city_id === null && user?.district_id === null) || user?.phone === null) {
+            toast.warning('Đặt hàng không thành công. Vui lòng cập nhật thông tin giao hàng !', {
                 position: "bottom-center",
                 theme: 'dark',
                 autoClose: 2000,
@@ -212,8 +218,8 @@ function PaymentPage(props) {
                 }
                 addOrder(order)
                     .then((res) => {
-                        localStorage.setItem('order_id', res.data.id);
-                        orderInfo.order_id = res.data.id;
+                        localStorage.setItem('order_id', res.id);
+                        orderInfo.order_id = res.id;
                         makePaymentMomo(orderInfo)
                             .then((res1) => {
                                 if (res1.data.errorCode === 0 || res1.data.errorCode === "0") {
@@ -277,9 +283,9 @@ function PaymentPage(props) {
                 }
                 addOrder(order)
                     .then((res) => {
-                        localStorage.setItem('order_id', res.data.id);
-                        orderInfo.order_id = res.data.id;
-                        makePaymentZaloPay(res.data, orderInfo)
+                        localStorage.setItem('order_id', res.id);
+                        orderInfo.order_id = res.id;
+                        makePaymentZaloPay(res, orderInfo)
                             .then((res1) => {
                                 if (res1.data.returncode === 1) {
                                     window.location.href = res1.data.orderurl;
@@ -328,7 +334,10 @@ function PaymentPage(props) {
                     total_item: cart?.items_count,
                     order_details: order_details,
                     orderInfo: orderInfo.vnp_OrderInfo,
-                    address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
+                    address: user ? user?.house : "",
+                    province: user ? user?.city : "",
+                    district: user ? user?.district : "",
+                    ward: user ? user?.ward : "",
                     payment: payment,
                     phone: user.phone,
                     name: user.fullName,
@@ -336,10 +345,11 @@ function PaymentPage(props) {
                     district_id: user?.district_id,
                     ship_fee: calculateShipFeeIfTotalMorethan3Mil(cart?.total_price),
                     ship_type: shipType
+                    
                 }
                 addOrder(order)
                     .then((res) => {
-                        localStorage.setItem('order_id', res.data.id);
+                        localStorage.setItem('order_id', res.id);
                         makePaymentVnpay(orderInfo)
                             .then((res) => {
                                 window.location.href = res.data.redirect_url;
@@ -383,7 +393,10 @@ function PaymentPage(props) {
                     total_item: cart?.items_count,
                     order_details: order_details,
                     orderInfo: orderInfo.vnp_OrderInfo,
-                    address: user ? user?.house + ", " + user?.ward + ", " + user?.district + ", " + user?.city : "",
+                    address: user ? user?.house : "",
+                    province: user ? user?.city : "",
+                    district: user ? user?.district : "",
+                    ward: user ? user?.ward : "",
                     ward_code: user?.ward_id,
                     district_id: user?.district_id,
                     payment: payment,
@@ -394,7 +407,7 @@ function PaymentPage(props) {
                 }
                 addOrder(order)
                     .then((res) => {
-                        props.history.push(`/success/payment?order_id=${res.data.id}`)
+                        props.history.push(`/success/payment?order_id=${res.id}`)
                         toast.success('Đặt hàng thành công!', {
                             position: "bottom-center",
                             theme: 'dark',

@@ -39,7 +39,7 @@ export default function Slide() {
 
   return (
     <>
-      <div className="row sm-gutter section__content">
+      <div className="row sm-gutter">
         <div className="col l-12 m-12 c-12">
           <Slider {...settings}>
             {slides.map((slide) => {

@@ -17,6 +17,8 @@ export default function Title(props) {
     title = "Máy ảnh - Máy quay";
   } else if (type === "may-giat") {
     title = "Máy giặt";
+  } else if (type === "thiet-bi-phu-kien") {
+    title = "Thiết bị - Phụ kiện";
   }
 
   return (

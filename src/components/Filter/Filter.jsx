@@ -128,6 +128,27 @@ const list_price = [
       },
     ],
   },
+  {
+    category: "thiet-bi-phu-kien",
+    prices: [
+      {
+        label: "Dưới 80.000",
+        value: "0,80000",
+      },
+      {
+        label: "Từ 80.000 - 200.000",
+        value: "80000,200000",
+      },
+      {
+        label: "Từ 200.000 - 320.000",
+        value: "200000,3200000",
+      },
+      {
+        label: "Trên 320.000",
+        value: "320000,10000000000",
+      },
+    ],
+  },
 ];
 
 const list_sort = [

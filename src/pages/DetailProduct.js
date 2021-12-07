@@ -7,6 +7,7 @@ import { getCurrentUser } from 'actions/services/UserActions'
 import { addViewedProduct, getListProductMostPopular, getListProductViewedByUser, getOneItem } from 'actions/services/ProductServices'
 import { addLikeProduct, deleteProductLiked, getProductLiked } from 'actions/services/ProductServices'
 import { getAllCommentByProductId } from 'actions/services/CommentServices'
+import { getListRecommendForUser, getSimilarProduct } from 'actions/services/RecommendServices'
 import { addProductToCart, getCartInfo } from 'actions/services/CartActions'
 import "react-toastify/dist/ReactToastify.css";
 import useTimeout from 'hooks/useTimeout';
@@ -27,7 +28,6 @@ function DetailProduct(props) {
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [index, setIndex] = useState(0);
-    // const [productByBrands, setProductByBrands] = useState([]);
     const [productLiked, setProductLiked] = useState(false);
     const [productViewed, setProductViewedd] = useState([]);
     const [mostPopularProduct, setMostPopularProduct] = useState([]);
@@ -35,6 +35,8 @@ function DetailProduct(props) {
     const username = localStorage.getItem('username')
     const params = new URLSearchParams(window.location.search)
     const color = params.get('color') ? params.get('color') : '';
+    const [similarProduct, setSimilarProduct] = useState([]);
+    const [recommendList, setRecommendList] = useState([]);
 
     const getUser = useCallback(() => {
         dispatch(getCurrentUser())
@@ -75,18 +77,26 @@ function DetailProduct(props) {
         getOneItem(id, color)
             .then((res) => {
                 setProduct(res.data);
+                getSimilarProduct(res.data?.features.split(','), res.data?.category.code)
+                    .then((res) => setSimilarProduct(res.data))
+                    .catch(err => console.log(err));
             })
             .catch(err => console.log(err));
         getComment();
         if (username) {
-            addViewedProduct({productId: id})
-                .then(() => {})
-                .catch(() => {})
+            addViewedProduct({ productId: id })
+                .then(() => { })
+                .catch(() => { })
             getListProductViewedByUser()
                 .then((res) => {
                     setProductViewedd(res)
                 })
                 .catch(() => setProductViewedd([]))
+            getListRecommendForUser()
+                .then((res) => {
+                    setRecommendList(res)
+                })
+                .catch(() => setRecommendList([]))
             getProductLiked(id)
                 .then((res) => {
                     if (res.data === true) {
@@ -96,7 +106,7 @@ function DetailProduct(props) {
                 .catch(() => setProductLiked(false))
         }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [color, getComment, match.params.id, username])
 
     useEffect(() => {
@@ -110,12 +120,6 @@ function DetailProduct(props) {
     }, [getUser])
 
     useEffect(() => {
-        // const { id, brand } = product;
-        // if (id) {
-        //     getAllProductByBrand(id, brand?.code)
-        //         .then(res => setProductByBrands(res.data))
-        //         .catch(() => alert('ERR'))
-        // }
         getListProductMostPopular()
             .then(res => setMostPopularProduct(res.data))
             .catch(() => setMostPopularProduct([]))
@@ -383,6 +387,18 @@ function DetailProduct(props) {
                                 <div className="col l-12 m-12 c-12">
                                     <div className="home-product-category-item">
                                         <h3 className="home-product-title">
+                                            Sản phẩm tương tự
+                                        </h3>
+                                    </div>
+                                </div>
+                                {
+                                    loading ? <ProductItemSkeleton total={similarProduct.length} /> : <ProductItem products={similarProduct} />
+                                }
+                            </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
                                             Thông tin chi tiết
                                         </h3>
                                     </div>
@@ -495,6 +511,18 @@ function DetailProduct(props) {
                                 </div>
                                 {
                                     loading ? <ProductItemSkeleton total={mostPopularProduct.length} /> : <ProductItem products={mostPopularProduct} />
+                                }
+                            </div>
+                            <div className="row sm-gutter section__item">
+                                <div className="col l-12 m-12 c-12">
+                                    <div className="home-product-category-item">
+                                        <h3 className="home-product-title">
+                                            Sản phẩm dành cho bạn
+                                        </h3>
+                                    </div>
+                                </div>
+                                {
+                                    loading ? <ProductItemSkeleton total={recommendList.length} /> : <ProductItem products={recommendList} />
                                 }
                             </div>
                             <div className="row sm-gutter section__item">

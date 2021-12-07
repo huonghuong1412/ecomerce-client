@@ -55,9 +55,7 @@ function App() {
         <Header />
         <div className="app__container">
           <div className="grid wide">
-
             <Switch>
-
               <PrivateRoute exact path="/customer/account" component={CustomerProfile} />
               <PrivateRoute exact path="/customer/change-password" component={CustomerPassword} />
               <PrivateRoute exact path="/customer/address" component={CustomerAddress} />
